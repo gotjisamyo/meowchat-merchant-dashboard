@@ -1,16 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Bot, BookOpen, MessageSquare, CreditCard, User,
-  ChevronLeft, ChevronRight, Cat, LogOut, Loader2
+  ChevronLeft, ChevronRight, Cat, LogOut, Loader2, PhoneCall
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { handoffAPI } from '../services/api';
+
+const BOT_ID = 'bot_001';
 
 const menuItems = [
   { path: '/',             id: 'dashboard',     label: 'Dashboard',       icon: LayoutDashboard },
   { path: '/bot',          id: 'bot',           label: 'ตั้งค่าบอท',        icon: Bot },
   { path: '/knowledge',    id: 'knowledge',     label: 'Knowledge Base',   icon: BookOpen },
   { path: '/conversations',id: 'conversations', label: 'บทสนทนา',          icon: MessageSquare },
+  { path: '/handoff',      id: 'handoff',       label: 'Handoff',          icon: PhoneCall, badgeKey: 'handoff' },
   { path: '/subscription', id: 'subscription',  label: 'Subscription',     icon: CreditCard },
   { path: '/profile',      id: 'profile',       label: 'โปรไฟล์',           icon: User },
 ];
@@ -49,6 +53,16 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [handoffCount, setHandoffCount] = useState(0);
+
+  useEffect(() => {
+    handoffAPI.getPendingCount(BOT_ID).then(setHandoffCount).catch(() => {});
+    // Poll every 30 seconds
+    const interval = setInterval(() => {
+      handoffAPI.getPendingCount(BOT_ID).then(setHandoffCount).catch(() => {});
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -106,6 +120,7 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeId === item.id;
+          const badge = item.badgeKey === 'handoff' && handoffCount > 0 ? handoffCount : null;
 
           return (
             <button
@@ -125,11 +140,23 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
                 border: '1px solid rgba(255, 107, 53, 0.2)',
               } : {}}
             >
-              <Icon className={`w-5 h-5 flex-shrink-0 transition-colors ${isActive ? 'text-orange-400' : 'group-hover:text-zinc-400'}`} />
+              <div className="relative flex-shrink-0">
+                <Icon className={`w-5 h-5 transition-colors ${isActive ? 'text-orange-400' : 'group-hover:text-zinc-400'}`} />
+                {badge && isCollapsed && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[9px] font-bold text-white flex items-center justify-center">
+                    {badge > 9 ? '9+' : badge}
+                  </span>
+                )}
+              </div>
               {!isCollapsed && (
                 <>
-                  <span className="font-semibold text-sm">{item.label}</span>
-                  {isActive && (
+                  <span className="font-semibold text-sm flex-1">{item.label}</span>
+                  {badge && (
+                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-red-500/20 text-red-400 border border-red-500/30">
+                      {badge}
+                    </span>
+                  )}
+                  {isActive && !badge && (
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-orange-500 rounded-full" />
                   )}
                 </>

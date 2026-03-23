@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import BotSettings from './pages/BotSettings';
 import KnowledgeBase from './pages/KnowledgeBase';
 import Conversations from './pages/Conversations';
+import Handoff from './pages/Handoff';
 import Subscription from './pages/Subscription';
 import Profile from './pages/Profile';
 
@@ -51,6 +52,7 @@ export default function App() {
                       <Route path="/bot" element={<BotSettings setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/knowledge" element={<KnowledgeBase setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/conversations" element={<Conversations setSidebarOpen={setSidebarOpen} />} />
+                      <Route path="/handoff" element={<Handoff setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/subscription" element={<Subscription setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/profile" element={<Profile setSidebarOpen={setSidebarOpen} />} />
                       <Route path="*" element={<Navigate to="/" replace />} />

@@ -200,4 +200,70 @@ export const conversationsAPI = {
   },
 };
 
+const MOCK_HANDOFFS = [
+  {
+    id: 'h1',
+    customerName: 'คุณรัตนา',
+    lastMessage: 'ต้องการคุยกับพนักงานค่ะ เรื่องการคืนสินค้า',
+    time: '2 นาทีที่แล้ว',
+    status: 'waiting',
+    avatar: 'ร',
+  },
+  {
+    id: 'h2',
+    customerName: 'คุณมาลี',
+    lastMessage: 'สั่งออนไลน์แล้วยังไม่ได้รับของ',
+    time: '10 นาทีที่แล้ว',
+    status: 'waiting',
+    avatar: 'ม',
+  },
+  {
+    id: 'h3',
+    customerName: 'คุณสมชาย',
+    lastMessage: 'อยากสอบถามเรื่องโปรโมชั่นพิเศษ',
+    time: '25 นาทีที่แล้ว',
+    status: 'accepted',
+    avatar: 'ส',
+  },
+];
+
+export const handoffAPI = {
+  getAll: async (botId) => {
+    // TODO: replace with GET /api/bots/:botId/handoffs when available
+    try {
+      const response = await api.get(`/api/bots/${botId}/handoffs`);
+      return response.data;
+    } catch {
+      return MOCK_HANDOFFS;
+    }
+  },
+  accept: async (botId, handoffId) => {
+    // TODO: replace with PUT /api/bots/:botId/handoffs/:handoffId/accept when available
+    try {
+      const response = await api.put(`/api/bots/${botId}/handoffs/${handoffId}/accept`);
+      return response.data;
+    } catch {
+      return { success: true };
+    }
+  },
+  close: async (botId, handoffId) => {
+    // TODO: replace with PUT /api/bots/:botId/handoffs/:handoffId/close when available
+    try {
+      const response = await api.put(`/api/bots/${botId}/handoffs/${handoffId}/close`);
+      return response.data;
+    } catch {
+      return { success: true };
+    }
+  },
+  getPendingCount: async (botId) => {
+    // TODO: replace with GET /api/bots/:botId/handoffs/count when available
+    try {
+      const response = await api.get(`/api/bots/${botId}/handoffs/count`);
+      return response.data.count ?? 0;
+    } catch {
+      return MOCK_HANDOFFS.filter((h) => h.status === 'waiting').length;
+    }
+  },
+};
+
 export default api;
