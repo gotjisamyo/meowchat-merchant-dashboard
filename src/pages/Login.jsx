@@ -1,0 +1,170 @@
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { Mail, Lock, Eye, EyeOff, Loader2, Cat } from 'lucide-react';
+
+export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const emailRef = useRef(null);
+  const passRef = useRef(null);
+
+  // Force dark bg on browser autofill
+  useEffect(() => {
+    const fix = (el) => {
+      if (!el) return;
+      el.style.backgroundColor = '#0A0A0F';
+      el.style.color = '#ffffff';
+    };
+    const t = setInterval(() => {
+      fix(emailRef.current);
+      fix(passRef.current);
+    }, 200);
+    return () => clearInterval(t);
+  }, []);
+
+  const { login, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || '/';
+
+  useEffect(() => {
+    if (isAuthenticated) navigate(from, { replace: true });
+  }, [isAuthenticated, navigate, from]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    if (!email.trim()) { setError('กรุณากรอกอีเมล'); return; }
+    if (!password.trim()) { setError('กรุณากรอกรหัสผ่าน'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('รูปแบบอีเมลไม่ถูกต้อง');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await login(email, password);
+      navigate(from, { replace: true });
+    } catch (err) {
+      setError(err.message || 'เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง');
+    }
+    setIsLoading(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0A0A0F] flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background glow effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-1/2 -left-1/4 w-3/4 h-3/4 bg-gradient-to-br from-orange-500/8 via-transparent to-transparent rounded-full blur-3xl" />
+        <div className="absolute -bottom-1/2 -right-1/4 w-3/4 h-3/4 bg-gradient-to-tl from-pink-500/8 via-transparent to-transparent rounded-full blur-3xl" />
+      </div>
+
+      {/* Subtle grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:60px_60px] pointer-events-none" />
+
+      {/* Card */}
+      <div className="w-full max-w-md relative z-10 animate-fade-in">
+        {/* Logo & Title */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-400 mb-4 shadow-xl shadow-orange-500/25">
+            <Cat className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-2xl font-extrabold text-white mb-1">MeowChat Merchant</h1>
+          <p className="text-zinc-500 text-sm">เข้าสู่ระบบเพื่อจัดการบอท LINE OA ของคุณ</p>
+        </div>
+
+        {/* Form Card */}
+        <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-7 shadow-2xl">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Email */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-semibold text-zinc-300 mb-2">
+                อีเมล
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 pointer-events-none" />
+                <input
+                  id="email"
+                  ref={emailRef}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3 bg-[#0A0A0F] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500/40 transition-all text-sm"
+                  placeholder="merchant@email.com"
+                  autoComplete="email"
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div>
+              <label htmlFor="password" className="block text-sm font-semibold text-zinc-300 mb-2">
+                รหัสผ่าน
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 pointer-events-none" />
+                <input
+                  id="password"
+                  ref={passRef}
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-11 pr-12 py-3 bg-[#0A0A0F] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500/40 transition-all text-sm"
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Forgot password */}
+            <div className="flex justify-end">
+              <a href="#" className="text-xs text-orange-400 hover:text-orange-300 transition-colors font-medium">
+                ลืมรหัสผ่าน?
+              </a>
+            </div>
+
+            {/* Error */}
+            {error && (
+              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20">
+                <p className="text-red-400 text-sm text-center">{error}</p>
+              </div>
+            )}
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-400 hover:to-pink-400 text-white font-bold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 text-sm"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  กำลังเข้าสู่ระบบ...
+                </>
+              ) : (
+                'เข้าสู่ระบบ'
+              )}
+            </button>
+          </form>
+        </div>
+
+        {/* Footer */}
+        <p className="text-center mt-6 text-zinc-600 text-xs">
+          © 2026 MeowChat by Mawsom Company Limited
+        </p>
+      </div>
+    </div>
+  );
+}
