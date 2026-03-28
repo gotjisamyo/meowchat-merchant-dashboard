@@ -1,6 +1,16 @@
-import { Menu, Bell, Cat } from 'lucide-react';
+import { Menu, Cat, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function PageLayout({ title, subtitle, setSidebarOpen, children, actions }) {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <div className="flex flex-col min-h-screen w-full min-w-0 animate-fade-in">
       {/* Mobile Header */}
@@ -17,8 +27,12 @@ export default function PageLayout({ title, subtitle, setSidebarOpen, children, 
           </div>
           <span className="font-bold text-white text-sm">MeowChat</span>
         </div>
-        <button className="relative p-2 hover:bg-white/[0.06] rounded-xl text-zinc-400 transition-colors">
-          <Bell className="w-5 h-5" />
+        <button
+          onClick={handleLogout}
+          className="relative p-2 hover:bg-red-500/10 rounded-xl text-zinc-400 hover:text-red-400 transition-colors"
+          title="ออกจากระบบ"
+        >
+          <LogOut className="w-5 h-5" />
         </button>
       </header>
 
@@ -28,11 +42,17 @@ export default function PageLayout({ title, subtitle, setSidebarOpen, children, 
           <h1 className="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">{title}</h1>
           {subtitle && <p className="text-zinc-500 mt-0.5 text-sm">{subtitle}</p>}
         </div>
-        {actions && (
-          <div className="flex items-center gap-2">
-            {actions}
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {actions}
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-3 py-2 rounded-xl text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors text-sm font-medium"
+            title="ออกจากระบบ"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>ออกจากระบบ</span>
+          </button>
+        </div>
       </header>
 
       {/* Page Content */}
