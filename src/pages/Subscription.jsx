@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { CreditCard, Check, Zap, Crown, Building2, X } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
-import { usageAPI } from '../services/api';
+import { usageAPI, botAPI } from '../services/api';
 
 const PLANS = [
   {
@@ -59,7 +59,13 @@ export default function Subscription({ setSidebarOpen }) {
   const [showTopup, setShowTopup] = useState(false);
 
   useEffect(() => {
-    usageAPI.getUsage().then(setUsage);
+    async function loadUsage() {
+      const bots = await botAPI.getMyBots();
+      const shopId = bots[0]?.id;
+      const data = await usageAPI.getUsage(shopId);
+      setUsage(data);
+    }
+    loadUsage();
   }, []);
 
   const currentPlanId = usage?.plan?.toLowerCase() || 'starter';

@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { MessageSquare, Search, ChevronRight, X, AlertCircle, Clock, Users } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
-import { conversationsAPI } from '../services/api';
-
-const BOT_ID = 'bot_001';
+import { conversationsAPI, botAPI } from '../services/api';
 
 const FILTERS = [
   { id: 'all', label: 'ทั้งหมด' },
@@ -17,11 +15,15 @@ export default function Conversations({ setSidebarOpen }) {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
   const [selected, setSelected] = useState(null);
+  const [botId, setBotId] = useState(null);
 
   useEffect(() => {
     async function load() {
       setLoading(true);
-      const data = await conversationsAPI.getAll(BOT_ID);
+      const bots = await botAPI.getMyBots();
+      const id = bots[0]?.id || 'bot_001';
+      setBotId(id);
+      const data = await conversationsAPI.getAll(id);
       setConversations(data);
       setLoading(false);
     }

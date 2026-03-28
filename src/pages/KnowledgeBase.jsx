@@ -2,9 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { BookOpen, Plus, Pencil, Trash2, X, Search, Tag } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
-import { knowledgeAPI } from '../services/api';
-
-const BOT_ID = 'bot_001';
+import { knowledgeAPI, botAPI } from '../services/api';
 
 export default function KnowledgeBase({ setSidebarOpen }) {
   const [entries, setEntries] = useState([]);
@@ -13,11 +11,15 @@ export default function KnowledgeBase({ setSidebarOpen }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [editEntry, setEditEntry] = useState(null); // null = create, object = edit
   const [toast, setToast] = useState(null);
+  const [botId, setBotId] = useState(null);
 
   useEffect(() => {
     async function load() {
       setLoading(true);
-      const data = await knowledgeAPI.getAll(BOT_ID);
+      const bots = await botAPI.getMyBots();
+      const id = bots[0]?.id || 'bot_001';
+      setBotId(id);
+      const data = await knowledgeAPI.getAll(id);
       setEntries(data);
       setLoading(false);
     }
@@ -34,28 +36,30 @@ export default function KnowledgeBase({ setSidebarOpen }) {
   });
 
   const handleSave = async (entry) => {
+    const id = botId || 'bot_001';
     let updated;
     if (editEntry) {
-      const result = await knowledgeAPI.update(BOT_ID, editEntry.id, entry);
+      const result = await knowledgeAPI.update(id, editEntry.id, entry);
       updated = entries.map((e) => (e.id === editEntry.id ? { ...e, ...result } : e));
       setToast({ message: 'แก้ไขรายการเรียบร้อยแล้ว', type: 'success' });
     } else {
-      const result = await knowledgeAPI.create(BOT_ID, entry);
+      const result = await knowledgeAPI.create(id, entry);
       updated = [...entries, result];
       setToast({ message: 'เพิ่มรายการใหม่เรียบร้อยแล้ว', type: 'success' });
     }
     setEntries(updated);
-    knowledgeAPI.saveLocal(BOT_ID, updated);
+    knowledgeAPI.saveLocal(id, updated);
     setModalOpen(false);
     setEditEntry(null);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (entryId) => {
     if (!window.confirm('ต้องการลบรายการนี้หรือไม่?')) return;
-    await knowledgeAPI.remove(BOT_ID, id);
-    const updated = entries.filter((e) => e.id !== id);
+    const id = botId || 'bot_001';
+    await knowledgeAPI.remove(id, entryId);
+    const updated = entries.filter((e) => e.id !== entryId);
     setEntries(updated);
-    knowledgeAPI.saveLocal(BOT_ID, updated);
+    knowledgeAPI.saveLocal(id, updated);
     setToast({ message: 'ลบรายการเรียบร้อยแล้ว', type: 'success' });
   };
 

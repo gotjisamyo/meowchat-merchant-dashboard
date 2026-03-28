@@ -32,13 +32,14 @@ export default function Dashboard({ setSidebarOpen }) {
     async function fetchData() {
       setLoading(true);
       try {
-        const [usageData, bots, convs] = await Promise.all([
-          usageAPI.getUsage(),
-          botAPI.getMyBots(),
-          conversationsAPI.getAll('bot_001'),
+        const bots = await botAPI.getMyBots();
+        const firstBot = bots[0] || null;
+        setBot(firstBot);
+        const [usageData, convs] = await Promise.all([
+          usageAPI.getUsage(firstBot?.id),
+          conversationsAPI.getAll(firstBot?.id || 'bot_001'),
         ]);
         setUsage(usageData);
-        setBot(bots[0] || null);
         setConversations(convs.slice(0, 5));
       } catch {
         // Already handled with mock fallbacks in api.js
