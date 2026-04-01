@@ -159,15 +159,21 @@ export const botAPI = {
 
   updateBot: async (botId, data) => {
     try {
-      const { name, businessName, personality, businessScope, channelId, lineNotifyToken } = data;
-      // Serialize back to the JSON description format used by backend
+      const { name, businessName, personality, businessScope, channelId, lineNotifyToken, lineAccessToken, lineChannelSecret } = data;
       const description = JSON.stringify({
         shopName: businessName || name || '',
         botStyle: personality || 'friendly',
         openHours: businessScope || '',
         channelId: channelId || '',
       });
-      const response = await api.put(`/api/bots/${botId}`, { name, description, personality, line_notify_token: lineNotifyToken || '' });
+      const response = await api.put(`/api/bots/${botId}`, {
+        name,
+        description,
+        personality,
+        line_notify_token: lineNotifyToken || '',
+        line_access_token: lineAccessToken || undefined,
+        line_channel_secret: lineChannelSecret || undefined,
+      });
       return response.data;
     } catch {
       return { success: true, ...data };

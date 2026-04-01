@@ -19,6 +19,9 @@ export default function BotSettings({ setSidebarOpen }) {
     personality: 'friendly',
     businessScope: '',
     channelId: '',
+    lineNotifyToken: '',
+    lineAccessToken: '',
+    lineChannelSecret: '',
   });
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState(null);
@@ -38,6 +41,9 @@ export default function BotSettings({ setSidebarOpen }) {
             personality: b.personality || 'friendly',
             businessScope: b.businessScope || '',
             channelId: b.channelId || '',
+            lineNotifyToken: b.lineNotifyToken || '',
+            lineAccessToken: '',
+            lineChannelSecret: '',
           });
         }
       } catch {
@@ -170,7 +176,59 @@ export default function BotSettings({ setSidebarOpen }) {
                 )}
               </div>
 
-              <FormField label="LINE Channel ID">
+              <FormField label="Channel Access Token *">
+                <input
+                  type="password"
+                  value={form.lineAccessToken}
+                  onChange={(e) => update('lineAccessToken', e.target.value)}
+                  className="input-premium"
+                  placeholder="วาง Channel Access Token จาก LINE Developers"
+                  autoComplete="off"
+                />
+                <p className="text-xs text-zinc-600 mt-1">
+                  LINE Developers Console → Messaging API → Channel access token → Issue
+                </p>
+              </FormField>
+
+              <FormField label="Channel Secret *">
+                <input
+                  type="password"
+                  value={form.lineChannelSecret}
+                  onChange={(e) => update('lineChannelSecret', e.target.value)}
+                  className="input-premium"
+                  placeholder="วาง Channel Secret จาก LINE Developers"
+                  autoComplete="off"
+                />
+                <p className="text-xs text-zinc-600 mt-1">
+                  LINE Developers Console → Basic settings → Channel secret
+                </p>
+              </FormField>
+
+              {/* Webhook URL */}
+              <div className="bg-[#0A0A0F] rounded-2xl p-4 border border-orange-500/20">
+                <p className="text-xs text-orange-400 font-bold mb-2">📋 Webhook URL — ใส่ใน LINE Developers Console</p>
+                <code className="text-xs text-orange-300 bg-orange-500/10 px-3 py-2 rounded-lg block break-all select-all">
+                  {`https://meowchat-engine-production.up.railway.app/webhook/line/${bot?.id || '{botId}'}`}
+                </code>
+                <p className="text-xs text-zinc-600 mt-2">Messaging API → Webhook settings → Webhook URL → Update → Verify</p>
+              </div>
+
+              {/* How to connect */}
+              <div className="bg-[#0A0A0F] rounded-2xl p-4 border border-white/[0.06]">
+                <div className="flex items-center gap-2 mb-3">
+                  <Info className="w-4 h-4 text-blue-400" />
+                  <span className="text-sm font-bold text-white">วิธีเชื่อมต่อ LINE OA (5 ขั้นตอน)</span>
+                </div>
+                <ol className="space-y-2 text-xs text-zinc-400">
+                  <li className="flex gap-2"><span className="text-orange-400 font-bold flex-shrink-0">1.</span>เข้า developers.line.biz → เลือก Provider และ Channel</li>
+                  <li className="flex gap-2"><span className="text-orange-400 font-bold flex-shrink-0">2.</span>Basic settings → คัดลอก <strong className="text-white">Channel secret</strong> มาวางด้านบน</li>
+                  <li className="flex gap-2"><span className="text-orange-400 font-bold flex-shrink-0">3.</span>Messaging API → Issue <strong className="text-white">Channel access token</strong> แล้วคัดลอกมาวาง</li>
+                  <li className="flex gap-2"><span className="text-orange-400 font-bold flex-shrink-0">4.</span>Webhook settings → ใส่ Webhook URL ด้านบน → Verify</li>
+                  <li className="flex gap-2"><span className="text-orange-400 font-bold flex-shrink-0">5.</span>กด "บันทึก" ในหน้านี้ → บอทพร้อมตอบลูกค้าแล้ว</li>
+                </ol>
+              </div>
+
+              <FormField label="LINE Channel ID (optional)">
                 <input
                   type="text"
                   value={form.channelId}
@@ -180,27 +238,18 @@ export default function BotSettings({ setSidebarOpen }) {
                 />
               </FormField>
 
-              {/* How to connect */}
-              <div className="bg-[#0A0A0F] rounded-2xl p-4 border border-white/[0.06]">
-                <div className="flex items-center gap-2 mb-3">
-                  <Info className="w-4 h-4 text-blue-400" />
-                  <span className="text-sm font-bold text-white">วิธีเชื่อมต่อ LINE OA</span>
-                </div>
-                <ol className="space-y-2 text-xs text-zinc-400">
-                  <li className="flex gap-2"><span className="text-orange-400 font-bold flex-shrink-0">1.</span>เข้า LINE Official Account Manager</li>
-                  <li className="flex gap-2"><span className="text-orange-400 font-bold flex-shrink-0">2.</span>ไปที่ Settings → Messaging API</li>
-                  <li className="flex gap-2"><span className="text-orange-400 font-bold flex-shrink-0">3.</span>เปิด Messaging API และบันทึก Channel ID</li>
-                  <li className="flex gap-2"><span className="text-orange-400 font-bold flex-shrink-0">4.</span>ใส่ Webhook URL ที่ได้รับจาก MeowChat</li>
-                  <li className="flex gap-2"><span className="text-orange-400 font-bold flex-shrink-0">5.</span>กด Save และรอสักครู่</li>
-                </ol>
-              </div>
-
-              <div className="bg-[#0A0A0F] rounded-2xl p-4 border border-white/[0.06]">
-                <p className="text-xs text-zinc-500 mb-2 font-semibold">Webhook URL ของคุณ</p>
-                <code className="text-xs text-orange-300 bg-orange-500/10 px-3 py-2 rounded-lg block break-all">
-                  https://api.meowchat.store/webhook/line
-                </code>
-              </div>
+              <FormField label="LINE Notify Token (รับแจ้งเตือนเมื่อลูกค้าขอพนักงาน)">
+                <input
+                  type="text"
+                  value={form.lineNotifyToken || ''}
+                  onChange={(e) => update('lineNotifyToken', e.target.value)}
+                  className="input-premium"
+                  placeholder="Token จาก notify-bot.line.me/th"
+                />
+                <p className="text-xs text-zinc-600 mt-1">
+                  รับ token ได้ที่ <span className="text-orange-400">notify-bot.line.me/th</span> → My page → Generate token
+                </p>
+              </FormField>
             </div>
           </Section>
 
