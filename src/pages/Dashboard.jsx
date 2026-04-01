@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   MessageSquare, Users, TrendingUp, Wifi, WifiOff,
   ChevronRight, RefreshCw, Zap, AlertTriangle, Bot, Activity,
-  Clock, Sparkles, Crown,
+  Clock, Sparkles, Crown, CheckCircle2, Circle,
 } from 'lucide-react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -108,6 +108,58 @@ export default function Dashboard({ setSidebarOpen }) {
           </button>
         </div>
       )}
+
+      {/* Onboarding Checklist — show only while not fully activated */}
+      {currentPlanId === 'trial' && !loading && (() => {
+        const hasLineOA = !!(bot?.channelId && bot.channelId !== '');
+        const hasBotReplied = (kpi?.totalConversations ?? 0) > 0;
+        const steps = [
+          { label: 'สร้างบอทเรียบร้อย', done: true, link: null },
+          { label: 'เชื่อม LINE OA', done: hasLineOA, link: '/bot' },
+          { label: 'Bot ตอบลูกค้าครั้งแรก', done: hasBotReplied, link: '/bot' },
+          { label: 'ดู ROI Widget ด้านล่าง', done: hasBotReplied, link: null },
+        ];
+        const doneCount = steps.filter(s => s.done).length;
+        if (doneCount === steps.length) return null; // hide when complete
+        return (
+          <div className="bg-[#12121A] rounded-3xl border border-orange-500/20 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-base font-bold text-white">เริ่มต้นใช้งาน</h2>
+                <p className="text-xs text-zinc-500 mt-0.5">ทำให้ครบเพื่อเริ่มรับลูกค้าอัตโนมัติ</p>
+              </div>
+              <span className="text-xs font-bold text-orange-400 bg-orange-500/10 border border-orange-500/20 px-3 py-1 rounded-full">
+                {doneCount}/{steps.length} เสร็จแล้ว
+              </span>
+            </div>
+            <div className="space-y-2">
+              {steps.map((step, i) => (
+                <div
+                  key={i}
+                  onClick={() => step.link && navigate(step.link)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all ${
+                    step.done
+                      ? 'bg-emerald-500/5 border border-emerald-500/15'
+                      : step.link
+                      ? 'bg-black/20 border border-white/[0.04] cursor-pointer hover:border-orange-500/20'
+                      : 'bg-black/20 border border-white/[0.04]'
+                  }`}
+                >
+                  {step.done
+                    ? <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                    : <Circle className="w-5 h-5 text-zinc-600 flex-shrink-0" />}
+                  <span className={`text-sm font-semibold ${step.done ? 'text-emerald-400 line-through opacity-60' : 'text-white'}`}>
+                    {step.label}
+                  </span>
+                  {!step.done && step.link && (
+                    <ChevronRight className="w-4 h-4 text-zinc-600 ml-auto" />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Quick Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
