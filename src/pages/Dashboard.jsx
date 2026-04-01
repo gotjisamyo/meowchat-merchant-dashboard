@@ -2,23 +2,16 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   MessageSquare, Users, TrendingUp, Wifi, WifiOff,
-  ChevronRight, RefreshCw, Zap
+  ChevronRight, RefreshCw, Zap, AlertTriangle, Bot, Activity,
+  Clock, Sparkles, Crown,
 } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  RadialBarChart, RadialBar, Cell,
+} from 'recharts';
 import PageLayout from '../components/PageLayout';
-import { usageAPI, botAPI, conversationsAPI } from '../services/api';
+import { usageAPI, botAPI, conversationsAPI, kpiAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-
-// Mock weekly message data for the mini chart
-const MOCK_WEEKLY = [
-  { day: 'จ', count: 28 },
-  { day: 'อ', count: 45 },
-  { day: 'พ', count: 32 },
-  { day: 'พฤ', count: 61 },
-  { day: 'ศ', count: 55 },
-  { day: 'ส', count: 38 },
-  { day: 'อา', count: 42 },
-];
 
 export default function Dashboard({ setSidebarOpen }) {
   const { user } = useAuth();
@@ -26,6 +19,8 @@ export default function Dashboard({ setSidebarOpen }) {
   const [usage, setUsage] = useState(null);
   const [bot, setBot] = useState(null);
   const [conversations, setConversations] = useState([]);
+  const [kpi, setKpi] = useState(null);
+  const [weekly, setWeekly] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,12 +30,17 @@ export default function Dashboard({ setSidebarOpen }) {
         const bots = await botAPI.getMyBots();
         const firstBot = bots[0] || null;
         setBot(firstBot);
-        const [usageData, convs] = await Promise.all([
+        const botId = firstBot?.id || 'bot_001';
+        const [usageData, convs, kpiData, weeklyData] = await Promise.all([
           usageAPI.getUsage(firstBot?.id),
-          conversationsAPI.getAll(firstBot?.id || 'bot_001'),
+          conversationsAPI.getAll(botId),
+          kpiAPI.getStats(botId),
+          kpiAPI.getWeekly(botId),
         ]);
         setUsage(usageData);
         setConversations(convs.slice(0, 5));
+        setKpi(kpiData);
+        setWeekly(weeklyData);
       } catch {
         // Already handled with mock fallbacks in api.js
       }
@@ -51,6 +51,16 @@ export default function Dashboard({ setSidebarOpen }) {
 
   const usagePercent = usage ? Math.round((usage.used / usage.limit) * 100) : 0;
   const usageColor = usagePercent >= 90 ? '#EF4444' : usagePercent >= 70 ? '#F59E0B' : '#FF6B35';
+
+  const currentPlanId = usage?.plan?.toLowerCase() || 'trial';
+  const trialDaysLeft = usage?.trialEndsAt
+    ? Math.max(0, Math.ceil((new Date(usage.trialEndsAt) - Date.now()) / (1000 * 60 * 60 * 24)))
+    : 14;
+
+  // ROI calculations: avg 3 min/reply, ฿150/hr for LINE responder
+  const totalReplies = usage?.used ?? 0;
+  const timeSavedHours = Math.round((totalReplies * 3) / 60);
+  const moneySaved = Math.round(timeSavedHours * 150);
 
   return (
     <PageLayout
@@ -67,6 +77,38 @@ export default function Dashboard({ setSidebarOpen }) {
         </button>
       }
     >
+      {/* Trial Countdown Banner */}
+      {currentPlanId === 'trial' && (
+        <div className={`rounded-2xl border p-4 flex items-center justify-between gap-3 ${
+          trialDaysLeft <= 3
+            ? 'bg-red-500/10 border-red-500/20'
+            : trialDaysLeft <= 7
+            ? 'bg-amber-500/10 border-amber-500/20'
+            : 'bg-orange-500/10 border-orange-500/20'
+        }`}>
+          <div className="flex items-center gap-3">
+            <Clock className={`w-5 h-5 flex-shrink-0 ${trialDaysLeft <= 3 ? 'text-red-400' : trialDaysLeft <= 7 ? 'text-amber-400' : 'text-orange-400'}`} />
+            <div>
+              <p className="text-sm font-bold text-white">
+                {trialDaysLeft === 0
+                  ? 'ทดลองใช้หมดอายุวันนี้ — Upgrade เพื่อไม่ให้บอทหยุด'
+                  : `เหลืออีก ${trialDaysLeft} วันในช่วงทดลองใช้`}
+              </p>
+              <p className="text-xs text-zinc-400">
+                บอทของคุณตอบไปแล้ว {totalReplies.toLocaleString()} ข้อความ — Upgrade เพื่อใช้งานต่อ
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate('/subscription')}
+            className="btn-primary px-4 py-2 rounded-xl text-xs font-bold text-white whitespace-nowrap flex items-center gap-1.5"
+          >
+            <Crown className="w-3.5 h-3.5" />
+            ฿376/เดือน
+          </button>
+        </div>
+      )}
+
       {/* Quick Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
@@ -154,7 +196,7 @@ export default function Dashboard({ setSidebarOpen }) {
           <h2 className="text-lg font-bold text-white mb-1">ข้อความรายสัปดาห์</h2>
           <p className="text-zinc-500 text-sm mb-5">7 วันที่ผ่านมา</p>
           <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={MOCK_WEEKLY} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+            <AreaChart data={weekly} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="msgGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#FF6B35" stopOpacity={0.3} />
@@ -173,6 +215,104 @@ export default function Dashboard({ setSidebarOpen }) {
             </AreaChart>
           </ResponsiveContainer>
         </div>
+      </div>
+
+      {/* KPI Section */}
+      <div>
+        <h2 className="text-base font-bold text-white mb-3 flex items-center gap-2">
+          <Activity className="w-4 h-4 text-orange-400" />
+          ตัวชี้วัดประสิทธิภาพ (KPI)
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Escalation Rate */}
+          <KpiRingCard
+            label="Escalation Rate"
+            sublabel="บทสนทนาที่ต้องพนักงาน"
+            value={loading ? null : (kpi?.escalationRate ?? 0)}
+            color="#F59E0B"
+            icon={<AlertTriangle className="w-4 h-4 text-amber-400" />}
+            detail={loading ? '...' : `${kpi?.escalated ?? 0} / ${kpi?.totalConversations ?? 0} บทสนทนา`}
+            lowerIsBetter
+          />
+          {/* AI Response Rate */}
+          <KpiRingCard
+            label="AI อัตราตอบอัตโนมัติ"
+            sublabel="ตอบได้โดยไม่ต้องพนักงาน"
+            value={loading ? null : (kpi?.aiResponseRate ?? 100)}
+            color="#10B981"
+            icon={<Bot className="w-4 h-4 text-emerald-400" />}
+            detail={loading ? '...' : `${(kpi?.totalConversations ?? 0) - (kpi?.escalated ?? 0)} บทสนทนา`}
+          />
+          {/* Active Today */}
+          <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6 flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center">
+                <MessageSquare className="w-4 h-4 text-blue-400" />
+              </div>
+              <span className="text-sm font-semibold text-zinc-300">บทสนทนาวันนี้</span>
+            </div>
+            <div>
+              <p className="text-4xl font-extrabold text-white tracking-tight">
+                {loading ? '...' : (kpi?.activeToday ?? 0)}
+              </p>
+              <p className="text-zinc-500 text-xs mt-1">บทสนทนาใน 24 ชั่วโมงที่ผ่านมา</p>
+            </div>
+            {(kpi?.pendingHandoffs ?? 0) > 0 && (
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                <span className="text-xs text-amber-400 font-semibold">
+                  รอพนักงาน {kpi.pendingHandoffs} ราย
+                </span>
+                <button
+                  onClick={() => navigate('/handoff')}
+                  className="ml-auto text-xs text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1"
+                >
+                  ดู <ChevronRight className="w-3 h-3" />
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ROI Widget */}
+      <div className="bg-gradient-to-br from-orange-500/10 to-pink-500/5 rounded-3xl border border-orange-500/20 p-6">
+        <div className="flex items-center gap-2 mb-5">
+          <Sparkles className="w-5 h-5 text-orange-400" />
+          <h2 className="text-base font-bold text-white">MeowChat ช่วยคุณไปแล้วเดือนนี้</h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="bg-black/20 rounded-2xl p-4 text-center">
+            <p className="text-4xl font-extrabold text-orange-400 mb-1">
+              {loading ? '...' : totalReplies.toLocaleString()}
+            </p>
+            <p className="text-xs text-zinc-400 font-semibold uppercase tracking-wider">ข้อความที่บอทตอบแทน</p>
+            <p className="text-xs text-zinc-600 mt-1">ไม่ต้องพิมพ์เอง</p>
+          </div>
+          <div className="bg-black/20 rounded-2xl p-4 text-center">
+            <p className="text-4xl font-extrabold text-emerald-400 mb-1">
+              {loading ? '...' : `${timeSavedHours}`}
+            </p>
+            <p className="text-xs text-zinc-400 font-semibold uppercase tracking-wider">ชั่วโมงที่ประหยัดได้</p>
+            <p className="text-xs text-zinc-600 mt-1">≈ 3 นาที/ข้อความ</p>
+          </div>
+          <div className="bg-black/20 rounded-2xl p-4 text-center">
+            <p className="text-4xl font-extrabold text-blue-400 mb-1">
+              {loading ? '...' : `฿${moneySaved.toLocaleString()}`}
+            </p>
+            <p className="text-xs text-zinc-400 font-semibold uppercase tracking-wider">มูลค่าที่ประหยัด</p>
+            <p className="text-xs text-zinc-600 mt-1">vs จ้างพนักงานตอบ LINE</p>
+          </div>
+        </div>
+        {!loading && moneySaved > 376 && (
+          <div className="mt-4 flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+            <Sparkles className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+            <p className="text-xs text-emerald-400">
+              MeowChat สร้างมูลค่า <strong>฿{moneySaved.toLocaleString()}</strong> ให้คุณเดือนนี้ — คุ้มกว่าค่าสมัคร ฿376 ถึง{' '}
+              <strong>{Math.round(moneySaved / 376)}x</strong>
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Bot Status Card */}
@@ -261,6 +401,62 @@ function StatCard({ label, value, icon, color, delay }) {
       </div>
       <p className="text-2xl font-extrabold text-white tracking-tight">{value}</p>
       <p className="text-zinc-500 text-xs font-semibold uppercase tracking-wider mt-1">{label}</p>
+    </div>
+  );
+}
+
+function KpiRingCard({ label, sublabel, value, color, icon, detail, lowerIsBetter }) {
+  const pct = value ?? 0;
+  // Ring data: fill + empty
+  const ringData = [{ v: pct }, { v: 100 - pct }];
+  const good = lowerIsBetter ? pct <= 15 : pct >= 85;
+  const warn = lowerIsBetter ? pct > 30 : pct < 60;
+  const statusColor = warn ? '#EF4444' : good ? color : '#F59E0B';
+
+  return (
+    <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6 flex flex-col gap-3">
+      <div className="flex items-center gap-2">
+        <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: `${color}22`, border: `1px solid ${color}33` }}>
+          {icon}
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-zinc-200">{label}</p>
+          <p className="text-xs text-zinc-500">{sublabel}</p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-4">
+        <div className="relative w-24 h-24 flex-shrink-0">
+          <RadialBarChart
+            width={96} height={96}
+            cx={48} cy={48}
+            innerRadius={32} outerRadius={46}
+            startAngle={90} endAngle={-270}
+            data={ringData}
+            barSize={10}
+          >
+            <RadialBar dataKey="v" cornerRadius={5} isAnimationActive>
+              <Cell fill={statusColor} />
+              <Cell fill="rgba(255,255,255,0.05)" />
+            </RadialBar>
+          </RadialBarChart>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-lg font-extrabold text-white">{value === null ? '...' : `${pct}%`}</span>
+          </div>
+        </div>
+
+        <div className="flex-1">
+          <p className="text-xs text-zinc-500 mb-1">{detail}</p>
+          <span
+            className="inline-flex items-center px-2 py-0.5 text-[10px] font-bold rounded-full"
+            style={{ background: `${statusColor}22`, color: statusColor, border: `1px solid ${statusColor}44` }}
+          >
+            {lowerIsBetter
+              ? (good ? 'ดีมาก' : warn ? 'สูงเกิน' : 'ปกติ')
+              : (good ? 'ดีมาก' : warn ? 'ต่ำเกิน' : 'ปกติ')}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

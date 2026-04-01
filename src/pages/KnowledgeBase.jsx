@@ -1,6 +1,39 @@
 import { useState, useEffect, useRef } from 'react';
-import { BookOpen, Plus, Pencil, Trash2, X, Search, Tag } from 'lucide-react';
+import { BookOpen, Plus, Pencil, Trash2, X, Search, Tag, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
+
+const KB_TEMPLATES = {
+  restaurant: {
+    label: '🍜 ร้านอาหาร',
+    entries: [
+      { topic: 'เวลาทำการ', content: 'ร้านเปิดทุกวัน เวลา 10:00 – 21:00 น. หยุดวันจันทร์', keywords: ['เปิด', 'ปิด', 'เวลา', 'วันหยุด'] },
+      { topic: 'ที่ตั้ง', content: 'ตั้งอยู่ที่ [ที่อยู่ร้าน] ใกล้ [สถานที่ใกล้เคียง] มีที่จอดรถ', keywords: ['ที่อยู่', 'แผนที่', 'จอดรถ', 'อยู่ที่ไหน'] },
+      { topic: 'เมนูแนะนำ', content: 'เมนูแนะนำของร้าน ได้แก่ [เมนู 1], [เมนู 2], [เมนู 3] ราคาเริ่มต้น [ราคา] บาท', keywords: ['เมนู', 'อาหาร', 'แนะนำ', 'อร่อย'] },
+      { topic: 'การจอง', content: 'รับจองโต๊ะล่วงหน้าได้ทาง LINE นี้ หรือโทร [เบอร์โทร] กรุณาแจ้งชื่อ วันเวลา และจำนวนคน', keywords: ['จอง', 'ล่วงหน้า', 'โต๊ะ'] },
+      { topic: 'บริการส่งอาหาร', content: 'รับส่งอาหาร Grab/LINE MAN ในรัศมี 5 กม. สั่งออนไลน์ได้ที่ [ลิงก์]', keywords: ['ส่ง', 'เดลิเวอรี่', 'Grab', 'LINE MAN'] },
+    ],
+  },
+  clinic: {
+    label: '🏥 คลินิก / สปา',
+    entries: [
+      { topic: 'เวลาทำการ', content: 'เปิดทำการ จันทร์ – เสาร์ เวลา 09:00 – 20:00 น. หยุดวันอาทิตย์', keywords: ['เปิด', 'ปิด', 'เวลา'] },
+      { topic: 'การนัดหมาย', content: 'สามารถนัดหมายได้ทาง LINE นี้ แจ้งชื่อ วันเวลาที่ต้องการ และบริการที่ต้องการ ทีมงานจะยืนยันภายใน 30 นาที', keywords: ['นัด', 'จอง', 'นัดหมาย'] },
+      { topic: 'บริการที่มี', content: 'บริการของเราได้แก่ [บริการ 1], [บริการ 2], [บริการ 3] สอบถามราคาได้เลย', keywords: ['บริการ', 'ทำอะไร', 'มีอะไร'] },
+      { topic: 'ราคา', content: 'ราคาบริการเริ่มต้น [ราคา] บาท ขึ้นอยู่กับบริการที่เลือก สอบถามแพ็กเกจพิเศษได้เลย', keywords: ['ราคา', 'ค่าบริการ', 'เท่าไหร่'] },
+      { topic: 'ที่ตั้ง', content: 'ตั้งอยู่ที่ [ที่อยู่] ใกล้ [สถานที่สังเกต] มีลิฟต์ พร้อมที่จอดรถ', keywords: ['ที่อยู่', 'อยู่ที่ไหน', 'ทางเข้า'] },
+    ],
+  },
+  shop: {
+    label: '🛍️ ร้านค้าออนไลน์',
+    entries: [
+      { topic: 'วิธีสั่งซื้อ', content: 'สั่งซื้อได้ทาง LINE นี้ แจ้ง: ชื่อสินค้า จำนวน และที่อยู่จัดส่ง รอการยืนยันจากทีมงาน', keywords: ['สั่ง', 'ซื้อ', 'วิธีสั่ง'] },
+      { topic: 'การจัดส่ง', content: 'จัดส่งทุกวัน จ-ศ ผ่านไปรษณีย์และ Kerry ระยะเวลา 2-3 วันทำการ ค่าส่งเริ่มต้น [ราคา] บาท', keywords: ['ส่ง', 'จัดส่ง', 'กี่วัน', 'Kerry', 'ไปรษณีย์'] },
+      { topic: 'การชำระเงิน', content: 'รับชำระผ่าน โอนเงิน PromptPay เลขที่ [เลข] ชื่อบัญชี [ชื่อ]', keywords: ['จ่าย', 'โอน', 'PromptPay', 'ชำระ'] },
+      { topic: 'การคืนสินค้า', content: 'คืนสินค้าได้ภายใน 7 วัน หากสินค้าชำรุดหรือไม่ตรงปก ส่งรูปภาพมาทาง LINE นี้ได้เลย', keywords: ['คืน', 'เปลี่ยน', 'ชำรุด', 'ผิด'] },
+      { topic: 'สินค้าแนะนำ', content: 'สินค้าขายดี ได้แก่ [สินค้า 1] ราคา [ราคา] บาท [สินค้า 2] ราคา [ราคา] บาท', keywords: ['แนะนำ', 'ขายดี', 'ยอดนิยม'] },
+    ],
+  },
+};
 import Toast from '../components/Toast';
 import { knowledgeAPI, botAPI } from '../services/api';
 
@@ -12,6 +45,8 @@ export default function KnowledgeBase({ setSidebarOpen }) {
   const [editEntry, setEditEntry] = useState(null); // null = create, object = edit
   const [toast, setToast] = useState(null);
   const [botId, setBotId] = useState(null);
+  const [showTemplates, setShowTemplates] = useState(false);
+  const [importingTemplate, setImportingTemplate] = useState(null);
 
   useEffect(() => {
     async function load() {
@@ -63,6 +98,44 @@ export default function KnowledgeBase({ setSidebarOpen }) {
     setToast({ message: 'ลบรายการเรียบร้อยแล้ว', type: 'success' });
   };
 
+  const handleImportTemplate = async (templateKey) => {
+    const template = KB_TEMPLATES[templateKey];
+    if (!template) return;
+    setImportingTemplate(templateKey);
+    const id = botId || 'bot_001';
+    let updated = [...entries];
+    for (const entry of template.entries) {
+      const result = await knowledgeAPI.create(id, entry);
+      updated = [...updated, result];
+    }
+    setEntries(updated);
+    knowledgeAPI.saveLocal(id, updated);
+    setShowTemplates(false);
+    setImportingTemplate(null);
+    setToast({ message: `นำเข้า template "${template.label}" เรียบร้อย (${template.entries.length} รายการ)`, type: 'success' });
+  };
+
+  // KB Health Score: 0–100 based on count, keyword coverage, content length
+  const kbHealthScore = (() => {
+    if (entries.length === 0) return 0;
+    const countScore = Math.min(entries.length / 15, 1) * 40; // 40pts: 15+ entries = full
+    const keywordScore = (entries.filter(e => e.keywords?.length > 0).length / entries.length) * 30; // 30pts: all have keywords
+    const contentScore = (entries.filter(e => (e.content?.length ?? 0) > 30).length / entries.length) * 30; // 30pts: detailed content
+    return Math.round(countScore + keywordScore + contentScore);
+  })();
+
+  const kbScoreColor = kbHealthScore >= 80 ? '#10B981' : kbHealthScore >= 50 ? '#F59E0B' : '#EF4444';
+  const kbScoreLabel = kbHealthScore >= 80 ? 'ดีมาก' : kbHealthScore >= 50 ? 'ปานกลาง' : 'ต้องปรับปรุง';
+  const kbNextTip = entries.length === 0
+    ? 'เพิ่มรายการแรกหรือนำเข้า template'
+    : entries.length < 5
+    ? `เพิ่มอีก ${5 - entries.length} รายการ → score ขึ้น`
+    : entries.filter(e => !e.keywords?.length).length > 0
+    ? `ใส่ keywords ให้ ${entries.filter(e => !e.keywords?.length).length} รายการที่เหลือ`
+    : entries.length < 15
+    ? `เพิ่มอีก ${15 - entries.length} รายการ → score เต็ม 100`
+    : 'KB ครบถ้วนแล้ว! บอทจะตอบได้แม่นขึ้น';
+
   const openCreate = () => {
     setEditEntry(null);
     setModalOpen(true);
@@ -90,6 +163,70 @@ export default function KnowledgeBase({ setSidebarOpen }) {
     >
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
+      {/* Templates Section */}
+      {entries.length === 0 && (
+        <div className="bg-gradient-to-br from-orange-500/10 to-pink-500/5 rounded-3xl border border-orange-500/20 p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="w-5 h-5 text-orange-400" />
+            <p className="text-sm font-bold text-white">เริ่มต้นด้วย Template สำเร็จรูป</p>
+          </div>
+          <p className="text-xs text-zinc-400 mb-4">นำเข้า KB สำหรับธุรกิจของคุณได้เลย บอทจะตอบลูกค้าได้ทันที</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {Object.entries(KB_TEMPLATES).map(([key, tpl]) => (
+              <button
+                key={key}
+                onClick={() => handleImportTemplate(key)}
+                disabled={importingTemplate !== null}
+                className="flex items-center gap-3 p-3 rounded-xl bg-black/20 border border-white/[0.08] hover:border-orange-500/30 hover:bg-orange-500/5 transition-all text-left disabled:opacity-50"
+              >
+                <span className="text-2xl">{tpl.label.split(' ')[0]}</span>
+                <div>
+                  <p className="text-sm font-bold text-white">{tpl.label.split(' ').slice(1).join(' ')}</p>
+                  <p className="text-xs text-zinc-500">{tpl.entries.length} รายการ</p>
+                </div>
+                {importingTemplate === key && (
+                  <span className="ml-auto w-4 h-4 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin" />
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {entries.length > 0 && (
+        <div>
+          <button
+            onClick={() => setShowTemplates(!showTemplates)}
+            className="flex items-center gap-2 text-sm text-orange-400 hover:text-orange-300 font-semibold transition-colors"
+          >
+            <Sparkles className="w-4 h-4" />
+            นำเข้า Template เพิ่ม
+            {showTemplates ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+          {showTemplates && (
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {Object.entries(KB_TEMPLATES).map(([key, tpl]) => (
+                <button
+                  key={key}
+                  onClick={() => handleImportTemplate(key)}
+                  disabled={importingTemplate !== null}
+                  className="flex items-center gap-3 p-3 rounded-xl bg-[#12121A] border border-white/[0.06] hover:border-orange-500/30 hover:bg-orange-500/5 transition-all text-left disabled:opacity-50"
+                >
+                  <span className="text-2xl">{tpl.label.split(' ')[0]}</span>
+                  <div>
+                    <p className="text-sm font-bold text-white">{tpl.label.split(' ').slice(1).join(' ')}</p>
+                    <p className="text-xs text-zinc-500">{tpl.entries.length} รายการ</p>
+                  </div>
+                  {importingTemplate === key && (
+                    <span className="ml-auto w-4 h-4 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin" />
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Search */}
       <div className="relative max-w-md">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
@@ -101,6 +238,38 @@ export default function KnowledgeBase({ setSidebarOpen }) {
           className="input-premium pl-11"
         />
       </div>
+
+      {/* KB Health Score */}
+      {!loading && (
+        <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#12121A] border border-white/[0.06]">
+          <div className="relative w-14 h-14 flex-shrink-0">
+            <svg viewBox="0 0 40 40" className="w-14 h-14 -rotate-90">
+              <circle cx="20" cy="20" r="16" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="4" />
+              <circle
+                cx="20" cy="20" r="16" fill="none"
+                stroke={kbScoreColor} strokeWidth="4"
+                strokeDasharray={`${(kbHealthScore / 100) * 100.5} 100.5`}
+                strokeLinecap="round"
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-xs font-extrabold text-white">{kbHealthScore}</span>
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <p className="text-sm font-bold text-white">KB Health Score</p>
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded-full" style={{ background: `${kbScoreColor}22`, color: kbScoreColor }}>
+                {kbScoreLabel}
+              </span>
+            </div>
+            <p className="text-xs text-zinc-500 truncate">💡 {kbNextTip}</p>
+          </div>
+          <div className="text-right flex-shrink-0">
+            <p className="text-xs text-zinc-600">{entries.length} รายการ</p>
+          </div>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="flex items-center gap-4 text-sm">

@@ -147,6 +147,7 @@ export const botAPI = {
           personality: desc.botStyle || 'friendly',
           businessScope: desc.openHours || desc.businessScope || '',
           channelId: bot.line_channel_id || desc.channelId || '',
+          lineNotifyToken: bot.line_notify_token || '',
           status: 'online',
           plan: bot.plan_name || bot.plan || 'free',
         };
@@ -158,7 +159,7 @@ export const botAPI = {
 
   updateBot: async (botId, data) => {
     try {
-      const { name, businessName, personality, businessScope, channelId } = data;
+      const { name, businessName, personality, businessScope, channelId, lineNotifyToken } = data;
       // Serialize back to the JSON description format used by backend
       const description = JSON.stringify({
         shopName: businessName || name || '',
@@ -166,7 +167,7 @@ export const botAPI = {
         openHours: businessScope || '',
         channelId: channelId || '',
       });
-      const response = await api.put(`/api/bots/${botId}`, { name, description, personality });
+      const response = await api.put(`/api/bots/${botId}`, { name, description, personality, line_notify_token: lineNotifyToken || '' });
       return response.data;
     } catch {
       return { success: true, ...data };
@@ -240,8 +241,9 @@ export const usageAPI = {
       return {
         used: d.messages_used || 0,
         limit: d.messages_limit || 300,
-        plan: d.plan || 'free',
+        plan: d.plan || 'Trial',
         resetDate: formatThaiDate(d.period_end),
+        trialEndsAt: d.trial_ends_at || null,
         todayMessages: 0,
         newCustomersToday: 0,
         responseRate: 0,
@@ -284,20 +286,30 @@ export const billingAPI = {
 // ── Conversations ─────────────────────────────────────────────────────────────
 
 export const conversationsAPI = {
+  getMessages: async (botId, convId) => {
+    try {
+      const response = await api.get(`/api/bots/${botId}/conversations/${convId}/messages`);
+      return (response.data?.messages || []).map(m => ({
+        from: m.role === 'user' ? 'customer' : 'bot',
+        text: m.content,
+        time: new Date(m.created_at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
+      }));
+    } catch {
+      return [];
+    }
+  },
   getAll: async (botId) => {
     try {
       const response = await api.get(`/api/bots/${botId}/conversations`);
       const convs = response.data?.conversations || [];
       return convs.map(c => ({
         id: c.id,
-        customerName: c.name || 'ลูกค้า',
-        lastMessage: c.total_orders > 0
-          ? `สั่งซื้อแล้ว ${c.total_orders} ครั้ง (฿${Number(c.total_spent || 0).toLocaleString()})`
-          : 'ยังไม่มีการสั่งซื้อ',
+        customerName: c.name || c.line_user_id || 'ลูกค้า',
+        lastMessage: c.last_message || (c.message_count > 0 ? `${c.message_count} ข้อความ` : 'ยังไม่มีการสนทนา'),
         time: formatRelativeTime(c.last_message_at || c.created_at),
-        status: c.status === 'escalated' ? 'escalated' : 'normal',
-        avatar: (c.name || 'ล').charAt(0),
-        messages: [], // Real message history not yet stored — Phase 2 (LINE webhook save)
+        status: c.escalated ? 'escalated' : (c.status === 'escalated' ? 'escalated' : 'normal'),
+        avatar: (c.name || c.line_user_id || 'ล').charAt(0),
+        messages: [],
       }));
     } catch {
       return MOCK_CONVERSATIONS;
@@ -348,6 +360,67 @@ export const handoffAPI = {
     } catch {
       return MOCK_HANDOFFS.filter(h => h.status === 'waiting').length;
     }
+  },
+};
+
+// ── KPI ───────────────────────────────────────────────────────────────────────
+
+export const kpiAPI = {
+  // Compute KPI from conversations + handoffs
+  getStats: async (botId) => {
+    try {
+      const [convRes, handoffRes] = await Promise.all([
+        api.get(`/api/bots/${botId}/conversations`).catch(() => ({ data: {} })),
+        api.get(`/api/bots/${botId}/handoffs`).catch(() => ({ data: {} })),
+      ]);
+
+      const convs = convRes.data?.conversations || [];
+      const handoffs = handoffRes.data?.handoffs || [];
+
+      const total = convs.length;
+      const escalated = convs.filter(c => c.status === 'escalated').length;
+      const pendingHandoffs = handoffs.filter(h => h.status === 'pending').length;
+
+      // Active today: conversations updated in last 24h
+      const now = Date.now();
+      const activeToday = convs.filter(c => {
+        const t = new Date(c.last_message_at || c.created_at || 0).getTime();
+        return now - t < 86400000;
+      }).length;
+
+      const escalationRate = total > 0 ? Math.round((escalated / total) * 100) : 0;
+      const aiResponseRate = total > 0 ? Math.round(((total - escalated) / total) * 100) : 100;
+
+      return { totalConversations: total, activeToday, escalationRate, aiResponseRate, pendingHandoffs, escalated };
+    } catch {
+      return { totalConversations: 58, activeToday: 12, escalationRate: 8, aiResponseRate: 92, pendingHandoffs: 2, escalated: 5 };
+    }
+  },
+
+  // Weekly message count
+  getWeekly: async (botId) => {
+    try {
+      const res = await api.get(`/api/bots/${botId}/stats/weekly`).catch(() => null);
+      if (res?.data?.weekly) return res.data.weekly;
+      throw new Error('no data');
+    } catch {
+      const days = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'];
+      const today = new Date().getDay();
+      return Array.from({ length: 7 }, (_, i) => ({
+        day: days[(today - 6 + i + 7) % 7],
+        count: Math.floor(20 + Math.random() * 40),
+      }));
+    }
+  },
+};
+
+export const referralAPI = {
+  getMy: async () => {
+    const res = await api.get('/api/referral/my');
+    return res.data;
+  },
+  trackClick: async (code) => {
+    await api.post('/api/referral/click', { code });
   },
 };
 

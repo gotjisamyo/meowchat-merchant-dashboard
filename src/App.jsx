@@ -11,6 +11,8 @@ import Conversations from './pages/Conversations';
 import Handoff from './pages/Handoff';
 import Subscription from './pages/Subscription';
 import Profile from './pages/Profile';
+import Onboarding from './pages/Onboarding';
+import Referral from './pages/Referral';
 
 function MerchantLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -39,6 +41,7 @@ export default function App() {
         <Routes>
           {/* Public */}
           <Route path="/login" element={<Login />} />
+          <Route path="/onboarding" element={<Onboarding />} />
 
           {/* Protected layout */}
           <Route
@@ -54,6 +57,7 @@ export default function App() {
                       <Route path="/conversations" element={<Conversations setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/handoff" element={<Handoff setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/subscription" element={<Subscription setSidebarOpen={setSidebarOpen} />} />
+                      <Route path="/referral" element={<Referral setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/profile" element={<Profile setSidebarOpen={setSidebarOpen} />} />
                       <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
