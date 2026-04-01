@@ -2,37 +2,27 @@ import { useState, useEffect } from 'react';
 import { CreditCard, Check, Zap, Crown, Building2, X } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import { usageAPI, botAPI } from '../services/api';
+import api from '../services/api';
 
 const PLANS = [
   {
-    id: 'free',
-    name: 'Free',
+    id: 'trial',
+    name: 'ทดลองใช้',
     price: 0,
     msgLimit: 300,
-    features: ['300 ข้อความ/เดือน', '1 LINE OA', 'Knowledge Base 5 รายการ', 'ซัพพอร์ตทาง LINE'],
+    trialDays: 14,
+    features: ['ทดลองใช้ฟรี 14 วัน', '300 ข้อความ/เดือน', '1 LINE OA', 'Knowledge Base 5 รายการ', 'ซัพพอร์ตทาง LINE'],
     color: 'text-zinc-400',
     borderColor: 'border-zinc-700',
     bgColor: 'bg-zinc-500/5',
     icon: <Zap className="w-5 h-5 text-zinc-400" />,
   },
   {
-    id: 'starter',
-    name: 'Starter',
-    price: 199,
-    msgLimit: 2000,
-    features: ['2,000 ข้อความ/เดือน', '1 LINE OA', 'Knowledge Base 20 รายการ', 'ซัพพอร์ตทาง LINE', 'Analytics พื้นฐาน'],
-    color: 'text-blue-400',
-    borderColor: 'border-blue-500/30',
-    bgColor: 'bg-blue-500/5',
-    icon: <Zap className="w-5 h-5 text-blue-400" />,
-    popular: false,
-  },
-  {
     id: 'pro',
     name: 'Pro',
-    price: 590,
-    msgLimit: 10000,
-    features: ['10,000 ข้อความ/เดือน', '3 LINE OA', 'Knowledge Base ไม่จำกัด', 'Priority Support', 'Analytics ครบครัน', 'Custom personality'],
+    price: 376,
+    msgLimit: 2000,
+    features: ['2,000 ข้อความ/เดือน', '1 LINE OA', 'Knowledge Base ไม่จำกัด', 'AI Auto Reply', 'Analytics พื้นฐาน', 'ซัพพอร์ตทาง LINE & Email'],
     color: 'text-orange-400',
     borderColor: 'border-orange-500/40',
     bgColor: 'bg-orange-500/8',
@@ -40,9 +30,20 @@ const PLANS = [
     popular: true,
   },
   {
+    id: 'pro+',
+    name: 'Pro+',
+    price: 790,
+    msgLimit: 10000,
+    features: ['10,000 ข้อความ/เดือน', '3 LINE OA', 'Knowledge Base ไม่จำกัด', 'Analytics ครบครัน', 'AI Auto Reply', 'Priority Support'],
+    color: 'text-blue-400',
+    borderColor: 'border-blue-500/30',
+    bgColor: 'bg-blue-500/5',
+    icon: <Zap className="w-5 h-5 text-blue-400" />,
+  },
+  {
     id: 'enterprise',
     name: 'Enterprise',
-    price: 1990,
+    price: 2990,
     msgLimit: null,
     features: ['ข้อความไม่จำกัด', 'LINE OA ไม่จำกัด', 'Knowledge Base ไม่จำกัด', 'Dedicated Support', 'SLA 99.9%', 'Custom integration', 'White-label option'],
     color: 'text-purple-400',
@@ -54,6 +55,7 @@ const PLANS = [
 
 export default function Subscription({ setSidebarOpen }) {
   const [usage, setUsage] = useState(null);
+  const [shopId, setShopId] = useState(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [showTopup, setShowTopup] = useState(false);
@@ -61,14 +63,18 @@ export default function Subscription({ setSidebarOpen }) {
   useEffect(() => {
     async function loadUsage() {
       const bots = await botAPI.getMyBots();
-      const shopId = bots[0]?.id;
-      const data = await usageAPI.getUsage(shopId);
+      const id = bots[0]?.id;
+      setShopId(id);
+      const data = await usageAPI.getUsage(id);
       setUsage(data);
     }
     loadUsage();
   }, []);
 
-  const currentPlanId = usage?.plan?.toLowerCase() || 'starter';
+  const currentPlanId = usage?.plan?.toLowerCase() || 'trial';
+  const trialDaysLeft = usage?.trialEndsAt
+    ? Math.max(0, Math.ceil((new Date(usage.trialEndsAt) - Date.now()) / (1000 * 60 * 60 * 24)))
+    : null;
   const currentPlan = PLANS.find((p) => p.id === currentPlanId) || PLANS[1];
   const usagePercent = usage ? Math.round((usage.used / (usage.limit || 1)) * 100) : 0;
   const usageColor = usagePercent >= 90 ? '#EF4444' : usagePercent >= 70 ? '#F59E0B' : '#FF6B35';
@@ -76,6 +82,7 @@ export default function Subscription({ setSidebarOpen }) {
   const handleUpgradeClick = (plan) => {
     setSelectedPlan(plan);
     setShowUpgradeModal(true);
+    if (shopId) api.post(`/api/bots/${shopId}/track-upgrade`).catch(() => {});
   };
 
   return (
@@ -84,6 +91,33 @@ export default function Subscription({ setSidebarOpen }) {
       subtitle="จัดการแผนและการใช้งานของคุณ"
       setSidebarOpen={setSidebarOpen}
     >
+      {/* Trial Countdown Banner */}
+      {currentPlanId === 'trial' && trialDaysLeft !== null && (
+        <div className={`rounded-2xl border p-4 flex items-center justify-between mb-2 ${
+          trialDaysLeft <= 3
+            ? 'bg-red-500/10 border-red-500/20'
+            : trialDaysLeft <= 7
+            ? 'bg-amber-500/10 border-amber-500/20'
+            : 'bg-orange-500/10 border-orange-500/20'
+        }`}>
+          <div className="flex items-center gap-3">
+            <Zap className={`w-5 h-5 flex-shrink-0 ${trialDaysLeft <= 3 ? 'text-red-400' : trialDaysLeft <= 7 ? 'text-amber-400' : 'text-orange-400'}`} />
+            <div>
+              <p className="text-sm font-bold text-white">
+                {trialDaysLeft === 0 ? 'ทดลองใช้หมดอายุวันนี้' : `เหลืออีก ${trialDaysLeft} วัน ในช่วงทดลองใช้`}
+              </p>
+              <p className="text-xs text-zinc-400">Upgrade เพื่อใช้งานต่อไม่ให้บอทหยุด</p>
+            </div>
+          </div>
+          <button
+            onClick={() => handleUpgradeClick(PLANS[1])}
+            className="btn-primary px-4 py-2 rounded-xl text-xs font-bold text-white whitespace-nowrap"
+          >
+            Upgrade ฿376/เดือน
+          </button>
+        </div>
+      )}
+
       {/* Current Plan + Usage */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Current Plan */}
