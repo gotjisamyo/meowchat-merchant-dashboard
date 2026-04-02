@@ -471,4 +471,23 @@ export const referralAPI = {
   },
 };
 
+export const broadcastAPI = {
+  getRecipientCount: async (botId) => {
+    try {
+      const res = await api.get(`/api/bots/${botId}/broadcast/recipients`);
+      return res.data?.count || 0;
+    } catch { return 0; }
+  },
+  getHistory: async (botId) => {
+    try {
+      const res = await api.get(`/api/bots/${botId}/broadcast/history`);
+      return res.data?.broadcasts || [];
+    } catch { return []; }
+  },
+  send: async (botId, message) => {
+    const res = await api.post(`/api/bots/${botId}/broadcast`, { message });
+    return res.data;
+  },
+};
+
 export default api;
