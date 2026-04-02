@@ -10,7 +10,7 @@ import {
   RadialBarChart, RadialBar, Cell,
 } from 'recharts';
 import PageLayout from '../components/PageLayout';
-import { usageAPI, botAPI, conversationsAPI, kpiAPI } from '../services/api';
+import { usageAPI, botAPI, conversationsAPI, kpiAPI, analyticsAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 export default function Dashboard({ setSidebarOpen }) {
@@ -22,6 +22,8 @@ export default function Dashboard({ setSidebarOpen }) {
   const [kpi, setKpi] = useState(null);
   const [weekly, setWeekly] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [insights, setInsights] = useState(null);
+  const [insightsDays, setInsightsDays] = useState(30);
 
   useEffect(() => {
     async function fetchData() {
@@ -31,23 +33,25 @@ export default function Dashboard({ setSidebarOpen }) {
         const firstBot = bots[0] || null;
         setBot(firstBot);
         const botId = firstBot?.id || 'bot_001';
-        const [usageData, convs, kpiData, weeklyData] = await Promise.all([
+        const [usageData, convs, kpiData, weeklyData, insightsData] = await Promise.all([
           usageAPI.getUsage(firstBot?.id),
           conversationsAPI.getAll(botId),
           kpiAPI.getStats(botId),
           kpiAPI.getWeekly(botId),
+          analyticsAPI.getTopics(botId, insightsDays),
         ]);
         setUsage(usageData);
         setConversations(convs.slice(0, 5));
         setKpi(kpiData);
         setWeekly(weeklyData);
+        setInsights(insightsData);
       } catch {
         // Already handled with mock fallbacks in api.js
       }
       setLoading(false);
     }
     fetchData();
-  }, []);
+  }, [insightsDays]);
 
   const usagePercent = usage ? Math.round((usage.used / usage.limit) * 100) : 0;
   const usageColor = usagePercent >= 90 ? '#EF4444' : usagePercent >= 70 ? '#F59E0B' : '#FF6B35';
@@ -364,6 +368,52 @@ export default function Dashboard({ setSidebarOpen }) {
               <strong>{Math.round(moneySaved / 376)}x</strong>
             </p>
           </div>
+        )}
+      </div>
+
+      {/* Customer Insights Widget */}
+      <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-purple-400" />
+            <h2 className="text-base font-bold text-white">ลูกค้าถามอะไรบ่อย</h2>
+          </div>
+          <div className="flex gap-1.5">
+            {[7, 30].map(d => (
+              <button key={d} onClick={() => setInsightsDays(d)}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${insightsDays === d ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'text-zinc-500 hover:text-zinc-300'}`}>
+                {d} วัน
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Stats row */}
+        <div className="grid grid-cols-3 gap-3 mb-5">
+          {[
+            { label: 'บทสนทนา', value: insights?.stats?.totalConversations ?? 0, color: '#A78BFA' },
+            { label: 'ผู้ใช้ไม่ซ้ำ', value: insights?.stats?.uniqueUsers ?? 0, color: '#34D399' },
+            { label: 'ขอคุยคน', value: insights?.stats?.escalations ?? 0, color: '#F59E0B' },
+          ].map(s => (
+            <div key={s.label} className="bg-white/[0.03] rounded-2xl p-3 text-center">
+              <p className="text-2xl font-extrabold" style={{ color: s.color }}>{loading ? '...' : s.value}</p>
+              <p className="text-[11px] text-zinc-500 mt-0.5 font-semibold">{s.label}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Keyword pills */}
+        {insights?.topKeywords?.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {insights.topKeywords.slice(0, 12).map(({ word, count }) => (
+              <span key={word} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-xs font-semibold text-zinc-300 hover:bg-white/[0.07] transition-colors">
+                {word}
+                <span className="text-[10px] text-zinc-500 font-bold">{count}</span>
+              </span>
+            ))}
+          </div>
+        ) : (
+          <p className="text-zinc-600 text-sm text-center py-4">ยังไม่มีข้อมูล — รอให้ลูกค้าส่งข้อความมาก่อน</p>
         )}
       </div>
 

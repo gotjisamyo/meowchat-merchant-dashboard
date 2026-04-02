@@ -420,6 +420,17 @@ export const kpiAPI = {
   },
 };
 
+export const analyticsAPI = {
+  getTopics: async (botId, days = 30) => {
+    try {
+      const res = await api.get(`/api/bots/${botId}/analytics/topics?days=${days}`);
+      return res.data;
+    } catch {
+      return { stats: { totalConversations: 0, totalMessages: 0, uniqueUsers: 0, escalations: 0 }, topKeywords: [], recentSamples: [] };
+    }
+  },
+};
+
 export const referralAPI = {
   getMy: async () => {
     const res = await api.get('/api/referral/my');
