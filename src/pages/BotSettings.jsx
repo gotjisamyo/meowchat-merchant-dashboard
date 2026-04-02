@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Bot, Save, Link2, Info, ChevronDown, Receipt } from 'lucide-react';
+import { Bot, Save, Link2, Info, ChevronDown, Receipt, MessageSquare, Plus, Trash2 } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
-import { botAPI } from '../services/api';
+import { botAPI, quickRepliesAPI } from '../services/api';
 
 const PERSONALITIES = [
   { value: 'friendly', label: 'เป็นกันเอง — ตอบแบบเพื่อนคุย' },
@@ -24,6 +24,7 @@ export default function BotSettings({ setSidebarOpen }) {
     lineChannelSecret: '',
     slipVerifyMode: 'off',
   });
+  const [quickReplies, setQuickReplies] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -47,6 +48,8 @@ export default function BotSettings({ setSidebarOpen }) {
             lineChannelSecret: '',
             slipVerifyMode: b.slip_verify_mode || 'off',
           });
+          const qr = await quickRepliesAPI.get(b.id);
+          setQuickReplies(qr);
         }
       } catch {
         // fallback handled in api.js
@@ -63,6 +66,7 @@ export default function BotSettings({ setSidebarOpen }) {
         ...form,
         slip_verify_mode: form.slipVerifyMode,
       });
+      await quickRepliesAPI.save(bot?.id || 'bot_001', quickReplies);
       setToast({ message: 'บันทึกการตั้งค่าเรียบร้อยแล้ว', type: 'success' });
     } catch {
       setToast({ message: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง', type: 'error' });
@@ -155,6 +159,69 @@ export default function BotSettings({ setSidebarOpen }) {
                 />
               </FormField>
             </div>
+          </Section>
+          {/* Quick Reply Templates */}
+          <Section title="Quick Reply Templates" icon={<MessageSquare className="w-5 h-5 text-purple-400" />}>
+            <p className="text-xs text-zinc-500 mb-4">
+              ปุ่มลัดที่ลูกค้าเห็นใต้แชท — กดแทนการพิมพ์ (สูงสุด 13 ปุ่ม)
+            </p>
+            <div className="space-y-2 mb-3">
+              {quickReplies.map((qr, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <div className="flex-1 flex gap-2">
+                    <input
+                      type="text"
+                      value={qr.label}
+                      onChange={(e) => {
+                        const next = [...quickReplies];
+                        next[i] = { ...next[i], label: e.target.value.slice(0, 20) };
+                        setQuickReplies(next);
+                      }}
+                      className="input-premium text-sm w-28 flex-shrink-0"
+                      placeholder="ชื่อปุ่ม"
+                      maxLength={20}
+                    />
+                    <input
+                      type="text"
+                      value={qr.text}
+                      onChange={(e) => {
+                        const next = [...quickReplies];
+                        next[i] = { ...next[i], text: e.target.value.slice(0, 300) };
+                        setQuickReplies(next);
+                      }}
+                      className="input-premium text-sm flex-1"
+                      placeholder="ข้อความที่ส่งเมื่อกด"
+                    />
+                  </div>
+                  <button
+                    onClick={() => setQuickReplies(prev => prev.filter((_, idx) => idx !== i))}
+                    className="p-2 rounded-lg text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-colors flex-shrink-0"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            {quickReplies.length < 13 && (
+              <button
+                onClick={() => setQuickReplies(prev => [...prev, { label: '', text: '' }])}
+                className="w-full py-2.5 rounded-xl border border-dashed border-white/[0.1] text-zinc-500 hover:text-zinc-300 hover:border-white/20 transition-colors text-sm flex items-center justify-center gap-2"
+              >
+                <Plus className="w-4 h-4" /> เพิ่มปุ่ม
+              </button>
+            )}
+            {quickReplies.length > 0 && (
+              <div className="mt-4 p-3 bg-[#0A0A0F] rounded-xl border border-white/[0.06]">
+                <p className="text-xs text-zinc-600 mb-2">Preview ปุ่ม:</p>
+                <div className="flex flex-wrap gap-2">
+                  {quickReplies.filter(q => q.label).map((qr, i) => (
+                    <span key={i} className="px-3 py-1.5 rounded-full bg-[#1A1A28] border border-white/[0.1] text-xs text-zinc-300">
+                      {qr.label}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </Section>
         </div>
 

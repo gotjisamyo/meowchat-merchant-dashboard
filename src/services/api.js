@@ -490,4 +490,17 @@ export const broadcastAPI = {
   },
 };
 
+export const quickRepliesAPI = {
+  get: async (botId) => {
+    try {
+      const res = await api.get(`/api/bots/${botId}/quick-replies`);
+      return res.data?.items || [];
+    } catch { return []; }
+  },
+  save: async (botId, items) => {
+    const res = await api.put(`/api/bots/${botId}/quick-replies`, { items });
+    return res.data;
+  },
+};
+
 export default api;
