@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Bot, Save, Link2, Info, ChevronDown } from 'lucide-react';
+import { Bot, Save, Link2, Info, ChevronDown, Receipt } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
 import { botAPI } from '../services/api';
@@ -22,6 +22,7 @@ export default function BotSettings({ setSidebarOpen }) {
     lineNotifyToken: '',
     lineAccessToken: '',
     lineChannelSecret: '',
+    slipVerifyMode: 'off',
   });
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState(null);
@@ -44,6 +45,7 @@ export default function BotSettings({ setSidebarOpen }) {
             lineNotifyToken: b.lineNotifyToken || '',
             lineAccessToken: '',
             lineChannelSecret: '',
+            slipVerifyMode: b.slip_verify_mode || 'off',
           });
         }
       } catch {
@@ -57,7 +59,10 @@ export default function BotSettings({ setSidebarOpen }) {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await botAPI.updateBot(bot?.id || 'bot_001', form);
+      await botAPI.updateBot(bot?.id || 'bot_001', {
+        ...form,
+        slip_verify_mode: form.slipVerifyMode,
+      });
       setToast({ message: 'บันทึกการตั้งค่าเรียบร้อยแล้ว', type: 'success' });
     } catch {
       setToast({ message: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง', type: 'error' });
@@ -250,6 +255,40 @@ export default function BotSettings({ setSidebarOpen }) {
                   รับ token ได้ที่ <span className="text-orange-400">notify-bot.line.me/th</span> → My page → Generate token
                 </p>
               </FormField>
+            </div>
+          </Section>
+
+          {/* Slip Verification */}
+          <Section title="ตรวจสอบสลิปโอนเงิน" icon={<Receipt className="w-5 h-5 text-blue-400" />}>
+            <p className="text-xs text-zinc-500 mb-4">
+              บอทจะอ่านสลิปที่ลูกค้าส่งมาผ่าน Gemini Vision และบันทึกคำสั่งซื้ออัตโนมัติ
+              <span className="text-zinc-400"> (~฿0.005/ภาพ ใช้เครดิต Gemini)</span>
+            </p>
+            <div className="space-y-3">
+              {[
+                { value: 'off', label: '🚫 ปิด', desc: 'ไม่ตรวจสอบสลิป บอทตอบกลับภาพทั่วไป' },
+                { value: 'manual', label: '👀 Manual', desc: 'บอทรับสลิป แจ้งลูกค้าว่ารอทีมงานตรวจ ส่งแจ้งเตือนให้คุณ' },
+                { value: 'auto', label: '⚡ Auto', desc: 'บอทอ่านสลิปและยืนยันคำสั่งซื้ออัตโนมัติทันที ไม่ต้องรออนุมัติ' },
+              ].map((opt) => (
+                <label key={opt.value} className={`flex items-start gap-3 p-4 rounded-2xl border cursor-pointer transition-colors ${
+                  form.slipVerifyMode === opt.value
+                    ? 'bg-blue-500/10 border-blue-500/30'
+                    : 'bg-[#0A0A0F] border-white/[0.06] hover:border-white/10'
+                }`}>
+                  <input
+                    type="radio"
+                    name="slipVerifyMode"
+                    value={opt.value}
+                    checked={form.slipVerifyMode === opt.value}
+                    onChange={(e) => update('slipVerifyMode', e.target.value)}
+                    className="mt-0.5 accent-blue-500 flex-shrink-0"
+                  />
+                  <div>
+                    <p className="text-sm font-semibold text-white">{opt.label}</p>
+                    <p className="text-xs text-zinc-500 mt-0.5">{opt.desc}</p>
+                  </div>
+                </label>
+              ))}
             </div>
           </Section>
 

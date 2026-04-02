@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { CreditCard, Check, Zap, Crown, Building2, X } from 'lucide-react';
+import { CreditCard, Check, Zap, Crown, Building2, X, Plus } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
-import { usageAPI, botAPI } from '../services/api';
+import { usageAPI, botAPI, creditsAPI } from '../services/api';
 import api from '../services/api';
 
 const PLANS = [
@@ -18,9 +18,20 @@ const PLANS = [
     icon: <Zap className="w-5 h-5 text-zinc-400" />,
   },
   {
+    id: 'starter',
+    name: 'Starter',
+    price: 199,
+    msgLimit: 500,
+    features: ['500 ข้อความ/เดือน', '1 LINE OA', 'Knowledge Base ไม่จำกัด', 'AI Auto Reply', 'ซัพพอร์ตทาง LINE'],
+    color: 'text-emerald-400',
+    borderColor: 'border-emerald-500/30',
+    bgColor: 'bg-emerald-500/5',
+    icon: <Zap className="w-5 h-5 text-emerald-400" />,
+  },
+  {
     id: 'pro',
     name: 'Pro',
-    price: 376,
+    price: 490,
     msgLimit: 2000,
     features: ['2,000 ข้อความ/เดือน', '1 LINE OA', 'Knowledge Base ไม่จำกัด', 'AI Auto Reply', 'Analytics พื้นฐาน', 'ซัพพอร์ตทาง LINE & Email'],
     color: 'text-orange-400',
@@ -32,7 +43,7 @@ const PLANS = [
   {
     id: 'pro+',
     name: 'Pro+',
-    price: 790,
+    price: 990,
     msgLimit: 10000,
     features: ['10,000 ข้อความ/เดือน', '3 LINE OA', 'Knowledge Base ไม่จำกัด', 'Analytics ครบครัน', 'AI Auto Reply', 'Priority Support'],
     color: 'text-blue-400',
@@ -43,7 +54,7 @@ const PLANS = [
   {
     id: 'enterprise',
     name: 'Enterprise',
-    price: 2990,
+    price: 3990,
     msgLimit: null,
     features: ['ข้อความไม่จำกัด', 'LINE OA ไม่จำกัด', 'Knowledge Base ไม่จำกัด', 'Dedicated Support', 'SLA 99.9%', 'Custom integration', 'White-label option'],
     color: 'text-purple-400',
@@ -59,6 +70,7 @@ export default function Subscription({ setSidebarOpen }) {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [showTopup, setShowTopup] = useState(false);
+  const [creditBalance, setCreditBalance] = useState(0);
 
   useEffect(() => {
     async function loadUsage() {
@@ -67,6 +79,10 @@ export default function Subscription({ setSidebarOpen }) {
       setShopId(id);
       const data = await usageAPI.getUsage(id);
       setUsage(data);
+      if (id) {
+        const bal = await creditsAPI.getBalance(id);
+        setCreditBalance(bal.totalAvailable || 0);
+      }
     }
     loadUsage();
   }, []);
@@ -110,10 +126,10 @@ export default function Subscription({ setSidebarOpen }) {
             </div>
           </div>
           <button
-            onClick={() => handleUpgradeClick(PLANS[1])}
+            onClick={() => handleUpgradeClick(PLANS[2])}
             className="btn-primary px-4 py-2 rounded-xl text-xs font-bold text-white whitespace-nowrap"
           >
-            Upgrade ฿376/เดือน
+            Upgrade ฿490/เดือน
           </button>
         </div>
       )}
@@ -181,18 +197,28 @@ export default function Subscription({ setSidebarOpen }) {
             </div>
           )}
 
+          {/* Extra Credits */}
+          {creditBalance > 0 && (
+            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 mb-2">
+              <p className="text-xs text-emerald-400 flex items-center gap-2">
+                <Plus className="w-3.5 h-3.5 flex-shrink-0" />
+                เครดิตเพิ่มเติม: <strong>{creditBalance.toLocaleString()} ข้อความ</strong> พร้อมใช้
+              </p>
+            </div>
+          )}
+
           {/* Top-up option */}
           <div className="bg-[#0A0A0F] rounded-2xl p-4 border border-white/[0.06]">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-sm font-bold text-white">Top-up ข้อความเพิ่ม</p>
-              <span className="text-orange-400 font-bold text-sm">฿99</span>
+              <p className="text-sm font-bold text-white">ซื้อเครดิตเพิ่ม</p>
+              <span className="text-orange-400 font-bold text-sm">เริ่มต้น ฿79</span>
             </div>
-            <p className="text-xs text-zinc-500 mb-3">ซื้อเพิ่ม 500 ข้อความ ใช้ได้ทันที ไม่หมดอายุในเดือนนี้</p>
+            <p className="text-xs text-zinc-500 mb-3">300–3,000 ข้อความ ไม่หมดอายุ 90 วัน ใช้ได้ทันทีหลัง activate</p>
             <button
               onClick={() => setShowTopup(true)}
               className="w-full py-2.5 rounded-xl text-sm font-bold btn-secondary border border-white/[0.08] text-zinc-300 hover:text-white"
             >
-              ซื้อ Top-up (+500 ข้อความ)
+              ซื้อเครดิตเพิ่มเติม
             </button>
           </div>
         </div>
@@ -202,7 +228,7 @@ export default function Subscription({ setSidebarOpen }) {
       <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
         <h2 className="text-xl font-bold text-white mb-6">เปรียบเทียบแผน</h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
           {PLANS.map((plan) => {
             const isCurrent = plan.id === currentPlanId;
             return (
@@ -284,7 +310,7 @@ export default function Subscription({ setSidebarOpen }) {
 
       {/* Topup Modal */}
       {showTopup && (
-        <TopupModal onClose={() => setShowTopup(false)} />
+        <TopupModal shopId={shopId} onClose={() => setShowTopup(false)} onSuccess={(extra) => setCreditBalance(b => b + extra)} />
       )}
     </PageLayout>
   );
@@ -330,35 +356,104 @@ function UpgradeModal({ plan, onClose }) {
   );
 }
 
-function TopupModal({ onClose }) {
+function TopupModal({ shopId, onClose, onSuccess }) {
+  const [packs, setPacks] = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [purchasing, setPurchasing] = useState(false);
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    creditsAPI.getPacks().then(p => { setPacks(p); setPurchasing(false); setLoading(false); });
+  }, []);
+
+  const handlePurchase = async () => {
+    if (!selected || !shopId) return;
+    setPurchasing(true);
+    try {
+      await creditsAPI.purchase(shopId, selected.id);
+      onSuccess?.(selected.messages);
+      setDone(true);
+    } catch {
+      setPurchasing(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
-      <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-sm shadow-2xl animate-scale-in">
+      <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-md shadow-2xl animate-scale-in">
         <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
-          <h3 className="text-lg font-bold text-white">Top-up ข้อความ</h3>
+          <h3 className="text-lg font-bold text-white">ซื้อเครดิตเพิ่มเติม</h3>
           <button onClick={onClose} className="p-2 hover:bg-white/[0.06] rounded-xl text-zinc-500 hover:text-white transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="p-6 space-y-5">
-          <div className="text-center p-5 bg-orange-500/10 rounded-2xl border border-orange-500/20">
-            <p className="text-4xl font-extrabold text-orange-400 mb-1">+500</p>
-            <p className="text-zinc-400">ข้อความ / ฿99</p>
-          </div>
-          <p className="text-zinc-400 text-sm text-center">
-            ข้อความที่ซื้อจะเพิ่มเข้าโควต้าของคุณทันทีและใช้ได้ถึงสิ้นเดือน
-          </p>
-          <a
-            href="https://line.me/ti/p/@MeowChatSupport"
-            target="_blank"
-            rel="noreferrer"
-            className="btn-primary w-full py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2"
-          >
-            ซื้อผ่าน LINE @MeowChatSupport
-          </a>
-          <button onClick={onClose} className="btn-secondary w-full py-3 rounded-xl text-sm font-semibold border border-white/[0.08]">
-            ยกเลิก
-          </button>
+        <div className="p-6 space-y-4">
+          {done ? (
+            <div className="text-center py-6">
+              <div className="text-5xl mb-3">✅</div>
+              <p className="text-lg font-bold text-white mb-1">สั่งซื้อสำเร็จ</p>
+              <p className="text-sm text-zinc-400">ทีมงานจะ activate เครดิตภายใน 24 ชั่วโมง หลังตรวจสอบการโอนเงิน</p>
+              <button onClick={onClose} className="btn-primary mt-5 px-8 py-2.5 rounded-xl text-sm font-bold text-white">
+                ปิด
+              </button>
+            </div>
+          ) : (
+            <>
+              <p className="text-sm text-zinc-400">เลือกแพ็กเกจที่ต้องการ เครดิตใช้ได้ 90 วัน ไม่หมดอายุตามรอบบิล</p>
+              {loading ? (
+                <div className="text-center py-8 text-zinc-500">กำลังโหลด...</div>
+              ) : (
+                <div className="space-y-3">
+                  {packs.map((pack) => (
+                    <label
+                      key={pack.id}
+                      className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-colors ${
+                        selected?.id === pack.id
+                          ? 'bg-orange-500/10 border-orange-500/30'
+                          : 'bg-[#0A0A0F] border-white/[0.06] hover:border-white/10'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="radio"
+                          name="pack"
+                          checked={selected?.id === pack.id}
+                          onChange={() => setSelected(pack)}
+                          className="accent-orange-500"
+                        />
+                        <div>
+                          <p className="text-sm font-bold text-white">Pack {pack.name} — +{pack.messages.toLocaleString()} ข้อความ</p>
+                          <p className="text-xs text-zinc-500">ใช้ได้ 90 วัน</p>
+                        </div>
+                      </div>
+                      <span className="text-orange-400 font-bold text-sm">฿{pack.price}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
+
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-3">
+                <p className="text-xs text-blue-300">
+                  📌 หลังสั่งซื้อ: โอนเงินตามจำนวนที่เลือก แล้วแจ้งสลิปผ่าน LINE @MeowChatSupport
+                  ทีมงานจะ activate เครดิตให้ภายใน 24 ชั่วโมง
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <button onClick={onClose} className="flex-1 py-3 rounded-xl text-sm font-semibold btn-secondary border border-white/[0.08]">
+                  ยกเลิก
+                </button>
+                <button
+                  onClick={handlePurchase}
+                  disabled={!selected || purchasing}
+                  className="flex-1 py-3 rounded-xl text-sm font-bold btn-primary text-white disabled:opacity-50"
+                >
+                  {purchasing ? 'กำลังดำเนินการ...' : `สั่งซื้อ${selected ? ` ฿${selected.price}` : ''}`}
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -159,7 +159,7 @@ export const botAPI = {
 
   updateBot: async (botId, data) => {
     try {
-      const { name, businessName, personality, businessScope, channelId, lineNotifyToken, lineAccessToken, lineChannelSecret } = data;
+      const { name, businessName, personality, businessScope, channelId, lineNotifyToken, lineAccessToken, lineChannelSecret, slip_verify_mode } = data;
       const description = JSON.stringify({
         shopName: businessName || name || '',
         botStyle: personality || 'friendly',
@@ -173,6 +173,7 @@ export const botAPI = {
         line_notify_token: lineNotifyToken || '',
         line_access_token: lineAccessToken || undefined,
         line_channel_secret: lineChannelSecret || undefined,
+        slip_verify_mode: slip_verify_mode || undefined,
       });
       return response.data;
     } catch {
@@ -428,6 +429,35 @@ export const analyticsAPI = {
     } catch {
       return { stats: { totalConversations: 0, totalMessages: 0, uniqueUsers: 0, escalations: 0 }, topKeywords: [], recentSamples: [] };
     }
+  },
+};
+
+// ── Credits ───────────────────────────────────────────────────────────────────
+
+export const creditsAPI = {
+  getPacks: async () => {
+    try {
+      const res = await api.get('/api/credits/packs');
+      return res.data?.packs || [];
+    } catch {
+      return [
+        { id: 1, name: 'S', messages: 300, price: 79 },
+        { id: 2, name: 'M', messages: 1000, price: 199 },
+        { id: 3, name: 'L', messages: 3000, price: 499 },
+      ];
+    }
+  },
+  getBalance: async (shopId) => {
+    try {
+      const res = await api.get(`/api/credits/balance/${shopId}`);
+      return res.data;
+    } catch {
+      return { credits: [], totalAvailable: 0 };
+    }
+  },
+  purchase: async (shopId, packId) => {
+    const res = await api.post(`/api/credits/purchase/${shopId}`, { packId });
+    return res.data;
   },
 };
 

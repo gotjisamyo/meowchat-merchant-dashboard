@@ -15,6 +15,7 @@ export default function Conversations({ setSidebarOpen }) {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
   const [selected, setSelected] = useState(null);
+  const [loadingMsgs, setLoadingMsgs] = useState(false);
   const [botId, setBotId] = useState(null);
 
   useEffect(() => {
@@ -137,7 +138,15 @@ export default function Conversations({ setSidebarOpen }) {
                 filtered.map((conv) => (
                   <button
                     key={conv.id}
-                    onClick={() => setSelected(conv)}
+                    onClick={async () => {
+                      setSelected({ ...conv, messages: [] });
+                      if (botId && conv.id) {
+                        setLoadingMsgs(true);
+                        const msgs = await conversationsAPI.getMessages(botId, conv.id);
+                        setSelected(prev => prev?.id === conv.id ? { ...prev, messages: msgs } : prev);
+                        setLoadingMsgs(false);
+                      }
+                    }}
                     className={`w-full flex items-center gap-3 px-4 py-4 border-b border-white/[0.04] text-left hover:bg-white/[0.02] transition-colors ${
                       selected?.id === conv.id ? 'bg-orange-500/[0.06]' : ''
                     }`}
@@ -168,7 +177,7 @@ export default function Conversations({ setSidebarOpen }) {
 
           {/* Detail Panel */}
           {selected ? (
-            <ChatDetail conv={selected} onClose={() => setSelected(null)} />
+            <ChatDetail conv={selected} onClose={() => setSelected(null)} loadingMsgs={loadingMsgs} />
           ) : (
             <div className="hidden lg:flex flex-1 items-center justify-center py-16 flex-col gap-3 text-center">
               <MessageSquare className="w-14 h-14 text-zinc-700" />
@@ -181,7 +190,7 @@ export default function Conversations({ setSidebarOpen }) {
   );
 }
 
-function ChatDetail({ conv, onClose }) {
+function ChatDetail({ conv, onClose, loadingMsgs }) {
   return (
     <div className="flex flex-col flex-1 min-w-0">
       {/* Header */}
@@ -216,6 +225,15 @@ function ChatDetail({ conv, onClose }) {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-5 space-y-4 max-h-[450px]">
+        {loadingMsgs && (
+          <div className="flex items-center justify-center py-8 gap-2 text-zinc-500 text-sm">
+            <span className="w-4 h-4 border-2 border-zinc-700 border-t-orange-400 rounded-full animate-spin" />
+            กำลังโหลดประวัติสนทนา...
+          </div>
+        )}
+        {!loadingMsgs && (conv.messages || []).length === 0 && (
+          <p className="text-center text-zinc-600 text-sm py-8">ยังไม่มีประวัติสนทนาที่บันทึกไว้</p>
+        )}
         {(conv.messages || []).map((msg, i) => (
           <div key={i} className={`flex ${msg.from === 'customer' ? 'justify-start' : 'justify-end'}`}>
             {msg.from === 'customer' && (
