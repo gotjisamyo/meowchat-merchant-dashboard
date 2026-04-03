@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { CreditCard, Check, Zap, Crown, Building2, X, Plus } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
+import Toast from '../components/Toast';
 import { usageAPI, botAPI, creditsAPI } from '../services/api';
 import api from '../services/api';
 
+// Canonical pricing — confirmed by Got 2026-04-03
 const PLANS = [
   {
     id: 'trial',
@@ -11,7 +13,7 @@ const PLANS = [
     price: 0,
     msgLimit: 300,
     trialDays: 14,
-    features: ['ทดลองใช้ฟรี 14 วัน', '300 ข้อความ/เดือน', '1 LINE OA', 'Knowledge Base 5 รายการ', 'ซัพพอร์ตทาง LINE'],
+    features: ['ทดลองใช้ฟรี 14 วัน (ไม่ต้องใส่บัตร)', '300 ข้อความ/เดือน', '1 LINE OA', 'Knowledge Base 5 รายการ', 'ซัพพอร์ตทาง LINE'],
     color: 'text-zinc-400',
     borderColor: 'border-zinc-700',
     bgColor: 'bg-zinc-500/5',
@@ -20,9 +22,9 @@ const PLANS = [
   {
     id: 'starter',
     name: 'Starter',
-    price: 199,
-    msgLimit: 500,
-    features: ['500 ข้อความ/เดือน', '1 LINE OA', 'Knowledge Base ไม่จำกัด', 'AI Auto Reply', 'ซัพพอร์ตทาง LINE'],
+    price: 490,
+    msgLimit: 3000,
+    features: ['3,000 ข้อความ/เดือน', '1 LINE OA', 'Knowledge Base ไม่จำกัด', 'AI Auto Reply', 'ซัพพอร์ตทาง LINE'],
     color: 'text-emerald-400',
     borderColor: 'border-emerald-500/30',
     bgColor: 'bg-emerald-500/5',
@@ -31,9 +33,9 @@ const PLANS = [
   {
     id: 'pro',
     name: 'Pro',
-    price: 490,
-    msgLimit: 2000,
-    features: ['2,000 ข้อความ/เดือน', '1 LINE OA', 'Knowledge Base ไม่จำกัด', 'AI Auto Reply', 'Analytics พื้นฐาน', 'ซัพพอร์ตทาง LINE & Email'],
+    price: 990,
+    msgLimit: 15000,
+    features: ['15,000 ข้อความ/เดือน', '1 LINE OA', 'Knowledge Base ไม่จำกัด', 'AI Auto Reply', 'Analytics พื้นฐาน', 'ซัพพอร์ตทาง LINE & Email'],
     color: 'text-orange-400',
     borderColor: 'border-orange-500/40',
     bgColor: 'bg-orange-500/8',
@@ -41,11 +43,11 @@ const PLANS = [
     popular: true,
   },
   {
-    id: 'pro+',
-    name: 'Pro+',
-    price: 990,
-    msgLimit: 10000,
-    features: ['10,000 ข้อความ/เดือน', '3 LINE OA', 'Knowledge Base ไม่จำกัด', 'Analytics ครบครัน', 'AI Auto Reply', 'Priority Support'],
+    id: 'business',
+    name: 'Business',
+    price: 2490,
+    msgLimit: 50000,
+    features: ['50,000 ข้อความ/เดือน', '3 LINE OA', 'Knowledge Base ไม่จำกัด', 'Analytics ครบครัน', 'AI Auto Reply', 'Priority Support'],
     color: 'text-blue-400',
     borderColor: 'border-blue-500/30',
     bgColor: 'bg-blue-500/5',
@@ -54,7 +56,7 @@ const PLANS = [
   {
     id: 'enterprise',
     name: 'Enterprise',
-    price: 3990,
+    price: null,
     msgLimit: null,
     features: ['ข้อความไม่จำกัด', 'LINE OA ไม่จำกัด', 'Knowledge Base ไม่จำกัด', 'Dedicated Support', 'SLA 99.9%', 'Custom integration', 'White-label option'],
     color: 'text-purple-400',
@@ -71,6 +73,9 @@ export default function Subscription({ setSidebarOpen }) {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [showTopup, setShowTopup] = useState(false);
   const [creditBalance, setCreditBalance] = useState(0);
+  const [toast, setToast] = useState(null);
+
+  const dismissToast = useCallback(() => setToast(null), []);
 
   useEffect(() => {
     async function loadUsage() {
@@ -85,6 +90,15 @@ export default function Subscription({ setSidebarOpen }) {
       }
     }
     loadUsage();
+  }, []);
+
+  // Listen for trial-abuse 409 dispatched by the global axios interceptor
+  useEffect(() => {
+    const handler = (e) => {
+      setToast({ message: e.detail?.message || 'LINE OA นี้เคยใช้สิทธิ์ทดลองฟรีแล้ว กรุณาเลือกแพ็กเกจ', type: 'error' });
+    };
+    window.addEventListener('meowchat:trial-abuse', handler);
+    return () => window.removeEventListener('meowchat:trial-abuse', handler);
   }, []);
 
   const currentPlanId = usage?.plan?.toLowerCase() || 'trial';
@@ -107,6 +121,8 @@ export default function Subscription({ setSidebarOpen }) {
       subtitle="จัดการแผนและการใช้งานของคุณ"
       setSidebarOpen={setSidebarOpen}
     >
+      {/* Trial-abuse / 409 toast */}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={dismissToast} />}
       {/* Trial Countdown Banner */}
       {currentPlanId === 'trial' && trialDaysLeft !== null && (
         <div className={`rounded-2xl border p-4 flex items-center justify-between mb-2 ${
@@ -129,7 +145,7 @@ export default function Subscription({ setSidebarOpen }) {
             onClick={() => handleUpgradeClick(PLANS[2])}
             className="btn-primary px-4 py-2 rounded-xl text-xs font-bold text-white whitespace-nowrap"
           >
-            Upgrade ฿490/เดือน
+            Upgrade ฿990/เดือน
           </button>
         </div>
       )}
@@ -145,8 +161,8 @@ export default function Subscription({ setSidebarOpen }) {
               <span className={`text-2xl font-extrabold ${currentPlan.color}`}>{currentPlan.name}</span>
             </div>
             <p className={`text-3xl font-extrabold ${currentPlan.color}`}>
-              {currentPlan.price === 0 ? 'ฟรี' : `฿${currentPlan.price.toLocaleString()}`}
-              {currentPlan.price > 0 && <span className="text-base font-normal text-zinc-500">/เดือน</span>}
+              {currentPlan.price === null ? 'Custom' : currentPlan.price === 0 ? 'ฟรี' : `฿${currentPlan.price.toLocaleString()}`}
+              {currentPlan.price !== null && currentPlan.price > 0 && <span className="text-base font-normal text-zinc-500">/เดือน</span>}
             </p>
           </div>
 
@@ -260,9 +276,9 @@ export default function Subscription({ setSidebarOpen }) {
 
                 <p className="mb-4">
                   <span className={`text-2xl font-extrabold ${plan.color}`}>
-                    {plan.price === 0 ? 'ฟรี' : `฿${plan.price}`}
+                    {plan.price === null ? 'Custom' : plan.price === 0 ? 'ฟรี' : `฿${plan.price.toLocaleString()}`}
                   </span>
-                  {plan.price > 0 && <span className="text-zinc-600 text-sm">/เดือน</span>}
+                  {plan.price !== null && plan.price > 0 && <span className="text-zinc-600 text-sm">/เดือน</span>}
                 </p>
 
                 <p className={`text-sm font-semibold mb-4 ${plan.color}`}>
@@ -329,7 +345,7 @@ function UpgradeModal({ plan, onClose }) {
         <div className="p-6 space-y-5">
           <div className={`p-5 rounded-2xl border ${plan.borderColor} ${plan.bgColor} text-center`}>
             <p className={`text-3xl font-extrabold ${plan.color} mb-1`}>
-              {plan.price === 0 ? 'ฟรี' : `฿${plan.price}/เดือน`}
+              {plan.price === null ? 'Custom' : plan.price === 0 ? 'ฟรี' : `฿${plan.price.toLocaleString()}/เดือน`}
             </p>
             <p className="text-zinc-400 text-sm">
               {plan.msgLimit ? `${plan.msgLimit.toLocaleString()} ข้อความ/เดือน` : 'ข้อความไม่จำกัด'}

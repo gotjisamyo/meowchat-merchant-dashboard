@@ -19,7 +19,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Handle 401 — redirect to login
+// Handle auth and trial-abuse errors globally
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -27,6 +27,18 @@ api.interceptors.response.use(
       localStorage.removeItem('meowchat_token');
       localStorage.removeItem('meowchat_user');
       window.location.href = '/login';
+    }
+    // Handle 409 trial abuse — LINE OA already used trial on another account
+    if (error.response?.status === 409) {
+      const body = error.response?.data || {};
+      const msg = body.error || 'LINE OA นี้เคยใช้สิทธิ์ทดลองฟรีแล้ว กรุณาเลือกแพ็กเกจ';
+      // Dispatch a custom event so any mounted component can show a toast
+      window.dispatchEvent(new CustomEvent('meowchat:trial-abuse', { detail: { message: msg } }));
+      // Redirect to subscription page after a short delay so the toast is visible
+      const redirectTo = body.redirect || '/subscription';
+      setTimeout(() => {
+        window.location.href = redirectTo;
+      }, 2500);
     }
     return Promise.reject(error);
   }
@@ -499,6 +511,20 @@ export const quickRepliesAPI = {
   },
   save: async (botId, items) => {
     const res = await api.put(`/api/bots/${botId}/quick-replies`, { items });
+    return res.data;
+  },
+};
+
+// ── Shops ─────────────────────────────────────────────────────────────────────
+
+export const shopAPI = {
+  /**
+   * Create a new shop (links a LINE OA and starts trial).
+   * Throws on error; caller should catch 409 for trial-abuse handling.
+   * The global 409 interceptor will also fire automatically.
+   */
+  create: async (payload) => {
+    const res = await api.post('/api/shops', payload);
     return res.data;
   },
 };
