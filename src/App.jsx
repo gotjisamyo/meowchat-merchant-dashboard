@@ -14,6 +14,7 @@ import Profile from './pages/Profile';
 import Onboarding from './pages/Onboarding';
 import Referral from './pages/Referral';
 import Broadcast from './pages/Broadcast';
+import Analytics from './pages/Analytics';
 
 function MerchantLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -59,6 +60,7 @@ export default function App() {
                       <Route path="/handoff" element={<Handoff setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/subscription" element={<Subscription setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/referral" element={<Referral setSidebarOpen={setSidebarOpen} />} />
+                      <Route path="/analytics" element={<Analytics setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/broadcast" element={<Broadcast setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/profile" element={<Profile setSidebarOpen={setSidebarOpen} />} />
                       <Route path="*" element={<Navigate to="/" replace />} />

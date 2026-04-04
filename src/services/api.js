@@ -442,6 +442,18 @@ export const analyticsAPI = {
       return { stats: { totalConversations: 0, totalMessages: 0, uniqueUsers: 0, escalations: 0 }, topKeywords: [], recentSamples: [] };
     }
   },
+  getOverview: async (botId, days = 30) => {
+    try {
+      const res = await api.get(`/api/bots/${botId}/analytics/overview?days=${days}`);
+      return res.data;
+    } catch {
+      return {
+        stats: { totalConversations: 0, totalMessages: 0, uniqueUsers: 0, escalations: 0, aiResponseRate: 100, timeSavedHours: 0 },
+        daily: [],
+        topKeywords: [],
+      };
+    }
+  },
 };
 
 // ── Credits ───────────────────────────────────────────────────────────────────
