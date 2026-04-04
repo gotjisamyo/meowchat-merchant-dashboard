@@ -289,7 +289,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
           <p className="text-zinc-600 text-sm">ลองค้นหาด้วยคำอื่น หรือเพิ่มรายการใหม่</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-4">
           {filtered.map((entry) => (
             <KBCard
               key={entry.id}

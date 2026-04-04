@@ -200,9 +200,9 @@ export default function Dashboard({ setSidebarOpen }) {
       </div>
 
       {/* Main Grid: Usage + Chart */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6">
         {/* Usage Card */}
-        <div className="lg:col-span-1 bg-[#12121A] rounded-3xl border border-white/[0.06] p-6 flex flex-col gap-5">
+        <div className="lg:col-span-1 bg-[#12121A] rounded-3xl border border-white/[0.06] p-4 sm:p-6 flex flex-col gap-5">
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-lg font-bold text-white">การใช้งานเดือนนี้</h2>

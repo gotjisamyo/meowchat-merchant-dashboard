@@ -168,7 +168,7 @@ export default function BotSettings({ setSidebarOpen }) {
             <div className="space-y-2 mb-3">
               {quickReplies.map((qr, i) => (
                 <div key={i} className="flex items-center gap-2">
-                  <div className="flex-1 flex gap-2">
+                  <div className="flex-1 flex flex-col sm:flex-row gap-2">
                     <input
                       type="text"
                       value={qr.label}
@@ -177,7 +177,7 @@ export default function BotSettings({ setSidebarOpen }) {
                         next[i] = { ...next[i], label: e.target.value.slice(0, 20) };
                         setQuickReplies(next);
                       }}
-                      className="input-premium text-sm w-full sm:w-28 flex-shrink-0"
+                      className="input-premium text-sm w-full sm:w-28 sm:flex-shrink-0"
                       placeholder="ชื่อปุ่ม"
                       maxLength={20}
                     />
