@@ -107,7 +107,7 @@ export default function Analytics({ setSidebarOpen }) {
       }
     >
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
         <StatCard icon={MessageSquare} label="บทสนทนาทั้งหมด" value={stats?.totalConversations ?? 0} color="#FF6B35" loading={loading} />
         <StatCard icon={Users} label="ผู้ใช้ไม่ซ้ำ" value={stats?.uniqueUsers ?? 0} color="#A78BFA" loading={loading} />
         <StatCard icon={Zap} label="AI ตอบได้เอง" value={`${stats?.aiResponseRate ?? 100}%`} sub="ไม่ต้องส่งต่อพนักงาน" color="#34D399" loading={loading} />

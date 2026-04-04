@@ -125,7 +125,7 @@ export default function Subscription({ setSidebarOpen }) {
       {toast && <Toast message={toast.message} type={toast.type} onClose={dismissToast} />}
       {/* Trial Countdown Banner */}
       {currentPlanId === 'trial' && trialDaysLeft !== null && (
-        <div className={`rounded-2xl border p-4 flex items-center justify-between mb-2 ${
+        <div className={`rounded-2xl border p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2 ${
           trialDaysLeft <= 3
             ? 'bg-red-500/10 border-red-500/20'
             : trialDaysLeft <= 7
@@ -244,7 +244,7 @@ export default function Subscription({ setSidebarOpen }) {
       <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
         <h2 className="text-xl font-bold text-white mb-6">เปรียบเทียบแผน</h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
           {PLANS.map((plan) => {
             const isCurrent = plan.id === currentPlanId;
             return (
@@ -335,14 +335,14 @@ export default function Subscription({ setSidebarOpen }) {
 function UpgradeModal({ plan, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
-      <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-md shadow-2xl animate-scale-in">
-        <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
+      <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-md shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-white/[0.06]">
           <h3 className="text-lg font-bold text-white">Upgrade เป็นแผน {plan.name}</h3>
           <button onClick={onClose} className="p-2 hover:bg-white/[0.06] rounded-xl text-zinc-500 hover:text-white transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="p-6 space-y-5">
+        <div className="p-4 sm:p-6 space-y-5">
           <div className={`p-5 rounded-2xl border ${plan.borderColor} ${plan.bgColor} text-center`}>
             <p className={`text-3xl font-extrabold ${plan.color} mb-1`}>
               {plan.price === null ? 'Custom' : plan.price === 0 ? 'ฟรี' : `฿${plan.price.toLocaleString()}/เดือน`}
@@ -397,14 +397,14 @@ function TopupModal({ shopId, onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
-      <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-md shadow-2xl animate-scale-in">
-        <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
+      <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-md shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-white/[0.06]">
           <h3 className="text-lg font-bold text-white">ซื้อเครดิตเพิ่มเติม</h3>
           <button onClick={onClose} className="p-2 hover:bg-white/[0.06] rounded-xl text-zinc-500 hover:text-white transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="p-6 space-y-4">
+        <div className="p-4 sm:p-6 space-y-4">
           {done ? (
             <div className="text-center py-6">
               <div className="text-5xl mb-3">✅</div>

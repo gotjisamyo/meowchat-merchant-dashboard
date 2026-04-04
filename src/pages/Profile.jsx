@@ -106,10 +106,10 @@ export default function Profile({ setSidebarOpen }) {
     >
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
         {/* Avatar Section */}
-        <div className="xl:col-span-1">
-          <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6 flex flex-col items-center gap-4 text-center">
+        <div className="lg:col-span-1">
+          <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-4 sm:p-6 flex flex-col items-center gap-4 text-center">
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center text-4xl font-bold text-white shadow-xl shadow-orange-500/20">
               {profile.name?.charAt(0).toUpperCase() || 'M'}
             </div>
@@ -131,7 +131,7 @@ export default function Profile({ setSidebarOpen }) {
         </div>
 
         {/* Profile Form + Password */}
-        <div className="xl:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-6">
           {/* Profile Info */}
           <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
             <div className="flex items-center gap-3 mb-6">

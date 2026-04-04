@@ -50,7 +50,7 @@ export default function Conversations({ setSidebarOpen }) {
       setSidebarOpen={setSidebarOpen}
     >
       {/* Stats row */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <div className="bg-[#12121A] rounded-2xl border border-white/[0.06] p-4 flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/20 flex items-center justify-center">
             <Users className="w-4 h-4 text-orange-400" />
@@ -241,7 +241,7 @@ function ChatDetail({ conv, onClose, loadingMsgs }) {
                 {conv.avatar}
               </div>
             )}
-            <div className={`max-w-[75%]`}>
+            <div className={`max-w-[75%] break-words`}>
               <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                 msg.from === 'customer'
                   ? 'bg-[#1E1E28] text-white rounded-tl-sm'

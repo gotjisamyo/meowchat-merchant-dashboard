@@ -166,7 +166,7 @@ export default function Dashboard({ setSidebarOpen }) {
       })()}
 
       {/* Quick Stats Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatCard
           label="ข้อความวันนี้"
           value={loading ? '...' : (usage?.todayMessages ?? 42).toLocaleString()}
@@ -389,7 +389,7 @@ export default function Dashboard({ setSidebarOpen }) {
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-3 gap-3 mb-5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 mb-5">
           {[
             { label: 'บทสนทนา', value: insights?.stats?.totalConversations ?? 0, color: '#A78BFA' },
             { label: 'ผู้ใช้ไม่ซ้ำ', value: insights?.stats?.uniqueUsers ?? 0, color: '#34D399' },

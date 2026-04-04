@@ -60,9 +60,9 @@ export default function Broadcast({ setSidebarOpen }) {
     >
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6">
         {/* Compose */}
-        <div className="xl:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-6">
           {/* Recipient Count */}
           <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
             <div className="flex items-center gap-4 mb-6">

@@ -228,7 +228,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
       )}
 
       {/* Search */}
-      <div className="relative max-w-md">
+      <div className="relative w-full max-w-md">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
         <input
           type="text"
@@ -383,9 +383,9 @@ function KBModal({ entry, onSave, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
-      <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-lg shadow-2xl animate-scale-in">
+      <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-lg shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-white/[0.06]">
           <h3 className="text-lg font-bold text-white">
             {entry ? 'แก้ไขรายการ' : 'เพิ่มรายการใหม่'}
           </h3>
@@ -398,7 +398,7 @@ function KBModal({ entry, onSave, onClose }) {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-5">
           <div>
             <label className="block text-sm font-semibold text-zinc-300 mb-2">หัวข้อ *</label>
             <input

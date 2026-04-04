@@ -98,9 +98,9 @@ export default function BotSettings({ setSidebarOpen }) {
     >
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
         {/* Bot Profile Section */}
-        <div className="xl:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-6">
           {/* Profile */}
           <Section title="โปรไฟล์บอท" icon={<Bot className="w-5 h-5 text-orange-400" />}>
             <div className="space-y-4">
@@ -177,7 +177,7 @@ export default function BotSettings({ setSidebarOpen }) {
                         next[i] = { ...next[i], label: e.target.value.slice(0, 20) };
                         setQuickReplies(next);
                       }}
-                      className="input-premium text-sm w-28 flex-shrink-0"
+                      className="input-premium text-sm w-full sm:w-28 flex-shrink-0"
                       placeholder="ชื่อปุ่ม"
                       maxLength={20}
                     />
