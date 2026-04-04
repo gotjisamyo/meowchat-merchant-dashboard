@@ -39,7 +39,7 @@ export default function Handoff({ setSidebarOpen }) {
       setSidebarOpen={setSidebarOpen}
     >
       {/* Stats */}
-      <div className="grid grid-cols-2 gap-4 max-w-sm">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:max-w-sm">
         <div className="bg-[#12121A] rounded-2xl border border-white/[0.06] p-4 flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-red-500/15 border border-red-500/20 flex items-center justify-center">
             <AlertCircle className="w-4 h-4 text-red-400" />

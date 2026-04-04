@@ -110,7 +110,7 @@ export default function Onboarding() {
         </div>
 
         {/* Card */}
-        <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-8">
+        <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-4 sm:p-8">
           {step === 1 && (
             <StepBotInfo info={botInfo} setInfo={setBotInfo} onNext={() => setStep(2)} />
           )}
