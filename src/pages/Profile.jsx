@@ -58,7 +58,7 @@ export default function Profile({ setSidebarOpen }) {
     e.preventDefault();
     setSavingProfile(true);
     try {
-      await api.put('/api/auth/profile', profile);
+      await api.put('/api/users/me', { name: profile.name, phone: profile.phone, company: profile.company });
       updateUser(profile);
       setToast({ message: 'บันทึกข้อมูลโปรไฟล์เรียบร้อยแล้ว', type: 'success' });
     } catch {

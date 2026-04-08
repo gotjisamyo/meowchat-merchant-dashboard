@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MessageSquare, Search, ChevronRight, X, AlertCircle, Clock, Users } from 'lucide-react';
+import { MessageSquare, Search, ChevronRight, X, AlertCircle, Clock, Users, RefreshCw } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import { conversationsAPI, botAPI } from '../services/api';
 
@@ -17,6 +17,7 @@ export default function Conversations({ setSidebarOpen }) {
   const [selected, setSelected] = useState(null);
   const [loadingMsgs, setLoadingMsgs] = useState(false);
   const [botId, setBotId] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -30,6 +31,14 @@ export default function Conversations({ setSidebarOpen }) {
     }
     load();
   }, []);
+
+  const handleRefresh = async () => {
+    if (!botId || refreshing) return;
+    setRefreshing(true);
+    const data = await conversationsAPI.getAll(botId);
+    setConversations(data);
+    setRefreshing(false);
+  };
 
   const filtered = conversations.filter((c) => {
     const matchSearch = c.customerName.toLowerCase().includes(search.toLowerCase()) ||
@@ -48,6 +57,16 @@ export default function Conversations({ setSidebarOpen }) {
       title="บทสนทนา"
       subtitle="ประวัติการสนทนากับลูกค้า"
       setSidebarOpen={setSidebarOpen}
+      actions={
+        <button
+          onClick={handleRefresh}
+          disabled={refreshing || loading}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-zinc-400 hover:text-white text-sm font-semibold transition-all disabled:opacity-50"
+        >
+          <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+          รีเฟรช
+        </button>
+      }
     >
       {/* Stats row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
