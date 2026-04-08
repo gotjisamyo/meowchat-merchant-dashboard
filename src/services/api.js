@@ -435,7 +435,7 @@ export const kpiAPI = {
   getWeekly: async (botId) => {
     try {
       const res = await api.get(`/api/bots/${botId}/stats/weekly`).catch(() => null);
-      if (res?.data?.weekly) return res.data.weekly;
+      if (Array.isArray(res?.data?.weekly)) return res.data.weekly;
       throw new Error('no data');
     } catch {
       const days = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'];
@@ -450,23 +450,35 @@ export const kpiAPI = {
 
 export const analyticsAPI = {
   getTopics: async (botId, days = 30) => {
+    const fallback = { stats: { totalConversations: 0, totalMessages: 0, uniqueUsers: 0, escalations: 0 }, topKeywords: [], recentSamples: [] };
     try {
       const res = await api.get(`/api/bots/${botId}/analytics/topics?days=${days}`);
-      return res.data;
+      const d = res.data || {};
+      return {
+        stats: d.stats || fallback.stats,
+        topKeywords: Array.isArray(d.topKeywords) ? d.topKeywords : [],
+        recentSamples: Array.isArray(d.recentSamples) ? d.recentSamples : [],
+      };
     } catch {
-      return { stats: { totalConversations: 0, totalMessages: 0, uniqueUsers: 0, escalations: 0 }, topKeywords: [], recentSamples: [] };
+      return fallback;
     }
   },
   getOverview: async (botId, days = 30) => {
+    const fallback = {
+      stats: { totalConversations: 0, totalMessages: 0, uniqueUsers: 0, escalations: 0, aiResponseRate: 100, timeSavedHours: 0 },
+      daily: [],
+      topKeywords: [],
+    };
     try {
       const res = await api.get(`/api/bots/${botId}/analytics/overview?days=${days}`);
-      return res.data;
-    } catch {
+      const d = res.data || {};
       return {
-        stats: { totalConversations: 0, totalMessages: 0, uniqueUsers: 0, escalations: 0, aiResponseRate: 100, timeSavedHours: 0 },
-        daily: [],
-        topKeywords: [],
+        stats: d.stats || fallback.stats,
+        daily: Array.isArray(d.daily) ? d.daily : [],
+        topKeywords: Array.isArray(d.topKeywords) ? d.topKeywords : [],
       };
+    } catch {
+      return fallback;
     }
   },
 };

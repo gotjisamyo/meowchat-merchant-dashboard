@@ -73,8 +73,8 @@ export default function Analytics({ setSidebarOpen }) {
   };
 
   const stats = data?.stats;
-  const daily = data?.daily || [];
-  const topKeywords = data?.topKeywords || [];
+  const daily = Array.isArray(data?.daily) ? data.daily : [];
+  const topKeywords = Array.isArray(data?.topKeywords) ? data.topKeywords : [];
 
   // Fill missing days with 0s for chart continuity
   const chartData = daily.map((d) => ({
