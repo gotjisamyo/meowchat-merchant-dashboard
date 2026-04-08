@@ -34,7 +34,7 @@ export default function Dashboard({ setSidebarOpen }) {
         setBot(firstBot);
         const botId = firstBot?.id || 'bot_001';
         const [usageData, convs, kpiData, weeklyData, insightsData] = await Promise.all([
-          usageAPI.getUsage(firstBot?.id),
+          usageAPI.getUsage(),
           conversationsAPI.getAll(botId),
           kpiAPI.getStats(botId),
           kpiAPI.getWeekly(botId),

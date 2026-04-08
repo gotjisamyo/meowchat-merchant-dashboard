@@ -58,7 +58,7 @@ export default function Profile({ setSidebarOpen }) {
     e.preventDefault();
     setSavingProfile(true);
     try {
-      await api.put('/api/users/me', profile);
+      await api.put('/api/auth/profile', profile);
       updateUser(profile);
       setToast({ message: 'บันทึกข้อมูลโปรไฟล์เรียบร้อยแล้ว', type: 'success' });
     } catch {
@@ -81,7 +81,7 @@ export default function Profile({ setSidebarOpen }) {
     }
     setSavingPass(true);
     try {
-      await api.put('/api/users/me/password', {
+      await api.put('/api/auth/profile', {
         currentPassword: passwords.current,
         newPassword: passwords.next,
       });

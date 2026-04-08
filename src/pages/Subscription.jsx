@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { CreditCard, Check, Zap, Crown, Building2, X, Plus } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
-import { usageAPI, botAPI, creditsAPI } from '../services/api';
+import { usageAPI, botAPI, creditsAPI, billingAPI } from '../services/api';
 import api from '../services/api';
 
 // Canonical pricing — confirmed by Got 2026-04-03
@@ -69,6 +69,7 @@ const PLANS = [
 export default function Subscription({ setSidebarOpen }) {
   const [usage, setUsage] = useState(null);
   const [shopId, setShopId] = useState(null);
+  const [plans, setPlans] = useState(PLANS);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [showTopup, setShowTopup] = useState(false);
@@ -82,8 +83,17 @@ export default function Subscription({ setSidebarOpen }) {
       const bots = await botAPI.getMyBots();
       const id = bots[0]?.id;
       setShopId(id);
-      const data = await usageAPI.getUsage(id);
+      const [data, apiPlans] = await Promise.all([
+        usageAPI.getUsage(id),
+        billingAPI.getPlans(),
+      ]);
       setUsage(data);
+      if (apiPlans && apiPlans.length > 0) {
+        setPlans(PLANS.map((p) => {
+          const ap = apiPlans.find((a) => a.id === p.id);
+          return ap ? { ...p, price: ap.price ?? p.price, msgLimit: ap.msgLimit ?? p.msgLimit, name: ap.name || p.name, features: ap.features?.length ? ap.features : p.features } : p;
+        }));
+      }
       if (id) {
         const bal = await creditsAPI.getBalance(id);
         setCreditBalance(bal.totalAvailable || 0);
@@ -105,7 +115,7 @@ export default function Subscription({ setSidebarOpen }) {
   const trialDaysLeft = usage?.trialEndsAt
     ? Math.max(0, Math.ceil((new Date(usage.trialEndsAt) - Date.now()) / (1000 * 60 * 60 * 24)))
     : null;
-  const currentPlan = PLANS.find((p) => p.id === currentPlanId) || PLANS[1];
+  const currentPlan = plans.find((p) => p.id === currentPlanId) || plans[1];
   const usagePercent = usage ? Math.round((usage.used / (usage.limit || 1)) * 100) : 0;
   const usageColor = usagePercent >= 90 ? '#EF4444' : usagePercent >= 70 ? '#F59E0B' : '#FF6B35';
 
@@ -245,7 +255,7 @@ export default function Subscription({ setSidebarOpen }) {
         <h2 className="text-xl font-bold text-white mb-6">เปรียบเทียบแผน</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
-          {PLANS.map((plan) => {
+          {plans.map((plan) => {
             const isCurrent = plan.id === currentPlanId;
             return (
               <div
