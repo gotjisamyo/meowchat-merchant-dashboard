@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Copy, Gift, Users, Check, Share2, ChevronRight, Clock } from 'lucide-react';
+import { Copy, Gift, Users, Check, Share2, ChevronRight, Clock, QrCode, Download } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import { useAuth } from '../context/AuthContext';
 import { referralAPI } from '../services/api';
@@ -20,6 +20,19 @@ export default function Referral({ setSidebarOpen }) {
     navigator.clipboard.writeText(referralLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(referralLink)}&color=1a1a2e&bgcolor=ffffff&qzone=2`;
+
+  const handleDownloadQR = () => {
+    const dlUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(referralLink)}&color=1a1a2e&bgcolor=ffffff&qzone=2`;
+    const a = document.createElement('a');
+    a.href = dlUrl;
+    a.download = `meowchat-qr-${referralCode}.png`;
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   const handleShare = () => {
@@ -100,6 +113,60 @@ export default function Referral({ setSidebarOpen }) {
           <Share2 className="w-4 h-4" />
           แชร์ลิงก์ทันที
         </button>
+      </div>
+
+      {/* QR Code Card */}
+      <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6 space-y-5">
+        <h2 className="text-lg font-bold text-white flex items-center gap-2">
+          <QrCode className="w-5 h-5 text-orange-400" />
+          QR Code แนะนำเพื่อน
+        </h2>
+
+        {/* Explanation banner */}
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-orange-500/10 to-pink-500/10 border border-orange-500/20">
+          <p className="text-sm font-bold text-white text-center">แชร์ QR นี้ให้เพื่อนสแกน</p>
+          <p className="text-xs text-zinc-400 text-center mt-1">
+            เพื่อนจะได้รับส่วนลด <span className="text-orange-400 font-bold">20%</span> เดือนแรก
+            &nbsp;·&nbsp; คุณจะได้รับ <span className="text-orange-400 font-bold">1 เดือนฟรี</span>
+          </p>
+        </div>
+
+        {/* QR code image */}
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative p-4 rounded-3xl bg-white shadow-2xl shadow-black/60" style={{ border: '3px solid rgba(255,107,53,0.35)' }}>
+            <img
+              src={qrImageUrl}
+              alt="QR Code แนะนำเพื่อน"
+              className="w-52 h-52 rounded-xl"
+              loading="lazy"
+            />
+            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-orange-500 to-orange-400 text-white text-xs font-bold shadow-lg shadow-orange-500/40 whitespace-nowrap">
+              🐱 MeowChat
+            </div>
+          </div>
+
+          <p className="text-xs text-zinc-500 mt-2">
+            รหัส: <span className="text-orange-400 font-bold font-mono">{referralCode}</span>
+          </p>
+
+          {/* Action buttons */}
+          <div className="flex items-center gap-3 w-full">
+            <button
+              onClick={handleDownloadQR}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.1] text-sm font-semibold text-zinc-300 hover:bg-white/[0.1] transition-all"
+            >
+              <Download className="w-4 h-4" />
+              ดาวน์โหลด
+            </button>
+            <button
+              onClick={handleCopy}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-orange-500/15 border border-orange-500/30 text-sm font-semibold text-orange-400 hover:bg-orange-500/25 transition-all"
+            >
+              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              {copied ? 'คัดลอกแล้ว' : 'คัดลอกลิงก์'}
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Stats placeholder */}
