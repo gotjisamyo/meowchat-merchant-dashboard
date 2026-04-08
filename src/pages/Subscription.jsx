@@ -105,23 +105,27 @@ export default function Subscription({ setSidebarOpen }) {
 
   useEffect(() => {
     async function loadUsage() {
-      const bots = await botAPI.getMyBots();
-      const id = bots[0]?.id;
-      setShopId(id);
-      const [data, apiPlans] = await Promise.all([
-        usageAPI.getUsage(id),
-        billingAPI.getPlans(),
-      ]);
-      setUsage(data);
-      if (apiPlans && apiPlans.length > 0) {
-        setPlans(PLANS.map((p) => {
-          const ap = apiPlans.find((a) => a.id === p.id);
-          return ap ? { ...p, price: ap.price ?? p.price, msgLimit: ap.msgLimit ?? p.msgLimit, name: ap.name || p.name, features: ap.features?.length ? ap.features : p.features } : p;
-        }));
-      }
-      if (id) {
-        const bal = await creditsAPI.getBalance(id);
-        setCreditBalance(bal.totalAvailable || 0);
+      try {
+        const bots = await botAPI.getMyBots();
+        const id = bots[0]?.id;
+        setShopId(id);
+        const [data, apiPlans] = await Promise.all([
+          usageAPI.getUsage(id),
+          billingAPI.getPlans(),
+        ]);
+        setUsage(data);
+        if (apiPlans && apiPlans.length > 0) {
+          setPlans(PLANS.map((p) => {
+            const ap = apiPlans.find((a) => a.id === p.id);
+            return ap ? { ...p, price: ap.price ?? p.price, msgLimit: ap.msgLimit ?? p.msgLimit, name: ap.name || p.name, features: ap.features?.length ? ap.features : p.features } : p;
+          }));
+        }
+        if (id) {
+          const bal = await creditsAPI.getBalance(id);
+          setCreditBalance(bal.totalAvailable || 0);
+        }
+      } catch {
+        // API unavailable — page renders with PLANS defaults
       }
     }
     loadUsage();
