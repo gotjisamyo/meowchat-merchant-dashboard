@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { CreditCard, Check, Zap, Crown, Building2, X, Plus } from 'lucide-react';
+import { CreditCard, Check, Zap, Crown, Building2, X, Plus, Calendar, Download } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
 import { usageAPI, botAPI, creditsAPI, billingAPI } from '../services/api';
@@ -66,6 +66,28 @@ const PLANS = [
   },
 ];
 
+const RANGE_OPTIONS = [
+  { label: '1 เดือน', months: 1 },
+  { label: '3 เดือน', months: 3 },
+  { label: '6 เดือน', months: 6 },
+  { label: '1 ปี', months: 12 },
+];
+
+function getDateRange(months) {
+  const to = new Date();
+  const from = new Date();
+  from.setMonth(from.getMonth() - months);
+  const fmt = (d) => d.toISOString().slice(0, 10);
+  return { from: fmt(from), to: fmt(to) };
+}
+
+const STATUS_STYLE = {
+  paid: { label: 'ชำระแล้ว', cls: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
+  pending: { label: 'รอชำระ', cls: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
+  refunded: { label: 'คืนเงิน', cls: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20' },
+  failed: { label: 'ล้มเหลว', cls: 'bg-red-500/10 text-red-400 border-red-500/20' },
+};
+
 export default function Subscription({ setSidebarOpen }) {
   const [usage, setUsage] = useState(null);
   const [shopId, setShopId] = useState(null);
@@ -75,6 +97,9 @@ export default function Subscription({ setSidebarOpen }) {
   const [showTopup, setShowTopup] = useState(false);
   const [creditBalance, setCreditBalance] = useState(0);
   const [toast, setToast] = useState(null);
+  const [historyRange, setHistoryRange] = useState(3);
+  const [billingHistory, setBillingHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   const dismissToast = useCallback(() => setToast(null), []);
 
@@ -101,6 +126,16 @@ export default function Subscription({ setSidebarOpen }) {
     }
     loadUsage();
   }, []);
+
+  useEffect(() => {
+    if (!shopId) return;
+    setHistoryLoading(true);
+    const { from, to } = getDateRange(historyRange);
+    billingAPI.getHistory(shopId, from, to).then((items) => {
+      setBillingHistory(items);
+      setHistoryLoading(false);
+    });
+  }, [shopId, historyRange]);
 
   // Listen for trial-abuse 409 dispatched by the global axios interceptor
   useEffect(() => {
@@ -327,6 +362,82 @@ export default function Subscription({ setSidebarOpen }) {
             );
           })}
         </div>
+      </div>
+
+      {/* Billing History */}
+      <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-zinc-400" />
+            <h2 className="text-lg font-bold text-white">ประวัติการชำระเงิน</h2>
+          </div>
+          <div className="flex items-center gap-2">
+            {RANGE_OPTIONS.map((opt) => (
+              <button
+                key={opt.months}
+                onClick={() => setHistoryRange(opt.months)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                  historyRange === opt.months
+                    ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                    : 'text-zinc-500 hover:text-zinc-300 border border-transparent'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {historyLoading ? (
+          <div className="text-center py-10 text-zinc-500 text-sm">กำลังโหลด...</div>
+        ) : billingHistory.length === 0 ? (
+          <div className="text-center py-10 text-zinc-500 text-sm">ไม่มีประวัติการชำระเงินในช่วงนี้</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-white/[0.06]">
+                  <th className="text-left py-3 px-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">วันที่</th>
+                  <th className="text-left py-3 px-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">รายการ</th>
+                  <th className="text-right py-3 px-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">จำนวนเงิน</th>
+                  <th className="text-center py-3 px-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">สถานะ</th>
+                </tr>
+              </thead>
+              <tbody>
+                {billingHistory.map((item) => {
+                  const st = STATUS_STYLE[item.status] || STATUS_STYLE.pending;
+                  return (
+                    <tr key={item.id} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
+                      <td className="py-3.5 px-2 text-zinc-400 whitespace-nowrap">
+                        {new Date(item.date).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </td>
+                      <td className="py-3.5 px-2 text-zinc-200">{item.description}</td>
+                      <td className="py-3.5 px-2 text-right font-bold text-white whitespace-nowrap">
+                        ฿{item.amount.toLocaleString()}
+                      </td>
+                      <td className="py-3.5 px-2 text-center">
+                        <span className={`inline-block px-2.5 py-1 rounded-lg text-xs font-bold border ${st.cls}`}>
+                          {st.label}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+              <tfoot>
+                <tr className="border-t border-white/[0.06]">
+                  <td colSpan={2} className="py-3 px-2 text-xs text-zinc-500">
+                    รวม {billingHistory.length} รายการ
+                  </td>
+                  <td className="py-3 px-2 text-right font-extrabold text-white">
+                    ฿{billingHistory.filter(i => i.status === 'paid').reduce((s, i) => s + i.amount, 0).toLocaleString()}
+                  </td>
+                  <td className="py-3 px-2 text-center text-xs text-zinc-500">ชำระแล้ว</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Upgrade Modal */}

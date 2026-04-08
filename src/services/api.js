@@ -300,6 +300,16 @@ export const billingAPI = {
       return [];
     }
   },
+  // TODO: backend must implement GET /api/billing/history?shopId=&from=YYYY-MM-DD&to=YYYY-MM-DD
+  getHistory: async (shopId, from, to) => {
+    try {
+      const res = await api.get(`/api/billing/history?shopId=${shopId}&from=${from}&to=${to}`);
+      return res.data?.data || [];
+    } catch {
+      // Mock data — remove when API is ready
+      return generateMockBillingHistory(from, to);
+    }
+  },
 };
 
 // ── Conversations ─────────────────────────────────────────────────────────────
@@ -540,5 +550,35 @@ export const shopAPI = {
     return res.data;
   },
 };
+
+// ── Mock Billing History ──────────────────────────────────────────────────────
+// TODO: Remove this function when GET /api/billing/history is implemented on backend
+function generateMockBillingHistory(from, to) {
+  const fromDate = new Date(from);
+  const toDate = new Date(to);
+  const items = [];
+  const planNames = ['Starter', 'Pro', 'Business'];
+  const statuses = ['paid', 'paid', 'paid', 'pending', 'refunded'];
+
+  // Generate monthly billing entries between from and to
+  const cursor = new Date(fromDate.getFullYear(), fromDate.getMonth(), 1);
+  let planIdx = 0;
+  while (cursor <= toDate) {
+    const planName = planNames[planIdx % planNames.length];
+    const prices = { Starter: 490, Pro: 990, Business: 2490 };
+    const price = prices[planName];
+    const statusIdx = Math.floor(Math.random() * statuses.length);
+    items.push({
+      id: `mock-${cursor.getFullYear()}-${cursor.getMonth() + 1}`,
+      date: new Date(cursor.getFullYear(), cursor.getMonth(), 5).toISOString(),
+      description: `แผน ${planName} — ${cursor.toLocaleDateString('th-TH', { month: 'long', year: 'numeric' })}`,
+      amount: price,
+      status: statuses[statusIdx],
+    });
+    cursor.setMonth(cursor.getMonth() + 1);
+    planIdx++;
+  }
+  return items.reverse();
+}
 
 export default api;
