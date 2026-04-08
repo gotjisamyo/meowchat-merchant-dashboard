@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Bot, Save, Link2, Info, Receipt, MessageSquare, Plus, Trash2 } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
@@ -283,9 +284,17 @@ export default function BotSettings({ setSidebarOpen }) {
                   placeholder="วาง Channel Access Token จาก LINE Developers"
                   autoComplete="off"
                 />
-                <p className="text-xs text-zinc-600 mt-1">
-                  LINE Developers Console → Messaging API → Channel access token → Issue
-                </p>
+                <div className="flex items-center justify-between mt-1">
+                  <p className="text-xs text-zinc-600">
+                    LINE Developers Console → Messaging API → Channel access token → Issue
+                  </p>
+                  <Link
+                    to="/line-guide"
+                    className="text-xs text-orange-400 hover:text-orange-300 transition-colors whitespace-nowrap ml-2 flex-shrink-0"
+                  >
+                    ดูคู่มือ →
+                  </Link>
+                </div>
               </FormField>
 
               <FormField label="Channel Secret *">
