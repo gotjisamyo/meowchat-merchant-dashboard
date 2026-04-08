@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { BookOpen, Plus, Pencil, Trash2, X, Search, Tag, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 const KB_TEMPLATES = {
   restaurant: {
@@ -52,7 +53,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
     async function load() {
       setLoading(true);
       const bots = await botAPI.getMyBots();
-      const id = bots[0]?.id || 'bot_001';
+      const id = bots[0]?.id;
       setBotId(id);
       const data = await knowledgeAPI.getAll(id);
       setEntries(data);
@@ -71,7 +72,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
   });
 
   const handleSave = async (entry) => {
-    const id = botId || 'bot_001';
+    const id = botId;
     let updated;
     if (editEntry) {
       const result = await knowledgeAPI.update(id, editEntry.id, entry);
@@ -90,7 +91,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
 
   const handleDelete = async (entryId) => {
     if (!window.confirm('ต้องการลบรายการนี้หรือไม่?')) return;
-    const id = botId || 'bot_001';
+    const id = botId;
     await knowledgeAPI.remove(id, entryId);
     const updated = entries.filter((e) => e.id !== entryId);
     setEntries(updated);
@@ -102,7 +103,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
     const template = KB_TEMPLATES[templateKey];
     if (!template) return;
     setImportingTemplate(templateKey);
-    const id = botId || 'bot_001';
+    const id = botId;
     let updated = [...entries];
     for (const entry of template.entries) {
       const result = await knowledgeAPI.create(id, entry);

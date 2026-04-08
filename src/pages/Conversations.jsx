@@ -22,7 +22,7 @@ export default function Conversations({ setSidebarOpen }) {
     async function load() {
       setLoading(true);
       const bots = await botAPI.getMyBots();
-      const id = bots[0]?.id || 'bot_001';
+      const id = bots[0]?.id;
       setBotId(id);
       const data = await conversationsAPI.getAll(id);
       setConversations(data);

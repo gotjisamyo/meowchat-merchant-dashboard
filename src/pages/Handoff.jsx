@@ -1,34 +1,41 @@
 import { useState, useEffect } from 'react';
 import { PhoneCall, X, Clock, User, CheckCircle, AlertCircle } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
-import { handoffAPI } from '../services/api';
-
-const BOT_ID = 'bot_001';
+import { handoffAPI, botAPI } from '../services/api';
 
 export default function Handoff({ setSidebarOpen }) {
   const [handoffs, setHandoffs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [botId, setBotId] = useState(null);
 
-  const load = async () => {
+  const load = async (id) => {
     setLoading(true);
-    const data = await handoffAPI.getAll(BOT_ID);
+    const data = await handoffAPI.getAll(id);
     setHandoffs(data);
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    async function init() {
+      const bots = await botAPI.getMyBots();
+      const id = bots[0]?.id;
+      setBotId(id);
+      await load(id);
+    }
+    init();
+  }, []);
 
   const pendingCount = handoffs.filter((h) => h.status === 'waiting').length;
 
   const handleAccept = async (id) => {
-    await handoffAPI.accept(BOT_ID, id);
+    await handoffAPI.accept(botId, id);
     setHandoffs((prev) =>
       prev.map((h) => (h.id === id ? { ...h, status: 'accepted' } : h))
     );
   };
 
   const handleClose = async (id) => {
-    await handoffAPI.close(BOT_ID, id);
+    await handoffAPI.close(botId, id);
     setHandoffs((prev) => prev.filter((h) => h.id !== id));
   };
 
