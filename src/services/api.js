@@ -309,10 +309,9 @@ export const billingAPI = {
   getHistory: async (shopId, from, to) => {
     try {
       const res = await api.get(`/api/billing/history?shopId=${shopId}&from=${from}&to=${to}`);
-      return res.data?.data || [];
+      return Array.isArray(res.data?.data) ? res.data.data : [];
     } catch {
-      // Mock data — remove when API is ready
-      return generateMockBillingHistory(from, to);
+      return [];
     }
   },
 };
@@ -489,7 +488,7 @@ export const creditsAPI = {
   getPacks: async () => {
     try {
       const res = await api.get('/api/credits/packs');
-      return res.data?.packs || [];
+      return Array.isArray(res.data?.packs) ? res.data.packs : [];
     } catch {
       return [
         { id: 1, name: 'S', messages: 300, price: 79 },
