@@ -5,9 +5,7 @@ import {
   ChevronLeft, ChevronRight, Cat, LogOut, Loader2, PhoneCall, Gift, Megaphone, BarChart2, Users,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { handoffAPI, usageAPI } from '../services/api';
-
-const BOT_ID = 'bot_001';
+import { handoffAPI, usageAPI, botAPI } from '../services/api';
 
 const menuItems = [
   { path: '/',             id: 'dashboard',     label: 'Dashboard',       icon: LayoutDashboard },
@@ -61,12 +59,26 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
   const [usagePlan, setUsagePlan] = useState(null);
 
   useEffect(() => {
-    handoffAPI.getPendingCount(BOT_ID).then(setHandoffCount).catch(() => {});
-    usageAPI.getUsage().then((d) => setUsagePlan(d?.plan || null)).catch(() => {});
-    const interval = setInterval(() => {
-      handoffAPI.getPendingCount(BOT_ID).then(setHandoffCount).catch(() => {});
-    }, 30000);
-    return () => clearInterval(interval);
+    let botId = null;
+    let interval = null;
+
+    async function init() {
+      try {
+        const bots = await botAPI.getMyBots();
+        botId = bots[0]?.id || null;
+        if (botId) handoffAPI.getPendingCount(botId).then(setHandoffCount).catch(() => {});
+        usageAPI.getUsage(botId).then((d) => setUsagePlan(d?.plan?.toLowerCase() || null)).catch(() => {});
+        if (botId) {
+          interval = setInterval(() => {
+            handoffAPI.getPendingCount(botId).then(setHandoffCount).catch(() => {});
+          }, 30000);
+        }
+      } catch {
+        // No bot or API unavailable — sidebar renders without badge/plan
+      }
+    }
+    init();
+    return () => { if (interval) clearInterval(interval); };
   }, []);
 
   const handleLogout = async () => {

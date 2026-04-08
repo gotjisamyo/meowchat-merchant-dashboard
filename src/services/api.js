@@ -20,13 +20,18 @@ api.interceptors.request.use(
 );
 
 // Handle auth and trial-abuse errors globally
+let _redirecting401 = false;
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('meowchat_token');
-      localStorage.removeItem('meowchat_user');
-      window.location.href = '/login';
+      // Avoid redirect loop and duplicate redirects
+      if (!_redirecting401 && !window.location.pathname.startsWith('/login')) {
+        _redirecting401 = true;
+        localStorage.removeItem('meowchat_token');
+        localStorage.removeItem('meowchat_user');
+        window.location.href = '/login';
+      }
     }
     // Handle 409 trial abuse — LINE OA already used trial on another account
     if (error.response?.status === 409) {
