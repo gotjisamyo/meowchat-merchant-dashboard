@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Bot, Save, Link2, Info, ChevronDown, Receipt, MessageSquare, Plus, Trash2 } from 'lucide-react';
+import { Bot, Save, Link2, Info, Receipt, MessageSquare, Plus, Trash2 } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
 import { botAPI, quickRepliesAPI } from '../services/api';
 
 const PERSONALITIES = [
-  { value: 'friendly', label: 'เป็นกันเอง — ตอบแบบเพื่อนคุย' },
-  { value: 'formal', label: 'ทางการ — ตอบแบบมืออาชีพ' },
-  { value: 'sales', label: 'ขายเก่ง — เน้นปิดการขาย' },
-  { value: 'cute', label: 'น่ารัก — ใช้ emoji เยอะๆ' },
+  { value: 'friendly',     icon: '😊', label: 'เป็นกันเอง',           desc: 'ตอบแบบเพื่อนคุย สบายๆ ไม่เป็นทางการ' },
+  { value: 'professional', icon: '💼', label: 'มืออาชีพ',             desc: 'ตอบแบบมืออาชีพ น่าเชื่อถือ มีความรู้' },
+  { value: 'casual',       icon: '🤙', label: 'ลำลอง',                desc: 'ตอบชิลๆ ไม่เครียด ใกล้ชิดลูกค้า' },
+  { value: 'cheerful',     icon: '🎉', label: 'ร่าเริง สดใส',         desc: 'ตอบแบบสดใส มีพลังงาน กระฉับกระเฉง' },
+  { value: 'empathetic',   icon: '🤗', label: 'เข้าอกเข้าใจ อบอุ่น', desc: 'รับฟัง ใส่ใจ ให้ความอบอุ่นกับลูกค้า' },
+  { value: 'direct',       icon: '🎯', label: 'ตรงไปตรงมา กระชับ',   desc: 'ตอบสั้น ตรงประเด็น ไม่อ้อมค้อม' },
+  { value: 'humorous',     icon: '😄', label: 'ขำขัน เป็นกันเอง',    desc: 'ตอบแบบสนุกสนาน มีอารมณ์ขัน' },
+  { value: 'formal',       icon: '🎩', label: 'ทางการ สุภาพ',         desc: 'ตอบแบบทางการ สุภาพ เป็นระเบียบ' },
 ];
 
 export default function BotSettings({ setSidebarOpen }) {
@@ -135,17 +139,27 @@ export default function BotSettings({ setSidebarOpen }) {
               </FormField>
 
               <FormField label="บุคลิกบอท" hint="กำหนดว่าบอทจะตอบแบบไหน">
-                <div className="relative">
-                  <select
-                    value={form.personality}
-                    onChange={(e) => update('personality', e.target.value)}
-                    className="input-premium appearance-none pr-10 cursor-pointer"
-                  >
-                    {PERSONALITIES.map((p) => (
-                      <option key={p.value} value={p.value}>{p.label}</option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                <div className="grid grid-cols-2 gap-2">
+                  {PERSONALITIES.map((p) => (
+                    <button
+                      key={p.value}
+                      type="button"
+                      onClick={() => update('personality', p.value)}
+                      className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-all ${
+                        form.personality === p.value
+                          ? 'bg-orange-500/10 border-orange-500/40'
+                          : 'bg-[#0A0A0F] border-white/[0.06] hover:border-white/15'
+                      }`}
+                    >
+                      <span className="text-xl flex-shrink-0 mt-0.5">{p.icon}</span>
+                      <div className="min-w-0">
+                        <p className={`text-xs font-semibold leading-tight ${form.personality === p.value ? 'text-orange-300' : 'text-zinc-300'}`}>
+                          {p.label}
+                        </p>
+                        <p className="text-[10px] text-zinc-600 mt-0.5 leading-tight">{p.desc}</p>
+                      </div>
+                    </button>
+                  ))}
                 </div>
               </FormField>
 
