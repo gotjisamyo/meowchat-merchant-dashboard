@@ -133,8 +133,8 @@ export const authAPI = {
   },
   getCurrentUser: async () => {
     try {
-      const response = await api.get('/api/users/me');
-      return response.data;
+      const response = await api.get('/api/auth/me');
+      return response.data?.user || response.data;
     } catch {
       const stored = localStorage.getItem('meowchat_user');
       return stored ? JSON.parse(stored) : null;
@@ -357,7 +357,7 @@ export const handoffAPI = {
   },
   accept: async (botId, handoffId) => {
     try {
-      const response = await api.patch(`/api/bots/${botId}/handoffs/${handoffId}`);
+      const response = await api.patch(`/api/bots/${botId}/handoffs/${handoffId}`, { status: 'accepted' });
       return response.data;
     } catch {
       return { success: true };
@@ -365,7 +365,7 @@ export const handoffAPI = {
   },
   close: async (botId, handoffId) => {
     try {
-      const response = await api.patch(`/api/bots/${botId}/handoffs/${handoffId}`);
+      const response = await api.patch(`/api/bots/${botId}/handoffs/${handoffId}`, { status: 'closed' });
       return response.data;
     } catch {
       return { success: true };

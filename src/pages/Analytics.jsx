@@ -63,6 +63,15 @@ export default function Analytics({ setSidebarOpen }) {
     });
   }, [botId, days]);
 
+  const handleRefresh = () => {
+    if (!botId || loading) return;
+    setLoading(true);
+    analyticsAPI.getOverview(botId, days).then((d) => {
+      setData(d);
+      setLoading(false);
+    });
+  };
+
   const stats = data?.stats;
   const daily = data?.daily || [];
   const topKeywords = data?.topKeywords || [];
@@ -98,10 +107,11 @@ export default function Analytics({ setSidebarOpen }) {
             </button>
           ))}
           <button
-            onClick={() => { setLoading(true); analyticsAPI.getOverview(botId, days).then((d) => { setData(d); setLoading(false); }); }}
-            className="p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.05] transition-colors border border-white/[0.06]"
+            onClick={handleRefresh}
+            disabled={loading || !botId}
+            className="p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.05] transition-colors border border-white/[0.06] disabled:opacity-40"
           >
-            <RefreshCw className="w-4 h-4" />
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
         </div>
       }

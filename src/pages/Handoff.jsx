@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { PhoneCall, X, Clock, User, CheckCircle, AlertCircle } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
+import Toast from '../components/Toast';
 import { handoffAPI, botAPI } from '../services/api';
 
 export default function Handoff({ setSidebarOpen }) {
   const [handoffs, setHandoffs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [botId, setBotId] = useState(null);
+  const [actionLoading, setActionLoading] = useState(null); // handoff id currently processing
+  const [toast, setToast] = useState(null);
 
   const load = async (id) => {
     setLoading(true);
@@ -28,15 +31,29 @@ export default function Handoff({ setSidebarOpen }) {
   const pendingCount = handoffs.filter((h) => h.status === 'waiting').length;
 
   const handleAccept = async (id) => {
-    await handoffAPI.accept(botId, id);
-    setHandoffs((prev) =>
-      prev.map((h) => (h.id === id ? { ...h, status: 'accepted' } : h))
-    );
+    setActionLoading(id);
+    try {
+      await handoffAPI.accept(botId, id);
+      setHandoffs((prev) =>
+        prev.map((h) => (h.id === id ? { ...h, status: 'accepted' } : h))
+      );
+      setToast({ message: 'รับสายเรียบร้อยแล้ว', type: 'success' });
+    } catch {
+      setToast({ message: 'เกิดข้อผิดพลาด กรุณาลองใหม่', type: 'error' });
+    }
+    setActionLoading(null);
   };
 
   const handleClose = async (id) => {
-    await handoffAPI.close(botId, id);
-    setHandoffs((prev) => prev.filter((h) => h.id !== id));
+    setActionLoading(id);
+    try {
+      await handoffAPI.close(botId, id);
+      setHandoffs((prev) => prev.filter((h) => h.id !== id));
+      setToast({ message: 'ปิด Handoff เรียบร้อยแล้ว', type: 'success' });
+    } catch {
+      setToast({ message: 'เกิดข้อผิดพลาด กรุณาลองใหม่', type: 'error' });
+    }
+    setActionLoading(null);
   };
 
   return (
@@ -45,6 +62,7 @@ export default function Handoff({ setSidebarOpen }) {
       subtitle="ลูกค้าที่รอคุยกับพนักงาน"
       setSidebarOpen={setSidebarOpen}
     >
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:max-w-sm">
         <div className="bg-[#12121A] rounded-2xl border border-white/[0.06] p-4 flex items-center gap-3">
@@ -89,6 +107,7 @@ export default function Handoff({ setSidebarOpen }) {
                 handoff={h}
                 onAccept={() => handleAccept(h.id)}
                 onClose={() => handleClose(h.id)}
+                isLoading={actionLoading === h.id}
               />
             ))}
           </div>
@@ -98,7 +117,7 @@ export default function Handoff({ setSidebarOpen }) {
   );
 }
 
-function HandoffCard({ handoff, onAccept, onClose }) {
+function HandoffCard({ handoff, onAccept, onClose, isLoading }) {
   const isWaiting = handoff.status === 'waiting';
 
   return (
@@ -134,17 +153,23 @@ function HandoffCard({ handoff, onAccept, onClose }) {
         {isWaiting && (
           <button
             onClick={onAccept}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-orange-500/15 hover:bg-orange-500/25 text-orange-400 text-xs font-bold border border-orange-500/20 transition-all"
+            disabled={isLoading}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-orange-500/15 hover:bg-orange-500/25 text-orange-400 text-xs font-bold border border-orange-500/20 transition-all disabled:opacity-50"
           >
-            <PhoneCall className="w-3.5 h-3.5" />
+            {isLoading
+              ? <span className="w-3.5 h-3.5 border-2 border-orange-400/30 border-t-orange-400 rounded-full animate-spin" />
+              : <PhoneCall className="w-3.5 h-3.5" />}
             รับสาย
           </button>
         )}
         <button
           onClick={onClose}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-400 hover:text-white text-xs font-bold border border-white/[0.06] transition-all"
+          disabled={isLoading}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-400 hover:text-white text-xs font-bold border border-white/[0.06] transition-all disabled:opacity-50"
         >
-          <X className="w-3.5 h-3.5" />
+          {isLoading
+            ? <span className="w-3.5 h-3.5 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
+            : <X className="w-3.5 h-3.5" />}
           ปิด
         </button>
       </div>
