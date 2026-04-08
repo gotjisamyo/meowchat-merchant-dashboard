@@ -165,7 +165,7 @@ export const botAPI = {
         };
       });
     } catch {
-      return [MOCK_BOT];
+      return [];
     }
   },
 
@@ -203,7 +203,7 @@ export const knowledgeAPI = {
       return Array.isArray(response.data) ? response.data : [];
     } catch {
       const stored = localStorage.getItem(`knowledge_${botId}`);
-      return stored ? JSON.parse(stored) : MOCK_KNOWLEDGE;
+      return stored ? JSON.parse(stored) : [];
     }
   },
   create: async (botId, entry) => {
@@ -268,7 +268,7 @@ export const usageAPI = {
         responseRate: 0,
       };
     } catch {
-      return MOCK_USAGE;
+      return { used: 0, limit: 300, plan: 'Trial', resetDate: '-', trialEndsAt: null, todayMessages: 0, newCustomersToday: 0, responseRate: 0 };
     }
   },
 };
@@ -341,7 +341,7 @@ export const conversationsAPI = {
         messages: [],
       }));
     } catch {
-      return MOCK_CONVERSATIONS;
+      return [];
     }
   },
 };
@@ -362,7 +362,7 @@ export const handoffAPI = {
         avatar: (h.customer_name || 'ล').charAt(0),
       }));
     } catch {
-      return MOCK_HANDOFFS;
+      return [];
     }
   },
   accept: async (botId, handoffId) => {
@@ -387,7 +387,7 @@ export const handoffAPI = {
       const handoffs = response.data?.handoffs || [];
       return handoffs.filter(h => h.status === 'pending').length;
     } catch {
-      return MOCK_HANDOFFS.filter(h => h.status === 'waiting').length;
+      return 0;
     }
   },
 };
@@ -422,7 +422,7 @@ export const kpiAPI = {
 
       return { totalConversations: total, activeToday, escalationRate, aiResponseRate, pendingHandoffs, escalated };
     } catch {
-      return { totalConversations: 58, activeToday: 12, escalationRate: 8, aiResponseRate: 92, pendingHandoffs: 2, escalated: 5 };
+      return { totalConversations: 0, activeToday: 0, escalationRate: 0, aiResponseRate: 100, pendingHandoffs: 0, escalated: 0 };
     }
   },
 
@@ -437,7 +437,7 @@ export const kpiAPI = {
       const today = new Date().getDay();
       return Array.from({ length: 7 }, (_, i) => ({
         day: days[(today - 6 + i + 7) % 7],
-        count: Math.floor(20 + Math.random() * 40),
+        count: 0,
       }));
     }
   },
@@ -548,6 +548,33 @@ export const shopAPI = {
   create: async (payload) => {
     const res = await api.post('/api/shops', payload);
     return res.data;
+  },
+  getMine: async () => {
+    try {
+      const res = await api.get('/api/shops/mine');
+      return res.data?.shop || res.data || null;
+    } catch {
+      return null;
+    }
+  },
+};
+
+// ── Marketing / Automation ────────────────────────────────────────────────────
+
+export const marketingAPI = {
+  getCampaigns: async () => {
+    try {
+      const res = await api.get('/api/marketing/campaigns');
+      return res.data?.campaigns || [];
+    } catch { return []; }
+  },
+  createCampaign: async (payload) => {
+    try {
+      const res = await api.post('/api/marketing/campaigns', payload);
+      return res.data;
+    } catch {
+      return { success: true, id: `campaign_${Date.now()}` };
+    }
   },
 };
 

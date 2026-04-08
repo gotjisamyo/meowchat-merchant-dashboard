@@ -169,21 +169,21 @@ export default function Dashboard({ setSidebarOpen }) {
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatCard
           label="ข้อความวันนี้"
-          value={loading ? '...' : (usage?.todayMessages ?? 42).toLocaleString()}
+          value={loading ? '...' : (usage?.todayMessages ?? 0).toLocaleString()}
           icon={<MessageSquare className="w-5 h-5 text-orange-400" />}
           color="from-orange-500/15 to-orange-500/5"
           delay="delay-100"
         />
         <StatCard
           label="ลูกค้าใหม่วันนี้"
-          value={loading ? '...' : (usage?.newCustomersToday ?? 7).toLocaleString()}
+          value={loading ? '...' : (usage?.newCustomersToday ?? 0).toLocaleString()}
           icon={<Users className="w-5 h-5 text-blue-400" />}
           color="from-blue-500/15 to-blue-500/5"
           delay="delay-200"
         />
         <StatCard
           label="อัตราตอบกลับ"
-          value={loading ? '...' : `${usage?.responseRate ?? 98.2}%`}
+          value={loading ? '...' : `${usage?.responseRate ?? 0}%`}
           icon={<TrendingUp className="w-5 h-5 text-emerald-400" />}
           color="from-emerald-500/15 to-emerald-500/5"
           delay="delay-300"
