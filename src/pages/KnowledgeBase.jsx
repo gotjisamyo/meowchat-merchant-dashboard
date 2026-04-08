@@ -48,6 +48,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
   const [botId, setBotId] = useState(null);
   const [showTemplates, setShowTemplates] = useState(false);
   const [importingTemplate, setImportingTemplate] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null); // entryId to delete
 
   useEffect(() => {
     async function load() {
@@ -89,8 +90,13 @@ export default function KnowledgeBase({ setSidebarOpen }) {
     setEditEntry(null);
   };
 
-  const handleDelete = async (entryId) => {
-    if (!window.confirm('ต้องการลบรายการนี้หรือไม่?')) return;
+  const handleDelete = (entryId) => {
+    setConfirmDelete(entryId);
+  };
+
+  const handleConfirmDelete = async () => {
+    const entryId = confirmDelete;
+    setConfirmDelete(null);
     const id = botId;
     await knowledgeAPI.remove(id, entryId);
     const updated = entries.filter((e) => e.id !== entryId);
@@ -163,6 +169,13 @@ export default function KnowledgeBase({ setSidebarOpen }) {
       }
     >
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      <ConfirmDialog
+        isOpen={confirmDelete !== null}
+        title="ลบรายการนี้?"
+        message="ต้องการลบรายการนี้หรือไม่? ไม่สามารถกู้คืนได้"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmDelete(null)}
+      />
 
       {/* Templates Section */}
       {entries.length === 0 && (

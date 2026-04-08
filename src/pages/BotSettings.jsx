@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Bot, Save, Link2, Info, Receipt, MessageSquare, Plus, Trash2 } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
+import ConfirmDialog from '../components/ConfirmDialog';
 import { botAPI, quickRepliesAPI } from '../services/api';
 
 const PERSONALITIES = [
@@ -32,6 +33,7 @@ export default function BotSettings({ setSidebarOpen }) {
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [confirmDeleteQR, setConfirmDeleteQR] = useState(null); // index to delete
 
   useEffect(() => {
     async function fetchBot() {
@@ -101,6 +103,16 @@ export default function BotSettings({ setSidebarOpen }) {
       }
     >
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      <ConfirmDialog
+        isOpen={confirmDeleteQR !== null}
+        title="ลบปุ่มนี้?"
+        message="ต้องการลบ Quick Reply นี้หรือไม่?"
+        onConfirm={() => {
+          setQuickReplies(prev => prev.filter((_, idx) => idx !== confirmDeleteQR));
+          setConfirmDeleteQR(null);
+        }}
+        onCancel={() => setConfirmDeleteQR(null)}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
         {/* Bot Profile Section */}
@@ -208,7 +220,7 @@ export default function BotSettings({ setSidebarOpen }) {
                     />
                   </div>
                   <button
-                    onClick={() => setQuickReplies(prev => prev.filter((_, idx) => idx !== i))}
+                    onClick={() => setConfirmDeleteQR(i)}
                     className="p-2 rounded-lg text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-colors flex-shrink-0"
                   >
                     <Trash2 className="w-4 h-4" />
