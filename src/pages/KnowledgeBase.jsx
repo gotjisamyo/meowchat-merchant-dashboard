@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BookOpen, Plus, Pencil, Trash2, X, Search, Tag, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
+import { BookOpen, Plus, Pencil, Trash2, X, Search, Tag, Sparkles, ChevronDown, ChevronUp, HelpCircle, PlusCircle, Calendar, Hash } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import ConfirmDialog from '../components/ConfirmDialog';
 
@@ -36,7 +36,7 @@ const KB_TEMPLATES = {
   },
 };
 import Toast from '../components/Toast';
-import { knowledgeAPI, botAPI } from '../services/api';
+import api, { knowledgeAPI, botAPI, shopAPI } from '../services/api';
 
 export default function KnowledgeBase({ setSidebarOpen }) {
   const [entries, setEntries] = useState([]);
@@ -49,13 +49,16 @@ export default function KnowledgeBase({ setSidebarOpen }) {
   const [showTemplates, setShowTemplates] = useState(false);
   const [importingTemplate, setImportingTemplate] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null); // entryId to delete
+  const [activeTab, setActiveTab] = useState('kb');
+  const [shopName, setShopName] = useState('');
 
   useEffect(() => {
     async function load() {
       setLoading(true);
-      const bots = await botAPI.getMyBots();
+      const [bots, shop] = await Promise.all([botAPI.getMyBots(), shopAPI.getMine()]);
       const id = bots[0]?.id;
       setBotId(id);
+      setShopName(shop?.name || '');
       const data = await knowledgeAPI.getAll(id);
       setEntries(data);
       setLoading(false);
@@ -155,7 +158,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
 
   return (
     <PageLayout
-      title="Knowledge Base"
+      title={shopName ? `Knowledge Base — ${shopName}` : "Knowledge Base"}
       subtitle="ข้อมูลที่บอทใช้ในการตอบคำถาม"
       setSidebarOpen={setSidebarOpen}
       actions={
@@ -176,6 +179,38 @@ export default function KnowledgeBase({ setSidebarOpen }) {
         onConfirm={handleConfirmDelete}
         onCancel={() => setConfirmDelete(null)}
       />
+
+      {/* Tab Switcher */}
+      <div className="flex gap-1 p-1 bg-[#12121A] border border-white/[0.06] rounded-2xl w-fit">
+        <button
+          onClick={() => setActiveTab('kb')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === 'kb' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' : 'text-zinc-400 hover:text-white'}`}
+        >
+          <BookOpen className="w-4 h-4" />
+          Knowledge Base
+        </button>
+        <button
+          onClick={() => setActiveTab('unanswered')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === 'unanswered' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' : 'text-zinc-400 hover:text-white'}`}
+        >
+          <HelpCircle className="w-4 h-4" />
+          คำถามที่ตอบไม่ได้
+        </button>
+      </div>
+
+      {activeTab === 'unanswered' && (
+        <UnansweredQuestions
+          botId={botId}
+          setToast={setToast}
+          onAddedToKB={(entry) => {
+            setEntries((prev) => [...prev, entry]);
+            knowledgeAPI.saveLocal(botId, [...entries, entry]);
+          }}
+        />
+      )}
+
+      {activeTab === 'kb' && (
+      <>
 
       {/* Templates Section */}
       {entries.length === 0 && (
@@ -322,6 +357,8 @@ export default function KnowledgeBase({ setSidebarOpen }) {
           onSave={handleSave}
           onClose={() => { setModalOpen(false); setEditEntry(null); }}
         />
+      )}
+      </>
       )}
     </PageLayout>
   );
