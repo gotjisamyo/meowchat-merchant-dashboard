@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Mail, Lock, Eye, EyeOff, Loader2, Cat } from 'lucide-react';
 
@@ -160,8 +160,16 @@ export default function Login() {
           </form>
         </div>
 
+        {/* Register link */}
+        <p className="text-center mt-4 text-zinc-500 text-sm">
+          ยังไม่มีบัญชี?{' '}
+          <Link to="/register" className="text-orange-400 hover:text-orange-300 font-semibold transition-colors">
+            สมัครฟรี 14 วัน
+          </Link>
+        </p>
+
         {/* Footer */}
-        <p className="text-center mt-6 text-zinc-600 text-xs">
+        <p className="text-center mt-4 text-zinc-600 text-xs">
           © 2026 MeowChat by Mawsom Company Limited
         </p>
       </div>
