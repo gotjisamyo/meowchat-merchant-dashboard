@@ -5,7 +5,7 @@ import {
   ChevronLeft, ChevronRight, Cat, LogOut, Loader2, PhoneCall, Gift, Megaphone, BarChart2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { handoffAPI } from '../services/api';
+import { handoffAPI, usageAPI } from '../services/api';
 
 const BOT_ID = 'bot_001';
 
@@ -57,10 +57,11 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
   const location = useLocation();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [handoffCount, setHandoffCount] = useState(0);
+  const [usagePlan, setUsagePlan] = useState(null);
 
   useEffect(() => {
     handoffAPI.getPendingCount(BOT_ID).then(setHandoffCount).catch(() => {});
-    // Poll every 30 seconds
+    usageAPI.getUsage().then((d) => setUsagePlan(d?.plan || null)).catch(() => {});
     const interval = setInterval(() => {
       handoffAPI.getPendingCount(BOT_ID).then(setHandoffCount).catch(() => {});
     }, 30000);
@@ -180,6 +181,17 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-white truncate">{user.name || 'Merchant'}</p>
               <p className="text-xs text-zinc-500 truncate">{user.email || ''}</p>
+              {usagePlan && (
+                <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide
+                  ${usagePlan === 'pro' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                  : usagePlan === 'starter' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                  : usagePlan === 'business' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                  : usagePlan === 'enterprise' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                  : 'bg-zinc-500/20 text-zinc-400 border border-zinc-500/30'}`}
+                >
+                  {usagePlan}
+                </span>
+              )}
             </div>
           </div>
         )}

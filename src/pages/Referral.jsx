@@ -37,7 +37,7 @@ export default function Referral({ setSidebarOpen }) {
   return (
     <PageLayout
       title="แนะนำเพื่อน"
-      subtitle="แนะนำร้านเพื่อน รับ 1 เดือนฟรี"
+      subtitle="แนะนำเพื่อน รับ 1 เดือนฟรี / เพื่อนได้ส่วนลด 20%"
       setSidebarOpen={setSidebarOpen}
     >
       {/* Coming soon banner */}
@@ -58,8 +58,8 @@ export default function Referral({ setSidebarOpen }) {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
             { step: '1', icon: Share2, label: 'แชร์ลิงก์', desc: 'ส่งลิงก์ของคุณให้เจ้าของร้านที่รู้จัก' },
-            { step: '2', icon: Users, label: 'เพื่อนสมัคร', desc: 'เพื่อนทดลองใช้ฟรี 14 วัน และ upgrade เป็น Pro' },
-            { step: '3', icon: Gift, label: 'รับรางวัล', desc: 'คุณได้ 1 เดือนฟรี เพื่อนได้ส่วนลด 10%' },
+            { step: '2', icon: Users, label: 'เพื่อนสมัคร', desc: 'เพื่อนทดลองใช้ฟรี 14 วัน — ชำระเงินครั้งแรกได้ส่วนลด 20% เดือนแรก' },
+            { step: '3', icon: Gift, label: 'รับรางวัล', desc: 'คุณได้ 1 เดือนฟรีทันทีที่เพื่อนชำระเงินครั้งแรก' },
           ].map(({ step, icon: Icon, label, desc }) => (
             <div key={step} className="flex flex-col items-center text-center p-4 rounded-2xl bg-black/20 border border-white/[0.04]">
               <div className="w-10 h-10 rounded-full bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 font-extrabold text-lg mb-3">
@@ -129,11 +129,11 @@ export default function Referral({ setSidebarOpen }) {
           {[
             {
               label: 'สำหรับเจ้าของร้านอาหาร',
-              msg: `🐱 แนะนำ MeowChat — บอท AI ตอบแทนเราตลอด 24 ชั่วโมง\nไม่ต้องตื่นมาตอบ LINE กลางดึกแล้ว! ทดลองใช้ฟรี 14 วัน\n👉 ${referralLink}`,
+              msg: `🐱 แนะนำ MeowChat — บอท AI ตอบแทนเราตลอด 24 ชั่วโมง\nไม่ต้องตื่นมาตอบ LINE กลางดึกแล้ว! ทดลองใช้ฟรี 14 วัน ชำระเงินครั้งแรกได้ส่วนลด 20%\n👉 ${referralLink}`,
             },
             {
               label: 'สำหรับคลินิก / สปา',
-              msg: `🐱 ใช้ MeowChat รับนัดหมายผ่าน LINE อัตโนมัติ\nบอทตอบแทน ลดงาน ลดพลาด ทดลองฟรี 14 วัน\n👉 ${referralLink}`,
+              msg: `🐱 ใช้ MeowChat รับนัดหมายผ่าน LINE อัตโนมัติ\nบอทตอบแทน ลดงาน ลดพลาด ทดลองฟรี 14 วัน ชำระเงินครั้งแรกได้ส่วนลด 20%\n👉 ${referralLink}`,
             },
           ].map(({ label, msg }) => (
             <div key={label} className="p-4 rounded-2xl bg-black/20 border border-white/[0.04]">

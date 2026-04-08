@@ -201,7 +201,7 @@ export default function Broadcast({ setSidebarOpen }) {
       {/* Confirm Modal */}
       {showConfirm && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
-          <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-sm shadow-2xl p-6 text-center">
+          <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-sm shadow-2xl p-6 text-center max-h-[90vh] overflow-y-auto">
             <div className="w-16 h-16 rounded-2xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center mx-auto mb-4">
               <Megaphone className="w-8 h-8 text-orange-400" />
             </div>
