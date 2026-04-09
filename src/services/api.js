@@ -172,6 +172,7 @@ export const botAPI = {
           workingHoursEnabled: !!bot.working_hours_enabled,
           workingHoursStart: bot.working_hours_start || '09:00',
           workingHoursEnd: bot.working_hours_end || '21:00',
+          showBranding: bot.show_branding !== 0,
           status: 'online',
           plan: bot.plan_name || bot.plan || 'free',
         };
@@ -184,7 +185,8 @@ export const botAPI = {
   updateBot: async (botId, data) => {
     const { name, businessName, personality, businessScope, channelId,
             lineAccessToken, lineChannelSecret, slip_verify_mode,
-            welcomeMessage, awayMessage, workingHoursEnabled, workingHoursStart, workingHoursEnd } = data;
+            welcomeMessage, awayMessage, workingHoursEnabled, workingHoursStart, workingHoursEnd,
+            showBranding } = data;
     const description = JSON.stringify({
       shopName: businessName || name || '',
       botStyle: personality || 'friendly',
@@ -203,6 +205,7 @@ export const botAPI = {
       working_hours_enabled: workingHoursEnabled !== undefined ? workingHoursEnabled : undefined,
       working_hours_start: workingHoursStart || undefined,
       working_hours_end: workingHoursEnd || undefined,
+      show_branding: showBranding !== undefined ? showBranding : undefined,
     });
     return response.data;
   },

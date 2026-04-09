@@ -33,6 +33,7 @@ export default function BotSettings({ setSidebarOpen }) {
     workingHoursEnabled: false,
     workingHoursStart: '09:00',
     workingHoursEnd: '21:00',
+    showBranding: true,
   });
   const [quickReplies, setQuickReplies] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -68,6 +69,7 @@ export default function BotSettings({ setSidebarOpen }) {
             workingHoursEnabled: b.workingHoursEnabled || false,
             workingHoursStart: b.workingHoursStart || '09:00',
             workingHoursEnd: b.workingHoursEnd || '21:00',
+            showBranding: b.showBranding !== false,
           });
           const qr = await quickRepliesAPI.get(b.id);
           setQuickReplies(qr);
@@ -91,7 +93,7 @@ export default function BotSettings({ setSidebarOpen }) {
     }
     setIsSaving(true);
     try {
-      await botAPI.updateBot(bot.id, { ...form, slip_verify_mode: form.slipVerifyMode });
+      await botAPI.updateBot(bot.id, { ...form, slip_verify_mode: form.slipVerifyMode, showBranding: form.showBranding });
       await quickRepliesAPI.save(bot.id, quickReplies);
       setToast({ message: 'บันทึกการตั้งค่าเรียบร้อยแล้ว', type: 'success' });
     } catch (err) {
@@ -295,6 +297,44 @@ export default function BotSettings({ setSidebarOpen }) {
                 )}
               </div>
             </div>
+          </Section>
+
+          {/* Branding */}
+          <Section title="Branding" icon={<span className="text-base">🐱</span>}>
+            {(() => {
+              const planId = bot?.plan?.toLowerCase() || 'trial';
+              const canHide = ['pro', 'business', 'enterprise'].includes(planId);
+              return (
+                <div className={`flex items-start justify-between gap-4 ${!canHide ? 'opacity-60' : ''}`}>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-zinc-300">แสดง "ขับเคลื่อนโดย MeowChat"</p>
+                    <p className="text-xs text-zinc-600 mt-0.5">
+                      {canHide
+                        ? 'ปิดเพื่อซ่อน footer branding ท้ายข้อความบอท'
+                        : 'ปิดได้ตั้งแต่แผน Pro ขึ้นไป — Upgrade เพื่อใช้งาน'}
+                    </p>
+                    <div className="mt-2 px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/[0.06] text-xs text-zinc-500 inline-block">
+                      {form.showBranding ? '🐱 ขับเคลื่อนโดย MeowChat' : '(ซ่อน — ไม่แสดง footer)'}
+                    </div>
+                  </div>
+                  {canHide ? (
+                    <button
+                      type="button"
+                      onClick={() => update('showBranding', !form.showBranding)}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors flex-shrink-0 mt-0.5 ${
+                        form.showBranding ? 'bg-orange-500' : 'bg-zinc-700'
+                      }`}
+                    >
+                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        form.showBranding ? 'translate-x-6' : 'translate-x-1'
+                      }`} />
+                    </button>
+                  ) : (
+                    <span className="text-xs text-orange-400 font-semibold whitespace-nowrap mt-1 flex-shrink-0">Pro+</span>
+                  )}
+                </div>
+              );
+            })()}
           </Section>
 
           {/* Quick Reply Templates */}
