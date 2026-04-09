@@ -53,7 +53,7 @@ export default function BotSettings({ setSidebarOpen }) {
             lineNotifyToken: b.lineNotifyToken || '',
             lineAccessToken: '',
             lineChannelSecret: '',
-            slipVerifyMode: b.slip_verify_mode || 'off',
+            slipVerifyMode: b.slipVerifyMode || 'off',
           });
           const qr = await quickRepliesAPI.get(b.id);
           setQuickReplies(qr);
@@ -67,16 +67,18 @@ export default function BotSettings({ setSidebarOpen }) {
   }, []);
 
   const handleSave = async () => {
+    if (!bot?.id) {
+      setToast({ message: 'ไม่พบข้อมูลบอท กรุณารีเฟรชหน้าและลองใหม่', type: 'error' });
+      return;
+    }
     setIsSaving(true);
     try {
-      await botAPI.updateBot(bot?.id || 'bot_001', {
-        ...form,
-        slip_verify_mode: form.slipVerifyMode,
-      });
-      await quickRepliesAPI.save(bot?.id || 'bot_001', quickReplies);
+      await botAPI.updateBot(bot.id, { ...form, slip_verify_mode: form.slipVerifyMode });
+      await quickRepliesAPI.save(bot.id, quickReplies);
       setToast({ message: 'บันทึกการตั้งค่าเรียบร้อยแล้ว', type: 'success' });
-    } catch {
-      setToast({ message: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง', type: 'error' });
+    } catch (err) {
+      const msg = err?.response?.data?.message || err?.response?.data?.error || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';
+      setToast({ message: msg, type: 'error' });
     }
     setIsSaving(false);
   };

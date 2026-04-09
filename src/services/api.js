@@ -165,6 +165,7 @@ export const botAPI = {
           businessScope: desc.openHours || desc.businessScope || '',
           channelId: bot.line_channel_id || desc.channelId || '',
           lineNotifyToken: bot.line_notify_token || '',
+          slipVerifyMode: bot.slip_verify_mode || 'off',
           status: 'online',
           plan: bot.plan_name || bot.plan || 'free',
         };
@@ -193,8 +194,8 @@ export const botAPI = {
         slip_verify_mode: slip_verify_mode || undefined,
       });
       return response.data;
-    } catch {
-      return { success: true, ...data };
+    } catch (err) {
+      throw err;
     }
   },
 };
