@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { CreditCard, Check, Zap, Crown, Building2, X, Plus, Calendar, Download } from 'lucide-react';
+import { CreditCard, Check, Zap, Crown, Building2, X, Plus, Calendar, Download, Gift } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
 import { usageAPI, botAPI, creditsAPI, billingAPI } from '../services/api';
@@ -51,7 +52,7 @@ const PLANS = [
     color: 'text-blue-400',
     borderColor: 'border-blue-500/30',
     bgColor: 'bg-blue-500/5',
-    icon: <Zap className="w-5 h-5 text-blue-400" />,
+    icon: <Building2 className="w-5 h-5 text-blue-400" />,
   },
   {
     id: 'enterprise',
@@ -81,11 +82,20 @@ function getDateRange(months) {
   return { from: fmt(from), to: fmt(to) };
 }
 
+function formatThaiDate(dateStr) {
+  if (!dateStr) return null;
+  try {
+    return new Date(dateStr).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
+  } catch {
+    return null;
+  }
+}
+
 const STATUS_STYLE = {
-  paid: { label: 'ชำระแล้ว', cls: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
-  pending: { label: 'รอชำระ', cls: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
-  refunded: { label: 'คืนเงิน', cls: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20' },
-  failed: { label: 'ล้มเหลว', cls: 'bg-red-500/10 text-red-400 border-red-500/20' },
+  paid:     { label: 'ชำระแล้ว', cls: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
+  pending:  { label: 'รอชำระ',   cls: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
+  refunded: { label: 'คืนเงิน',  cls: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20' },
+  failed:   { label: 'ล้มเหลว',  cls: 'bg-red-500/10 text-red-400 border-red-500/20' },
 };
 
 export default function Subscription({ setSidebarOpen }) {
@@ -96,10 +106,12 @@ export default function Subscription({ setSidebarOpen }) {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [showTopup, setShowTopup] = useState(false);
   const [creditBalance, setCreditBalance] = useState(0);
+  const [creditExpiry, setCreditExpiry] = useState(null);
   const [toast, setToast] = useState(null);
   const [historyRange, setHistoryRange] = useState(3);
   const [billingHistory, setBillingHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [nextBillingDate, setNextBillingDate] = useState(null);
 
   const dismissToast = useCallback(() => setToast(null), []);
 
@@ -109,11 +121,17 @@ export default function Subscription({ setSidebarOpen }) {
         const bots = await botAPI.getMyBots();
         const id = bots[0]?.id;
         setShopId(id);
-        const [data, apiPlans] = await Promise.all([
+        const [data, apiPlans, subData] = await Promise.all([
           usageAPI.getUsage(id),
           billingAPI.getPlans(),
+          id ? billingAPI.getSubscription(id) : Promise.resolve(null),
         ]);
         setUsage(data);
+
+        // Next billing date from subscription
+        if (subData?.periodEnd) setNextBillingDate(formatThaiDate(subData.periodEnd));
+        else if (data?.resetDate) setNextBillingDate(data.resetDate);
+
         if (apiPlans && apiPlans.length > 0) {
           setPlans(PLANS.map((p) => {
             const ap = apiPlans.find((a) => a.id === p.id);
@@ -123,6 +141,7 @@ export default function Subscription({ setSidebarOpen }) {
         if (id) {
           const bal = await creditsAPI.getBalance(id);
           setCreditBalance(bal.totalAvailable || 0);
+          if (bal.expiresAt) setCreditExpiry(formatThaiDate(bal.expiresAt));
         }
       } catch {
         // API unavailable — page renders with PLANS defaults
@@ -154,7 +173,7 @@ export default function Subscription({ setSidebarOpen }) {
   const trialDaysLeft = usage?.trialEndsAt
     ? Math.max(0, Math.ceil((new Date(usage.trialEndsAt) - Date.now()) / (1000 * 60 * 60 * 24)))
     : null;
-  const currentPlan = plans.find((p) => p.id === currentPlanId) || plans[1];
+  const currentPlan = plans.find((p) => p.id === currentPlanId) || plans[0];
   const usagePercent = usage ? Math.round((usage.used / (usage.limit || 1)) * 100) : 0;
   const usageColor = usagePercent >= 90 ? '#EF4444' : usagePercent >= 70 ? '#F59E0B' : '#FF6B35';
 
@@ -164,14 +183,40 @@ export default function Subscription({ setSidebarOpen }) {
     if (shopId) api.post(`/api/bots/${shopId}/track-upgrade`).catch(() => {});
   };
 
+  const handleDownloadInvoice = (item) => {
+    // Generate a simple printable invoice in a new tab
+    const win = window.open('', '_blank');
+    win.document.write(`
+      <html><head><title>ใบเสร็จ MeowChat</title>
+      <style>body{font-family:sans-serif;padding:40px;max-width:600px;margin:auto}
+      h1{color:#FF6B35}table{width:100%;border-collapse:collapse;margin-top:20px}
+      td,th{padding:10px;border:1px solid #eee;text-align:left}
+      .total{font-weight:bold;font-size:1.1em}.status{color:${item.status==='paid'?'green':'orange'}}</style>
+      </head><body>
+      <h1>🐱 MeowChat</h1>
+      <p>ใบเสร็จรับเงิน / Receipt</p>
+      <table>
+        <tr><th>รายการ</th><td>${item.description}</td></tr>
+        <tr><th>วันที่</th><td>${new Date(item.date).toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'})}</td></tr>
+        <tr><th>จำนวนเงิน</th><td class="total">฿${item.amount.toLocaleString()}</td></tr>
+        <tr><th>สถานะ</th><td class="status">${STATUS_STYLE[item.status]?.label || item.status}</td></tr>
+        <tr><th>เลขที่อ้างอิง</th><td>${item.id}</td></tr>
+      </table>
+      <p style="margin-top:30px;color:#999;font-size:12px">MeowChat — my.meowchat.store | ออกเมื่อ ${new Date().toLocaleDateString('th-TH')}</p>
+      <script>window.print()</script>
+      </body></html>
+    `);
+    win.document.close();
+  };
+
   return (
     <PageLayout
       title="Subscription"
       subtitle="จัดการแผนและการใช้งานของคุณ"
       setSidebarOpen={setSidebarOpen}
     >
-      {/* Trial-abuse / 409 toast */}
       {toast && <Toast message={toast.message} type={toast.type} onClose={dismissToast} />}
+
       {/* Trial Countdown Banner */}
       {currentPlanId === 'trial' && trialDaysLeft !== null && (
         <div className={`rounded-2xl border p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2 ${
@@ -213,9 +258,22 @@ export default function Subscription({ setSidebarOpen }) {
               {currentPlan.price === null ? 'Custom' : currentPlan.price === 0 ? 'ฟรี' : `฿${currentPlan.price.toLocaleString()}`}
               {currentPlan.price !== null && currentPlan.price > 0 && <span className="text-base font-normal text-zinc-500">/เดือน</span>}
             </p>
+            {/* Next billing / expiry */}
+            {nextBillingDate && currentPlanId !== 'trial' && (
+              <p className="text-xs text-zinc-500 mt-2 flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5" />
+                ต่ออายุถัดไป: <span className="text-zinc-300">{nextBillingDate}</span>
+              </p>
+            )}
+            {currentPlanId === 'trial' && usage?.trialEndsAt && (
+              <p className="text-xs text-zinc-500 mt-2 flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5" />
+                หมดอายุ: <span className="text-amber-300">{formatThaiDate(usage.trialEndsAt)}</span>
+              </p>
+            )}
           </div>
 
-          <ul className="space-y-2">
+          <ul className="space-y-2 mb-5">
             {currentPlan.features.map((f, i) => (
               <li key={i} className="flex items-center gap-2 text-sm text-zinc-300">
                 <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
@@ -223,6 +281,19 @@ export default function Subscription({ setSidebarOpen }) {
               </li>
             ))}
           </ul>
+
+          {/* Referral shortcut */}
+          <Link
+            to="/referral"
+            className="flex items-center gap-2 p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 hover:border-purple-500/40 transition-colors group"
+          >
+            <Gift className="w-4 h-4 text-purple-400 flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold text-purple-300">แนะนำเพื่อน รับส่วนลด</p>
+              <p className="text-[10px] text-zinc-500">แนะนำเพื่อน 1 คน รับเครดิตฟรี</p>
+            </div>
+            <span className="text-zinc-600 group-hover:text-zinc-400 transition-colors text-xs">→</span>
+          </Link>
         </div>
 
         {/* Usage This Month */}
@@ -237,7 +308,7 @@ export default function Subscription({ setSidebarOpen }) {
                 </span>
                 <span className="text-zinc-500 text-sm ml-2">ข้อความ</span>
               </div>
-              <span className="text-zinc-500 text-sm">จาก {(usage?.limit ?? 2000).toLocaleString()}</span>
+              <span className="text-zinc-500 text-sm">จาก {(usage?.limit ?? 300).toLocaleString()}</span>
             </div>
             <div className="progress-bar h-3">
               <div
@@ -249,7 +320,8 @@ export default function Subscription({ setSidebarOpen }) {
               />
             </div>
             <p className="text-xs text-zinc-500 mt-2">
-              ใช้ไป {usagePercent}% · รีเซ็ตวันที่ {usage?.resetDate ?? '1 เมษายน 2026'}
+              ใช้ไป {usagePercent}%
+              {usage?.resetDate && ` · รีเซ็ต ${usage.resetDate}`}
             </p>
           </div>
 
@@ -264,10 +336,11 @@ export default function Subscription({ setSidebarOpen }) {
 
           {/* Extra Credits */}
           {creditBalance > 0 && (
-            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 mb-2">
+            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 mb-3">
               <p className="text-xs text-emerald-400 flex items-center gap-2">
                 <Plus className="w-3.5 h-3.5 flex-shrink-0" />
-                เครดิตเพิ่มเติม: <strong>{creditBalance.toLocaleString()} ข้อความ</strong> พร้อมใช้
+                เครดิตเพิ่มเติม: <strong>{creditBalance.toLocaleString()} ข้อความ</strong>
+                {creditExpiry && <span className="text-zinc-500 ml-1">· หมด {creditExpiry}</span>}
               </p>
             </div>
           )}
@@ -359,7 +432,7 @@ export default function Subscription({ setSidebarOpen }) {
                         : 'btn-secondary border border-white/[0.08] text-zinc-300 hover:text-white'
                     }`}
                   >
-                    {plan.price < (currentPlan.price || 0) ? 'Downgrade' : 'Upgrade'}
+                    {plan.price !== null && currentPlan.price !== null && plan.price < currentPlan.price ? 'Downgrade' : plan.id === 'enterprise' ? 'ติดต่อทีมงาน' : 'Upgrade'}
                   </button>
                 )}
               </div>
@@ -405,6 +478,7 @@ export default function Subscription({ setSidebarOpen }) {
                   <th className="text-left py-3 px-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">รายการ</th>
                   <th className="text-right py-3 px-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">จำนวนเงิน</th>
                   <th className="text-center py-3 px-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">สถานะ</th>
+                  <th className="text-center py-3 px-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">ใบเสร็จ</th>
                 </tr>
               </thead>
               <tbody>
@@ -424,6 +498,17 @@ export default function Subscription({ setSidebarOpen }) {
                           {st.label}
                         </span>
                       </td>
+                      <td className="py-3.5 px-2 text-center">
+                        {item.status === 'paid' && (
+                          <button
+                            onClick={() => handleDownloadInvoice(item)}
+                            className="p-1.5 rounded-lg text-zinc-600 hover:text-zinc-300 hover:bg-white/[0.06] transition-colors"
+                            title="ดาวน์โหลดใบเสร็จ"
+                          >
+                            <Download className="w-4 h-4" />
+                          </button>
+                        )}
+                      </td>
                     </tr>
                   );
                 })}
@@ -437,6 +522,7 @@ export default function Subscription({ setSidebarOpen }) {
                     ฿{billingHistory.filter(i => i.status === 'paid').reduce((s, i) => s + i.amount, 0).toLocaleString()}
                   </td>
                   <td className="py-3 px-2 text-center text-xs text-zinc-500">ชำระแล้ว</td>
+                  <td />
                 </tr>
               </tfoot>
             </table>
@@ -458,16 +544,19 @@ export default function Subscription({ setSidebarOpen }) {
 }
 
 function UpgradeModal({ plan, onClose }) {
+  const isEnterprise = plan.id === 'enterprise';
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
       <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-md shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-white/[0.06]">
-          <h3 className="text-lg font-bold text-white">Upgrade เป็นแผน {plan.name}</h3>
+          <h3 className="text-lg font-bold text-white">
+            {isEnterprise ? 'ติดต่อขอใช้งาน Enterprise' : `Upgrade เป็นแผน ${plan.name}`}
+          </h3>
           <button onClick={onClose} className="p-2 hover:bg-white/[0.06] rounded-xl text-zinc-500 hover:text-white transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="p-4 sm:p-6 space-y-5">
+        <div className="p-4 sm:p-6 space-y-4">
           <div className={`p-5 rounded-2xl border ${plan.borderColor} ${plan.bgColor} text-center`}>
             <p className={`text-3xl font-extrabold ${plan.color} mb-1`}>
               {plan.price === null ? 'Custom' : plan.price === 0 ? 'ฟรี' : `฿${plan.price.toLocaleString()}/เดือน`}
@@ -477,20 +566,46 @@ function UpgradeModal({ plan, onClose }) {
             </p>
           </div>
 
-          <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4">
-            <p className="text-blue-300 text-sm font-semibold mb-2">ติดต่อเพื่อ Upgrade</p>
-            <p className="text-zinc-400 text-sm mb-3">
-              กรุณาติดต่อทีม MeowChat เพื่ออัปเกรดแผนของคุณ เราจะดำเนินการให้ภายใน 24 ชั่วโมง
+          {/* Payment steps */}
+          {!isEnterprise && (
+            <div className="bg-[#0A0A0F] rounded-2xl p-4 border border-white/[0.06] space-y-3">
+              <p className="text-sm font-bold text-white">ขั้นตอนการชำระเงิน</p>
+              <ol className="space-y-2 text-xs text-zinc-400">
+                <li className="flex gap-2">
+                  <span className="text-orange-400 font-bold flex-shrink-0">1.</span>
+                  <span>โอนเงิน <strong className="text-white">฿{plan.price?.toLocaleString()}</strong> มาที่บัญชี</span>
+                </li>
+                <div className="ml-4 p-3 bg-white/[0.04] rounded-xl border border-white/[0.06] text-xs">
+                  <p className="text-zinc-300 font-semibold">ธนาคารกสิกรไทย (KBank)</p>
+                  <p className="text-white font-mono text-base mt-1">xxx-x-xxxxx-x</p>
+                  <p className="text-zinc-500">ชื่อบัญชี: MeowChat / กฤษฐาพงศ์ จ.</p>
+                </div>
+                <li className="flex gap-2">
+                  <span className="text-orange-400 font-bold flex-shrink-0">2.</span>
+                  <span>แจ้งสลิปพร้อม Email ที่ใช้สมัครผ่าน LINE @MeowChatSupport</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="text-orange-400 font-bold flex-shrink-0">3.</span>
+                  <span>ทีมงาน activate แผนให้ภายใน <strong className="text-white">2 ชั่วโมง</strong> (วันจันทร์-ศุกร์ 9-18น.)</span>
+                </li>
+              </ol>
+            </div>
+          )}
+
+          <a
+            href="https://line.me/ti/p/@meowchat"
+            target="_blank"
+            rel="noreferrer"
+            className="btn-primary w-full py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2"
+          >
+            {isEnterprise ? 'ติดต่อทีมงาน MeowChat' : 'แจ้งสลิปผ่าน LINE @MeowChat'}
+          </a>
+
+          {!isEnterprise && (
+            <p className="text-center text-xs text-zinc-600">
+              มีคำถาม? LINE: @MeowChat หรือ Email: support@meowchat.store
             </p>
-            <a
-              href="https://line.me/ti/p/@MeowChatSupport"
-              target="_blank"
-              rel="noreferrer"
-              className="btn-primary w-full py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2"
-            >
-              ติดต่อ @MeowChatSupport ทาง LINE
-            </a>
-          </div>
+          )}
         </div>
       </div>
     </div>
@@ -534,7 +649,7 @@ function TopupModal({ shopId, onClose, onSuccess }) {
             <div className="text-center py-6">
               <div className="text-5xl mb-3">✅</div>
               <p className="text-lg font-bold text-white mb-1">สั่งซื้อสำเร็จ</p>
-              <p className="text-sm text-zinc-400">ทีมงานจะ activate เครดิตภายใน 24 ชั่วโมง หลังตรวจสอบการโอนเงิน</p>
+              <p className="text-sm text-zinc-400">แจ้งสลิปผ่าน LINE @MeowChat ทีมงานจะ activate เครดิตภายใน 2 ชั่วโมง</p>
               <button onClick={onClose} className="btn-primary mt-5 px-8 py-2.5 rounded-xl text-sm font-bold text-white">
                 ปิด
               </button>
@@ -565,7 +680,7 @@ function TopupModal({ shopId, onClose, onSuccess }) {
                         />
                         <div>
                           <p className="text-sm font-bold text-white">Pack {pack.name} — +{pack.messages.toLocaleString()} ข้อความ</p>
-                          <p className="text-xs text-zinc-500">ใช้ได้ 90 วัน</p>
+                          <p className="text-xs text-zinc-500">ใช้ได้ 90 วัน นับจากวัน activate</p>
                         </div>
                       </div>
                       <span className="text-orange-400 font-bold text-sm">฿{pack.price}</span>
@@ -574,10 +689,10 @@ function TopupModal({ shopId, onClose, onSuccess }) {
                 </div>
               )}
 
-              <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-3">
+              <div className="bg-[#0A0A0F] rounded-2xl p-3 border border-white/[0.06] space-y-2">
+                <p className="text-xs font-semibold text-zinc-300">ขั้นตอนหลังสั่งซื้อ:</p>
                 <p className="text-xs text-blue-300">
-                  📌 หลังสั่งซื้อ: โอนเงินตามจำนวนที่เลือก แล้วแจ้งสลิปผ่าน LINE @MeowChatSupport
-                  ทีมงานจะ activate เครดิตให้ภายใน 24 ชั่วโมง
+                  โอนเงินตามจำนวน → แจ้งสลิป + อีเมล ที่ <strong>LINE @MeowChat</strong> → activate ภายใน 2 ชั่วโมง
                 </p>
               </div>
 
