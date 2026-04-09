@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Bot, Save, Link2, Info, Receipt, MessageSquare, Plus, Trash2, Send, Clock, Smile } from 'lucide-react';
+import { Bot, Save, Link2, Info, Receipt, MessageSquare, Plus, Trash2, Send, Clock, Smile, PhoneCall, Zap, BookOpen, Cpu } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
 import ConfirmDialog from '../components/ConfirmDialog';
@@ -34,6 +34,8 @@ export default function BotSettings({ setSidebarOpen }) {
     workingHoursStart: '09:00',
     workingHoursEnd: '21:00',
     showBranding: true,
+    escalationKeywords: '',
+    aiModel: 'gemini-2.0-flash',
   });
   const [quickReplies, setQuickReplies] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -70,6 +72,8 @@ export default function BotSettings({ setSidebarOpen }) {
             workingHoursStart: b.workingHoursStart || '09:00',
             workingHoursEnd: b.workingHoursEnd || '21:00',
             showBranding: b.showBranding !== false,
+            escalationKeywords: b.escalationKeywords || '',
+            aiModel: b.aiModel || 'gemini-2.0-flash',
           });
           const qr = await quickRepliesAPI.get(b.id);
           setQuickReplies(qr);
@@ -93,7 +97,7 @@ export default function BotSettings({ setSidebarOpen }) {
     }
     setIsSaving(true);
     try {
-      await botAPI.updateBot(bot.id, { ...form, slip_verify_mode: form.slipVerifyMode, showBranding: form.showBranding });
+      await botAPI.updateBot(bot.id, { ...form, slip_verify_mode: form.slipVerifyMode, showBranding: form.showBranding, escalationKeywords: form.escalationKeywords, aiModel: form.aiModel });
       await quickRepliesAPI.save(bot.id, quickReplies);
       setToast({ message: 'บันทึกการตั้งค่าเรียบร้อยแล้ว', type: 'success' });
     } catch (err) {
@@ -401,6 +405,52 @@ export default function BotSettings({ setSidebarOpen }) {
             )}
           </Section>
 
+          {/* Escalation Keywords */}
+          <Section title="คำสั่ง Escalation" icon={<PhoneCall className="w-5 h-5 text-red-400" />}>
+            <div className="space-y-4">
+              <p className="text-xs text-zinc-500 leading-relaxed">
+                เมื่อลูกค้าพิมพ์คำเหล่านี้ บอทจะ<strong className="text-zinc-300">โอนให้พนักงาน</strong>ทันที — คั่นด้วยเครื่องหมายจุลภาค
+              </p>
+              <div className="bg-[#0A0A0F] rounded-xl p-3 border border-white/[0.06]">
+                <p className="text-xs text-zinc-600 mb-1">คำ default (ใช้เสมอ):</p>
+                <p className="text-xs text-zinc-500">คืนเงิน, โกง, คุยกับคน, ขอพนักงาน, เจ้าหน้าที่, แจ้งความ, ร้องเรียน, ด่า, แย่มาก</p>
+              </div>
+              <FormField label="คำเพิ่มเติมของร้านคุณ" hint="เช่น: ยกเลิก, คืนสินค้า, ไม่ได้รับของ">
+                <textarea
+                  value={form.escalationKeywords}
+                  onChange={(e) => update('escalationKeywords', e.target.value)}
+                  rows={3}
+                  className="input-premium resize-none"
+                  placeholder="เช่น ยกเลิก, คืนสินค้า, เสียหาย, ผิดรุ่น"
+                />
+                <p className="text-xs text-zinc-600 mt-1">
+                  ใส่คำ คั่นด้วย comma เช่น <span className="text-zinc-400">ยกเลิก, คืนของ, ไม่พอใจ</span>
+                </p>
+              </FormField>
+            </div>
+          </Section>
+
+          {/* Knowledge Base Shortcut */}
+          <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/15 to-emerald-500/5 border border-emerald-500/20 flex items-center justify-center">
+                  <BookOpen className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-white">Knowledge Base</p>
+                  <p className="text-xs text-zinc-500">ข้อมูลที่บอทใช้ตอบคำถาม</p>
+                </div>
+              </div>
+              <Link
+                to="/knowledge-base"
+                className="px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-400 text-sm font-semibold hover:bg-emerald-500/20 transition-colors border border-emerald-500/20"
+              >
+                จัดการ KB →
+              </Link>
+            </div>
+          </div>
+
           {/* Test Bot Panel */}
           <Section title="ทดสอบบอท" icon={<Send className="w-5 h-5 text-cyan-400" />}>
             <p className="text-xs text-zinc-500 mb-4">พิมพ์ข้อความทดสอบโดยไม่ต้องเปิด LINE จริง</p>
@@ -619,6 +669,64 @@ export default function BotSettings({ setSidebarOpen }) {
                 </label>
               ))}
             </div>
+          </Section>
+
+          {/* AI Model Selector */}
+          <Section title="AI Model" icon={<Cpu className="w-5 h-5 text-violet-400" />}>
+            {(() => {
+              const planId = bot?.plan?.toLowerCase() || 'trial';
+              const canUsePro = ['pro', 'business', 'enterprise'].includes(planId);
+              const models = [
+                {
+                  value: 'gemini-2.0-flash',
+                  icon: <Zap className="w-4 h-4 text-yellow-400" />,
+                  label: 'Flash (เร็ว)',
+                  desc: 'ตอบเร็ว ประหยัดเครดิต เหมาะกับทุกแผน',
+                  locked: false,
+                },
+                {
+                  value: 'gemini-2.5-pro',
+                  icon: <Cpu className="w-4 h-4 text-violet-400" />,
+                  label: 'Pro (ฉลาดกว่า)',
+                  desc: 'ตอบแม่น เข้าใจ context ลึกกว่า เหมาะกับร้านที่ KB ซับซ้อน',
+                  locked: !canUsePro,
+                },
+              ];
+              return (
+                <div className="space-y-2">
+                  {models.map((m) => (
+                    <label
+                      key={m.value}
+                      className={`flex items-start gap-3 p-4 rounded-2xl border transition-colors ${
+                        m.locked
+                          ? 'opacity-50 cursor-not-allowed bg-[#0A0A0F] border-white/[0.06]'
+                          : form.aiModel === m.value
+                            ? 'bg-violet-500/10 border-violet-500/30 cursor-pointer'
+                            : 'bg-[#0A0A0F] border-white/[0.06] hover:border-white/10 cursor-pointer'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="aiModel"
+                        value={m.value}
+                        checked={form.aiModel === m.value}
+                        onChange={(e) => !m.locked && update('aiModel', e.target.value)}
+                        disabled={m.locked}
+                        className="mt-0.5 accent-violet-500 flex-shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          {m.icon}
+                          <p className="text-sm font-semibold text-white">{m.label}</p>
+                          {m.locked && <span className="text-xs text-orange-400 font-semibold ml-1">Pro+</span>}
+                        </div>
+                        <p className="text-xs text-zinc-500 mt-0.5">{m.desc}</p>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              );
+            })()}
           </Section>
 
           {/* Save on mobile */}
