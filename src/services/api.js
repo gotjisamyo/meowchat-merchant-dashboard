@@ -165,6 +165,8 @@ export const botAPI = {
           businessScope: desc.openHours || desc.businessScope || '',
           channelId: bot.line_channel_id || desc.channelId || '',
           lineNotifyToken: bot.line_notify_token || '',
+          lineAccessToken: bot.line_access_token || '',
+          lineChannelSecret: bot.line_channel_secret || '',
           slipVerifyMode: bot.slip_verify_mode || 'off',
           status: 'online',
           plan: bot.plan_name || bot.plan || 'free',
@@ -176,27 +178,23 @@ export const botAPI = {
   },
 
   updateBot: async (botId, data) => {
-    try {
-      const { name, businessName, personality, businessScope, channelId, lineNotifyToken, lineAccessToken, lineChannelSecret, slip_verify_mode } = data;
-      const description = JSON.stringify({
-        shopName: businessName || name || '',
-        botStyle: personality || 'friendly',
-        openHours: businessScope || '',
-        channelId: channelId || '',
-      });
-      const response = await api.put(`/api/bots/${botId}`, {
-        name,
-        description,
-        personality,
-        line_notify_token: lineNotifyToken || '',
-        line_access_token: lineAccessToken || undefined,
-        line_channel_secret: lineChannelSecret || undefined,
-        slip_verify_mode: slip_verify_mode || undefined,
-      });
-      return response.data;
-    } catch (err) {
-      throw err;
-    }
+    const { name, businessName, personality, businessScope, channelId, lineNotifyToken, lineAccessToken, lineChannelSecret, slip_verify_mode } = data;
+    const description = JSON.stringify({
+      shopName: businessName || name || '',
+      botStyle: personality || 'friendly',
+      openHours: businessScope || '',
+      channelId: channelId || '',
+    });
+    const response = await api.put(`/api/bots/${botId}`, {
+      name,
+      description,
+      personality,
+      line_notify_token: lineNotifyToken || '',
+      line_access_token: lineAccessToken || undefined,
+      line_channel_secret: lineChannelSecret || undefined,
+      slip_verify_mode: slip_verify_mode || undefined,
+    });
+    return response.data;
   },
 };
 
