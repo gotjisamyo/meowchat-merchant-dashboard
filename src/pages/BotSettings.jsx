@@ -326,14 +326,41 @@ export default function BotSettings({ setSidebarOpen }) {
               <div className="bg-[#0A0A0F] rounded-2xl p-4 border border-white/[0.06]">
                 <div className="flex items-center gap-2 mb-3">
                   <Info className="w-4 h-4 text-blue-400" />
-                  <span className="text-sm font-bold text-white">วิธีเชื่อมต่อ LINE OA (5 ขั้นตอน)</span>
+                  <span className="text-sm font-bold text-white">วิธีเชื่อมต่อ LINE OA (ทำครั้งเดียว)</span>
                 </div>
-                <ol className="space-y-2 text-xs text-zinc-400">
-                  <li className="flex gap-2"><span className="text-orange-400 font-bold flex-shrink-0">1.</span>เข้า developers.line.biz → เลือก Provider และ Channel</li>
-                  <li className="flex gap-2"><span className="text-orange-400 font-bold flex-shrink-0">2.</span>Basic settings → คัดลอก <strong className="text-white">Channel secret</strong> มาวางด้านบน</li>
-                  <li className="flex gap-2"><span className="text-orange-400 font-bold flex-shrink-0">3.</span>Messaging API → Issue <strong className="text-white">Channel access token</strong> แล้วคัดลอกมาวาง</li>
-                  <li className="flex gap-2"><span className="text-orange-400 font-bold flex-shrink-0">4.</span>Webhook settings → ใส่ Webhook URL ด้านบน → Verify</li>
-                  <li className="flex gap-2"><span className="text-orange-400 font-bold flex-shrink-0">5.</span>กด "บันทึก" ในหน้านี้ → บอทพร้อมตอบลูกค้าแล้ว</li>
+                <ol className="space-y-3 text-xs text-zinc-400">
+                  <li className="flex gap-2">
+                    <span className="text-orange-400 font-bold flex-shrink-0">1.</span>
+                    <span>เข้า <strong className="text-white">developers.line.biz</strong> → Login → เลือก Provider → เลือก Channel (Messaging API)</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-orange-400 font-bold flex-shrink-0">2.</span>
+                    <span>แท็บ <strong className="text-white">Basic settings</strong> → เลื่อนหา <strong className="text-white">Channel secret</strong> → กด <strong className="text-green-400">Copy</strong> → วางในช่อง Channel Secret ด้านบน</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-orange-400 font-bold flex-shrink-0">3.</span>
+                    <span>แท็บ <strong className="text-white">Messaging API</strong> → เลื่อนหา <strong className="text-white">Channel access token</strong> → กด <strong className="text-green-400">Issue</strong> → Copy → วางในช่อง Channel Access Token ด้านบน</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-orange-400 font-bold flex-shrink-0">4.</span>
+                    <span>กด <strong className="text-white">บันทึก</strong> ในหน้านี้ก่อน เพื่อบันทึก Token และ Secret</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-orange-400 font-bold flex-shrink-0">5.</span>
+                    <span>กลับไป LINE Developers → แท็บ <strong className="text-white">Messaging API</strong> → หัวข้อ <strong className="text-white">Webhook settings</strong> → วาง Webhook URL จากกล่องด้านบน → กด <strong className="text-green-400">Update</strong> → กด <strong className="text-green-400">Verify</strong> (ต้องขึ้น Success)</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-orange-400 font-bold flex-shrink-0">6.</span>
+                    <span>ในหน้าเดียวกัน เปิด <strong className="text-white">Use webhook</strong> เป็น <strong className="text-green-400">Enabled</strong></span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-orange-400 font-bold flex-shrink-0">7.</span>
+                    <span>เลื่อนหา <strong className="text-white">Auto-reply messages</strong> → กด Edit → ตั้งเป็น <strong className="text-red-400">Disabled</strong> (ถ้าเปิดอยู่ บอทจะไม่ตอบ)</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-green-400 font-bold flex-shrink-0">✓</span>
+                    <span className="text-green-400">เสร็จแล้ว — ส่งข้อความทดสอบเข้า LINE OA ได้เลย</span>
+                  </li>
                 </ol>
               </div>
 
