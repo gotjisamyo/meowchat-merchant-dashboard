@@ -15,6 +15,10 @@ const PERSONALITIES = [
   { value: 'direct',       icon: '🎯', label: 'ตรงไปตรงมา กระชับ',   desc: 'ตอบสั้น ตรงประเด็น ไม่อ้อมค้อม' },
   { value: 'humorous',     icon: '😄', label: 'ขำขัน เป็นกันเอง',    desc: 'ตอบแบบสนุกสนาน มีอารมณ์ขัน' },
   { value: 'formal',       icon: '🎩', label: 'ทางการ สุภาพ',         desc: 'ตอบแบบทางการ สุภาพ เป็นระเบียบ' },
+  { value: 'luxury',       icon: '✨', label: 'หรูหรา พรีเมียม',      desc: 'ตอบแบบ high-end สง่า ใส่ใจทุกรายละเอียด' },
+  { value: 'thai_polite',  icon: '🙏', label: 'สุภาพแบบไทย',          desc: 'ใช้คำสุภาพ ค่ะ/ครับ เต็มที่ แบบไทยแท้' },
+  { value: 'mentor',       icon: '📚', label: 'ผู้เชี่ยวชาญ',         desc: 'ตอบแบบผู้รู้ ให้คำแนะนำ อธิบายละเอียด' },
+  { value: 'sales',        icon: '🚀', label: 'Sales เชิงรุก',        desc: 'แนะนำสินค้า โปรโมชั่น กระตุ้นยอดขาย' },
 ];
 
 export default function BotSettings({ setSidebarOpen }) {
@@ -42,6 +46,10 @@ export default function BotSettings({ setSidebarOpen }) {
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(true);
   const [confirmDeleteQR, setConfirmDeleteQR] = useState(null);
+
+  // LINE verify state
+  const [lineVerifying, setLineVerifying] = useState(false);
+  const [lineVerifyResult, setLineVerifyResult] = useState(null); // null | { ok, name, picture, detail }
 
   // Test bot state
   const [testMessages, setTestMessages] = useState([]);
@@ -120,6 +128,22 @@ export default function BotSettings({ setSidebarOpen }) {
       setTestMessages(prev => [...prev, { role: 'bot', text: '❌ เกิดข้อผิดพลาด ลองใหม่อีกครั้ง', escalated: false }]);
     }
     setTestLoading(false);
+  };
+
+  const handleVerifyLine = async () => {
+    if (!form.lineAccessToken.trim()) {
+      setLineVerifyResult({ ok: false, detail: 'กรุณาใส่ Channel Access Token ก่อน' });
+      return;
+    }
+    setLineVerifying(true);
+    setLineVerifyResult(null);
+    try {
+      const result = await botAPI.lineTest(form.lineAccessToken.trim(), form.lineChannelSecret.trim());
+      setLineVerifyResult({ ok: result.success, name: result.botName, picture: result.botPicture, detail: result.detail || '' });
+    } catch {
+      setLineVerifyResult({ ok: false, detail: 'ไม่สามารถตรวจสอบได้ กรุณาลองใหม่' });
+    }
+    setLineVerifying(false);
   };
 
   const update = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
@@ -524,25 +548,51 @@ export default function BotSettings({ setSidebarOpen }) {
             <div className="space-y-4">
               {/* Connection Status */}
               <div className={`p-4 rounded-2xl border ${
-                form.lineAccessToken
+                lineVerifyResult?.ok
                   ? 'bg-emerald-500/10 border-emerald-500/20'
-                  : 'bg-zinc-500/10 border-zinc-500/20'
+                  : form.lineAccessToken
+                    ? 'bg-yellow-500/10 border-yellow-500/20'
+                    : 'bg-zinc-500/10 border-zinc-500/20'
               }`}>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
-                    form.lineAccessToken ? 'bg-emerald-400 animate-pulse' : 'bg-zinc-500'
-                  }`} />
-                  <span className={`text-sm font-bold ${form.lineAccessToken ? 'text-emerald-400' : 'text-zinc-400'}`}>
-                    {form.lineAccessToken ? 'ใส่ Token แล้ว' : 'ยังไม่ได้ใส่ Token'}
-                  </span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                      lineVerifyResult?.ok ? 'bg-emerald-400 animate-pulse' :
+                      form.lineAccessToken ? 'bg-yellow-400' : 'bg-zinc-500'
+                    }`} />
+                    <span className={`text-sm font-bold ${
+                      lineVerifyResult?.ok ? 'text-emerald-400' :
+                      form.lineAccessToken ? 'text-yellow-400' : 'text-zinc-400'
+                    }`}>
+                      {lineVerifyResult?.ok
+                        ? `✓ เชื่อมต่อแล้ว${lineVerifyResult.name ? ` — ${lineVerifyResult.name}` : ''}`
+                        : form.lineAccessToken ? 'ยังไม่ได้ตรวจสอบ Token' : 'ยังไม่ได้ใส่ Token'}
+                    </span>
+                  </div>
+                  {form.lineAccessToken && (
+                    <button
+                      type="button"
+                      onClick={handleVerifyLine}
+                      disabled={lineVerifying}
+                      className="text-xs px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/10 text-zinc-300 transition-colors disabled:opacity-50 flex items-center gap-1.5 flex-shrink-0"
+                    >
+                      {lineVerifying
+                        ? <span className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" />
+                        : '🔍'}
+                      ตรวจสอบ
+                    </button>
+                  )}
                 </div>
+                {lineVerifyResult && !lineVerifyResult.ok && (
+                  <p className="text-xs text-red-400 mt-2">{lineVerifyResult.detail || 'Token ไม่ถูกต้องหรือหมดอายุ'}</p>
+                )}
               </div>
 
               <FormField label="Channel Access Token *">
                 <input
                   type="password"
                   value={form.lineAccessToken}
-                  onChange={(e) => update('lineAccessToken', e.target.value)}
+                  onChange={(e) => { update('lineAccessToken', e.target.value); setLineVerifyResult(null); }}
                   className="input-premium"
                   placeholder="วาง Channel Access Token จาก LINE Developers"
                   autoComplete="off"
@@ -564,7 +614,7 @@ export default function BotSettings({ setSidebarOpen }) {
                 <input
                   type="password"
                   value={form.lineChannelSecret}
-                  onChange={(e) => update('lineChannelSecret', e.target.value)}
+                  onChange={(e) => { update('lineChannelSecret', e.target.value); setLineVerifyResult(null); }}
                   className="input-premium"
                   placeholder="วาง Channel Secret จาก LINE Developers"
                   autoComplete="off"

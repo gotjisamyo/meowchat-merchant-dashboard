@@ -162,7 +162,7 @@ export const botAPI = {
           name: bot.name || 'บอทของฉัน',
           businessName: desc.shopName || bot.name || '',
           personality: desc.botStyle || 'friendly',
-          businessScope: desc.openHours || desc.businessScope || '',
+          businessScope: desc.businessScope || desc.openHours || '',
           channelId: bot.line_channel_id || desc.channelId || '',
           lineAccessToken: bot.line_access_token || '',
           lineChannelSecret: bot.line_channel_secret || '',
@@ -192,15 +192,16 @@ export const botAPI = {
     const description = JSON.stringify({
       shopName: businessName || name || '',
       botStyle: personality || 'friendly',
-      openHours: businessScope || '',
-      channelId: channelId || '',
+      businessScope: businessScope || '',
     });
     const response = await api.put(`/api/bots/${botId}`, {
       name,
       description,
       personality,
-      line_access_token: lineAccessToken || undefined,
-      line_channel_secret: lineChannelSecret || undefined,
+      // send explicit value (including '') so backend can clear if needed
+      line_access_token: lineAccessToken,
+      line_channel_secret: lineChannelSecret,
+      line_channel_id: channelId,
       slip_verify_mode: slip_verify_mode || undefined,
       welcome_message: welcomeMessage !== undefined ? welcomeMessage : undefined,
       away_message: awayMessage !== undefined ? awayMessage : undefined,
@@ -211,6 +212,11 @@ export const botAPI = {
       escalation_keywords: escalationKeywords !== undefined ? escalationKeywords : undefined,
       ai_model: aiModel || undefined,
     });
+    return response.data;
+  },
+
+  lineTest: async (channelAccessToken, channelSecret) => {
+    const response = await api.post('/api/bots/line-test', { channelAccessToken, channelSecret });
     return response.data;
   },
 
