@@ -51,8 +51,8 @@ export default function BotSettings({ setSidebarOpen }) {
             businessScope: b.businessScope || '',
             channelId: b.channelId || '',
             lineNotifyToken: b.lineNotifyToken || '',
-            lineAccessToken: '',
-            lineChannelSecret: '',
+            lineAccessToken: b.lineAccessToken || '',
+            lineChannelSecret: b.lineChannelSecret || '',
             slipVerifyMode: b.slipVerifyMode || 'off',
           });
           const qr = await quickRepliesAPI.get(b.id);
