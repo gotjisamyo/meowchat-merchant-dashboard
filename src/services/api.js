@@ -164,10 +164,14 @@ export const botAPI = {
           personality: desc.botStyle || 'friendly',
           businessScope: desc.openHours || desc.businessScope || '',
           channelId: bot.line_channel_id || desc.channelId || '',
-          lineNotifyToken: bot.line_notify_token || '',
           lineAccessToken: bot.line_access_token || '',
           lineChannelSecret: bot.line_channel_secret || '',
           slipVerifyMode: bot.slip_verify_mode || 'off',
+          welcomeMessage: bot.welcome_message || '',
+          awayMessage: bot.away_message || '',
+          workingHoursEnabled: !!bot.working_hours_enabled,
+          workingHoursStart: bot.working_hours_start || '09:00',
+          workingHoursEnd: bot.working_hours_end || '21:00',
           status: 'online',
           plan: bot.plan_name || bot.plan || 'free',
         };
@@ -178,7 +182,9 @@ export const botAPI = {
   },
 
   updateBot: async (botId, data) => {
-    const { name, businessName, personality, businessScope, channelId, lineNotifyToken, lineAccessToken, lineChannelSecret, slip_verify_mode } = data;
+    const { name, businessName, personality, businessScope, channelId,
+            lineAccessToken, lineChannelSecret, slip_verify_mode,
+            welcomeMessage, awayMessage, workingHoursEnabled, workingHoursStart, workingHoursEnd } = data;
     const description = JSON.stringify({
       shopName: businessName || name || '',
       botStyle: personality || 'friendly',
@@ -189,11 +195,20 @@ export const botAPI = {
       name,
       description,
       personality,
-      line_notify_token: lineNotifyToken || '',
       line_access_token: lineAccessToken || undefined,
       line_channel_secret: lineChannelSecret || undefined,
       slip_verify_mode: slip_verify_mode || undefined,
+      welcome_message: welcomeMessage !== undefined ? welcomeMessage : undefined,
+      away_message: awayMessage !== undefined ? awayMessage : undefined,
+      working_hours_enabled: workingHoursEnabled !== undefined ? workingHoursEnabled : undefined,
+      working_hours_start: workingHoursStart || undefined,
+      working_hours_end: workingHoursEnd || undefined,
     });
+    return response.data;
+  },
+
+  simulate: async (botId, message) => {
+    const response = await api.post(`/api/bots/${botId}/simulate`, { message });
     return response.data;
   },
 };

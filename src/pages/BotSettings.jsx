@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Bot, Save, Link2, Info, Receipt, MessageSquare, Plus, Trash2 } from 'lucide-react';
+import { Bot, Save, Link2, Info, Receipt, MessageSquare, Plus, Trash2, Send, Clock, Smile } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
 import ConfirmDialog from '../components/ConfirmDialog';
@@ -25,16 +25,26 @@ export default function BotSettings({ setSidebarOpen }) {
     personality: 'friendly',
     businessScope: '',
     channelId: '',
-    lineNotifyToken: '',
     lineAccessToken: '',
     lineChannelSecret: '',
     slipVerifyMode: 'off',
+    welcomeMessage: '',
+    awayMessage: '',
+    workingHoursEnabled: false,
+    workingHoursStart: '09:00',
+    workingHoursEnd: '21:00',
   });
   const [quickReplies, setQuickReplies] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [confirmDeleteQR, setConfirmDeleteQR] = useState(null); // index to delete
+  const [confirmDeleteQR, setConfirmDeleteQR] = useState(null);
+
+  // Test bot state
+  const [testMessages, setTestMessages] = useState([]);
+  const [testInput, setTestInput] = useState('');
+  const [testLoading, setTestLoading] = useState(false);
+  const chatEndRef = useRef(null);
 
   useEffect(() => {
     async function fetchBot() {
@@ -50,10 +60,14 @@ export default function BotSettings({ setSidebarOpen }) {
             personality: b.personality || 'friendly',
             businessScope: b.businessScope || '',
             channelId: b.channelId || '',
-            lineNotifyToken: b.lineNotifyToken || '',
             lineAccessToken: b.lineAccessToken || '',
             lineChannelSecret: b.lineChannelSecret || '',
             slipVerifyMode: b.slipVerifyMode || 'off',
+            welcomeMessage: b.welcomeMessage || '',
+            awayMessage: b.awayMessage || '',
+            workingHoursEnabled: b.workingHoursEnabled || false,
+            workingHoursStart: b.workingHoursStart || '09:00',
+            workingHoursEnd: b.workingHoursEnd || '21:00',
           });
           const qr = await quickRepliesAPI.get(b.id);
           setQuickReplies(qr);
@@ -65,6 +79,10 @@ export default function BotSettings({ setSidebarOpen }) {
     }
     fetchBot();
   }, []);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [testMessages]);
 
   const handleSave = async () => {
     if (!bot?.id) {
@@ -81,6 +99,21 @@ export default function BotSettings({ setSidebarOpen }) {
       setToast({ message: msg, type: 'error' });
     }
     setIsSaving(false);
+  };
+
+  const handleSendTest = async () => {
+    if (!testInput.trim() || !bot?.id || testLoading) return;
+    const userMsg = testInput.trim();
+    setTestInput('');
+    setTestMessages(prev => [...prev, { role: 'user', text: userMsg }]);
+    setTestLoading(true);
+    try {
+      const data = await botAPI.simulate(bot.id, userMsg);
+      setTestMessages(prev => [...prev, { role: 'bot', text: data.reply || '(ไม่มีคำตอบ)', escalated: data.escalated }]);
+    } catch {
+      setTestMessages(prev => [...prev, { role: 'bot', text: '❌ เกิดข้อผิดพลาด ลองใหม่อีกครั้ง', escalated: false }]);
+    }
+    setTestLoading(false);
   };
 
   const update = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
@@ -118,7 +151,7 @@ export default function BotSettings({ setSidebarOpen }) {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
-        {/* Bot Profile Section */}
+        {/* Left column */}
         <div className="lg:col-span-2 space-y-6">
           {/* Profile */}
           <Section title="โปรไฟล์บอท" icon={<Bot className="w-5 h-5 text-orange-400" />}>
@@ -182,13 +215,88 @@ export default function BotSettings({ setSidebarOpen }) {
                 <textarea
                   value={form.businessScope}
                   onChange={(e) => update('businessScope', e.target.value)}
-                  rows={4}
+                  rows={3}
                   className="input-premium resize-none"
                   placeholder="เช่น เมนูอาหาร ราคา เวลาทำการ ข้อมูลการจัดส่ง โปรโมชั่น"
                 />
               </FormField>
             </div>
           </Section>
+
+          {/* Welcome & Away Messages */}
+          <Section title="ข้อความอัตโนมัติ" icon={<Smile className="w-5 h-5 text-yellow-400" />}>
+            <div className="space-y-5">
+              <FormField
+                label="Welcome Message"
+                hint="ส่งให้ลูกค้าอัตโนมัติเมื่อ Follow OA ครั้งแรก (ถ้าว่างไว้ บอทจะใช้ข้อความ default)"
+              >
+                <textarea
+                  value={form.welcomeMessage}
+                  onChange={(e) => update('welcomeMessage', e.target.value)}
+                  rows={3}
+                  className="input-premium resize-none"
+                  placeholder="เช่น สวัสดีค่ะ ขอบคุณที่ติดตาม LINE OA ของเรานะคะ 😊 มีอะไรให้ช่วยบอกได้เลยค่ะ"
+                />
+              </FormField>
+
+              <div className="border-t border-white/[0.06] pt-5">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <p className="text-sm font-semibold text-zinc-300 flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-zinc-500" />
+                      Away Message (นอกเวลาทำการ)
+                    </p>
+                    <p className="text-xs text-zinc-600 mt-0.5">บอทจะตอบข้อความนี้เมื่อลูกค้าส่งข้อความนอกเวลา</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => update('workingHoursEnabled', !form.workingHoursEnabled)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors flex-shrink-0 ${
+                      form.workingHoursEnabled ? 'bg-orange-500' : 'bg-zinc-700'
+                    }`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      form.workingHoursEnabled ? 'translate-x-6' : 'translate-x-1'
+                    }`} />
+                  </button>
+                </div>
+
+                {form.workingHoursEnabled && (
+                  <div className="space-y-3 pl-0">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <label className="text-xs text-zinc-500 mb-1 block">เปิด</label>
+                        <input
+                          type="time"
+                          value={form.workingHoursStart}
+                          onChange={(e) => update('workingHoursStart', e.target.value)}
+                          className="input-premium text-sm"
+                        />
+                      </div>
+                      <span className="text-zinc-600 mt-5">–</span>
+                      <div className="flex-1">
+                        <label className="text-xs text-zinc-500 mb-1 block">ปิด</label>
+                        <input
+                          type="time"
+                          value={form.workingHoursEnd}
+                          onChange={(e) => update('workingHoursEnd', e.target.value)}
+                          className="input-premium text-sm"
+                        />
+                      </div>
+                    </div>
+                    <textarea
+                      value={form.awayMessage}
+                      onChange={(e) => update('awayMessage', e.target.value)}
+                      rows={3}
+                      className="input-premium resize-none"
+                      placeholder="เช่น ขณะนี้ร้านปิดแล้วค่ะ เปิดทำการ 09:00-21:00 น. พรุ่งนี้ทีมงานจะรีบตอบกลับนะคะ 😊"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </Section>
+
           {/* Quick Reply Templates */}
           <Section title="Quick Reply Templates" icon={<MessageSquare className="w-5 h-5 text-purple-400" />}>
             <p className="text-xs text-zinc-500 mb-4">
@@ -252,29 +360,92 @@ export default function BotSettings({ setSidebarOpen }) {
               </div>
             )}
           </Section>
+
+          {/* Test Bot Panel */}
+          <Section title="ทดสอบบอท" icon={<Send className="w-5 h-5 text-cyan-400" />}>
+            <p className="text-xs text-zinc-500 mb-4">พิมพ์ข้อความทดสอบโดยไม่ต้องเปิด LINE จริง</p>
+            <div className="bg-[#0A0A0F] rounded-2xl border border-white/[0.06] flex flex-col h-72">
+              {/* Messages */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                {testMessages.length === 0 && (
+                  <p className="text-xs text-zinc-600 text-center mt-8">พิมพ์ข้อความด้านล่างเพื่อเริ่มทดสอบ</p>
+                )}
+                {testMessages.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${
+                      msg.role === 'user'
+                        ? 'bg-orange-500/20 text-orange-100 rounded-br-sm'
+                        : 'bg-white/[0.06] text-zinc-200 rounded-bl-sm'
+                    }`}>
+                      {msg.text}
+                      {msg.escalated && (
+                        <span className="ml-2 text-xs text-yellow-400">🔔 โอนให้พนักงาน</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {testLoading && (
+                  <div className="flex justify-start">
+                    <div className="bg-white/[0.06] px-4 py-2.5 rounded-2xl rounded-bl-sm">
+                      <span className="flex gap-1">
+                        <span className="w-1.5 h-1.5 bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <span className="w-1.5 h-1.5 bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <span className="w-1.5 h-1.5 bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <div ref={chatEndRef} />
+              </div>
+              {/* Input */}
+              <div className="border-t border-white/[0.06] p-3 flex gap-2">
+                <input
+                  type="text"
+                  value={testInput}
+                  onChange={(e) => setTestInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendTest()}
+                  placeholder={!bot?.id ? 'บันทึกการตั้งค่าก่อนทดสอบ' : 'พิมพ์ข้อความ...'}
+                  disabled={!bot?.id || testLoading}
+                  className="flex-1 bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-orange-500/40 disabled:opacity-40"
+                />
+                <button
+                  onClick={handleSendTest}
+                  disabled={!testInput.trim() || !bot?.id || testLoading}
+                  className="p-2.5 rounded-xl bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 transition-colors disabled:opacity-30"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            {testMessages.length > 0 && (
+              <button
+                onClick={() => setTestMessages([])}
+                className="mt-2 text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
+              >
+                ล้างประวัติแชท
+              </button>
+            )}
+          </Section>
         </div>
 
-        {/* LINE OA Connection */}
+        {/* Right column */}
         <div className="space-y-6">
           <Section title="LINE OA Connection" icon={<Link2 className="w-5 h-5 text-green-400" />}>
             <div className="space-y-4">
               {/* Connection Status */}
               <div className={`p-4 rounded-2xl border ${
-                form.channelId
+                form.lineAccessToken
                   ? 'bg-emerald-500/10 border-emerald-500/20'
                   : 'bg-zinc-500/10 border-zinc-500/20'
               }`}>
                 <div className="flex items-center gap-2 mb-1">
                   <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
-                    form.channelId ? 'bg-emerald-400 animate-pulse' : 'bg-zinc-500'
+                    form.lineAccessToken ? 'bg-emerald-400 animate-pulse' : 'bg-zinc-500'
                   }`} />
-                  <span className={`text-sm font-bold ${form.channelId ? 'text-emerald-400' : 'text-zinc-400'}`}>
-                    {form.channelId ? 'เชื่อมต่อแล้ว' : 'ยังไม่ได้เชื่อมต่อ'}
+                  <span className={`text-sm font-bold ${form.lineAccessToken ? 'text-emerald-400' : 'text-zinc-400'}`}>
+                    {form.lineAccessToken ? 'ใส่ Token แล้ว' : 'ยังไม่ได้ใส่ Token'}
                   </span>
                 </div>
-                {form.channelId && (
-                  <p className="text-zinc-400 text-sm ml-4">{form.channelId}</p>
-                )}
               </div>
 
               <FormField label="Channel Access Token *">
@@ -288,7 +459,7 @@ export default function BotSettings({ setSidebarOpen }) {
                 />
                 <div className="flex items-center justify-between mt-1">
                   <p className="text-xs text-zinc-600">
-                    LINE Developers Console → Messaging API → Channel access token → Issue
+                    LINE Developers → Messaging API → Channel access token → Issue
                   </p>
                   <Link
                     to="/line-guide"
@@ -309,7 +480,7 @@ export default function BotSettings({ setSidebarOpen }) {
                   autoComplete="off"
                 />
                 <p className="text-xs text-zinc-600 mt-1">
-                  LINE Developers Console → Basic settings → Channel secret
+                  LINE Developers → Basic settings → Channel secret
                 </p>
               </FormField>
 
@@ -343,19 +514,19 @@ export default function BotSettings({ setSidebarOpen }) {
                   </li>
                   <li className="flex gap-2">
                     <span className="text-orange-400 font-bold flex-shrink-0">4.</span>
-                    <span>กด <strong className="text-white">บันทึก</strong> ในหน้านี้ก่อน เพื่อบันทึก Token และ Secret</span>
+                    <span>กด <strong className="text-white">บันทึก</strong> ในหน้านี้ก่อน</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-orange-400 font-bold flex-shrink-0">5.</span>
-                    <span>กลับไป LINE Developers → แท็บ <strong className="text-white">Messaging API</strong> → หัวข้อ <strong className="text-white">Webhook settings</strong> → วาง Webhook URL จากกล่องด้านบน → กด <strong className="text-green-400">Update</strong> → กด <strong className="text-green-400">Verify</strong> (ต้องขึ้น Success)</span>
+                    <span>กลับไป LINE Developers → <strong className="text-white">Webhook settings</strong> → วาง Webhook URL → กด <strong className="text-green-400">Update</strong> → กด <strong className="text-green-400">Verify</strong> (ต้องขึ้น Success)</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-orange-400 font-bold flex-shrink-0">6.</span>
-                    <span>ในหน้าเดียวกัน เปิด <strong className="text-white">Use webhook</strong> เป็น <strong className="text-green-400">Enabled</strong></span>
+                    <span>เปิด <strong className="text-white">Use webhook</strong> เป็น <strong className="text-green-400">Enabled</strong></span>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-orange-400 font-bold flex-shrink-0">7.</span>
-                    <span>เลื่อนหา <strong className="text-white">Auto-reply messages</strong> → กด Edit → ตั้งเป็น <strong className="text-red-400">Disabled</strong> (ถ้าเปิดอยู่ บอทจะไม่ตอบ)</span>
+                    <span>เลื่อนหา <strong className="text-white">Auto-reply messages</strong> → ตั้งเป็น <strong className="text-red-400">Disabled</strong></span>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-green-400 font-bold flex-shrink-0">✓</span>
@@ -372,19 +543,6 @@ export default function BotSettings({ setSidebarOpen }) {
                   className="input-premium"
                   placeholder="@YourOfficialAccount"
                 />
-              </FormField>
-
-              <FormField label="LINE Notify Token (รับแจ้งเตือนเมื่อลูกค้าขอพนักงาน)">
-                <input
-                  type="text"
-                  value={form.lineNotifyToken || ''}
-                  onChange={(e) => update('lineNotifyToken', e.target.value)}
-                  className="input-premium"
-                  placeholder="Token จาก notify-bot.line.me/th"
-                />
-                <p className="text-xs text-zinc-600 mt-1">
-                  รับ token ได้ที่ <span className="text-orange-400">notify-bot.line.me/th</span> → My page → Generate token
-                </p>
               </FormField>
             </div>
           </Section>
