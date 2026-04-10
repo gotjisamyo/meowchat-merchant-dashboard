@@ -482,7 +482,15 @@ export default function BotSettings({ setSidebarOpen }) {
 
           {/* Test Bot Panel */}
           <Section title="ทดสอบบอท" icon={<Send className="w-5 h-5 text-cyan-400" />}>
-            <p className="text-xs text-zinc-500 mb-4">พิมพ์ข้อความทดสอบโดยไม่ต้องเปิด LINE จริง</p>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs text-zinc-500">พิมพ์ข้อความทดสอบโดยไม่ต้องเปิด LINE จริง</p>
+              <button
+                onClick={() => setTestMessages(prev => [...prev, { role: 'bot', type: 'branding' }])}
+                className="text-xs px-2.5 py-1 rounded-lg bg-[#1C1B33] border border-[#E8C56B]/30 text-[#E8C56B] hover:bg-[#252445] transition-colors"
+              >
+                🐱 ดู Branding Bubble
+              </button>
+            </div>
             <div className="bg-[#0A0A0F] rounded-2xl border border-white/[0.06] flex flex-col h-72">
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
@@ -491,16 +499,26 @@ export default function BotSettings({ setSidebarOpen }) {
                 )}
                 {testMessages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${
-                      msg.role === 'user'
-                        ? 'bg-orange-500/20 text-orange-100 rounded-br-sm'
-                        : 'bg-white/[0.06] text-zinc-200 rounded-bl-sm'
-                    }`}>
-                      {msg.text}
-                      {msg.escalated && (
-                        <span className="ml-2 text-xs text-yellow-400">🔔 โอนให้พนักงาน</span>
-                      )}
-                    </div>
+                    {msg.type === 'branding' ? (
+                      <div className="flex items-center gap-3 bg-[#1C1B33] border border-[#E8C56B]/20 rounded-2xl rounded-bl-sm px-4 py-3 max-w-[60%]">
+                        <span className="text-2xl">🐱</span>
+                        <div>
+                          <p className="text-[10px] font-bold tracking-widest text-[#7878A8] leading-none mb-0.5">POWERED BY</p>
+                          <p className="text-sm font-bold text-[#E8C56B] leading-none">MeowChat</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${
+                        msg.role === 'user'
+                          ? 'bg-orange-500/20 text-orange-100 rounded-br-sm'
+                          : 'bg-white/[0.06] text-zinc-200 rounded-bl-sm'
+                      }`}>
+                        {msg.text}
+                        {msg.escalated && (
+                          <span className="ml-2 text-xs text-yellow-400">🔔 โอนให้พนักงาน</span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
                 {testLoading && (
