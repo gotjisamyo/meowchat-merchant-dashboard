@@ -83,11 +83,18 @@ export default function BotSettings({ setSidebarOpen }) {
             escalationKeywords: b.escalationKeywords || '',
             aiModel: b.aiModel || 'gemini-2.0-flash',
           });
-          const qr = await quickRepliesAPI.get(b.id);
-          setQuickReplies(qr);
+          try {
+            const qr = await quickRepliesAPI.get(b.id);
+            // เพิ่ม stable _id สำหรับ React key
+            setQuickReplies(qr.map((q, i) => ({ ...q, _id: q._id || `qr_${Date.now()}_${i}` })));
+          } catch {
+            setQuickReplies([]);
+          }
+        } else {
+          setToast({ message: 'ยังไม่มีการตั้งค่าบอท กรุณาตั้งค่า LINE OA ก่อน', type: 'error' });
         }
       } catch {
-        // fallback handled in api.js
+        setToast({ message: 'โหลดข้อมูลบอทไม่สำเร็จ กรุณารีเฟรชหน้า', type: 'error' });
       }
       setLoading(false);
     }
@@ -106,7 +113,9 @@ export default function BotSettings({ setSidebarOpen }) {
     setIsSaving(true);
     try {
       await botAPI.updateBot(bot.id, { ...form, slip_verify_mode: form.slipVerifyMode, showBranding: form.showBranding, escalationKeywords: form.escalationKeywords, aiModel: form.aiModel });
-      await quickRepliesAPI.save(bot.id, quickReplies);
+      // กรองออก quick replies ที่ label ว่าง ก่อน save
+      const validQR = quickReplies.filter(q => q.label.trim()).map(({ _id, ...q }) => q);
+      await quickRepliesAPI.save(bot.id, validQR);
       setToast({ message: 'บันทึกการตั้งค่าเรียบร้อยแล้ว', type: 'success' });
     } catch (err) {
       const msg = err?.response?.data?.message || err?.response?.data?.error || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';
@@ -174,7 +183,7 @@ export default function BotSettings({ setSidebarOpen }) {
         title="ลบปุ่มนี้?"
         message="ต้องการลบ Quick Reply นี้หรือไม่?"
         onConfirm={() => {
-          setQuickReplies(prev => prev.filter((_, idx) => idx !== confirmDeleteQR));
+          setQuickReplies(prev => prev.filter(q => q._id !== confirmDeleteQR));
           setConfirmDeleteQR(null);
         }}
         onCancel={() => setConfirmDeleteQR(null)}
@@ -371,16 +380,14 @@ export default function BotSettings({ setSidebarOpen }) {
               ปุ่มลัดที่ลูกค้าเห็นใต้แชท — กดแทนการพิมพ์ (สูงสุด 13 ปุ่ม)
             </p>
             <div className="space-y-2 mb-3">
-              {quickReplies.map((qr, i) => (
-                <div key={i} className="flex items-center gap-2">
+              {quickReplies.map((qr) => (
+                <div key={qr._id} className="flex items-center gap-2">
                   <div className="flex-1 flex flex-col sm:flex-row gap-2">
                     <input
                       type="text"
                       value={qr.label}
                       onChange={(e) => {
-                        const next = [...quickReplies];
-                        next[i] = { ...next[i], label: e.target.value.slice(0, 20) };
-                        setQuickReplies(next);
+                        setQuickReplies(prev => prev.map(q => q._id === qr._id ? { ...q, label: e.target.value.slice(0, 20) } : q));
                       }}
                       className="input-premium text-sm w-full sm:w-28 sm:flex-shrink-0"
                       placeholder="ชื่อปุ่ม"
@@ -390,16 +397,14 @@ export default function BotSettings({ setSidebarOpen }) {
                       type="text"
                       value={qr.text}
                       onChange={(e) => {
-                        const next = [...quickReplies];
-                        next[i] = { ...next[i], text: e.target.value.slice(0, 300) };
-                        setQuickReplies(next);
+                        setQuickReplies(prev => prev.map(q => q._id === qr._id ? { ...q, text: e.target.value.slice(0, 300) } : q));
                       }}
                       className="input-premium text-sm flex-1"
                       placeholder="ข้อความที่ส่งเมื่อกด"
                     />
                   </div>
                   <button
-                    onClick={() => setConfirmDeleteQR(i)}
+                    onClick={() => setConfirmDeleteQR(qr._id)}
                     className="p-2 rounded-lg text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-colors flex-shrink-0"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -409,7 +414,7 @@ export default function BotSettings({ setSidebarOpen }) {
             </div>
             {quickReplies.length < 13 && (
               <button
-                onClick={() => setQuickReplies(prev => [...prev, { label: '', text: '' }])}
+                onClick={() => setQuickReplies(prev => [...prev, { label: '', text: '', _id: `qr_${Date.now()}_${Math.random()}` }])}
                 className="w-full py-2.5 rounded-xl border border-dashed border-white/[0.1] text-zinc-500 hover:text-zinc-300 hover:border-white/20 transition-colors text-sm flex items-center justify-center gap-2"
               >
                 <Plus className="w-4 h-4" /> เพิ่มปุ่ม
@@ -565,7 +570,7 @@ export default function BotSettings({ setSidebarOpen }) {
                       form.lineAccessToken ? 'text-yellow-400' : 'text-zinc-400'
                     }`}>
                       {lineVerifyResult?.ok
-                        ? `✓ เชื่อมต่อแล้ว${lineVerifyResult.name ? ` — ${lineVerifyResult.name}` : ''}`
+                        ? `✓ Token ถูกต้อง${lineVerifyResult.name ? ` — ${lineVerifyResult.name}` : ''}`
                         : form.lineAccessToken ? 'ยังไม่ได้ตรวจสอบ Token' : 'ยังไม่ได้ใส่ Token'}
                     </span>
                   </div>
@@ -782,7 +787,7 @@ export default function BotSettings({ setSidebarOpen }) {
           {/* Save on mobile */}
           <button
             onClick={handleSave}
-            disabled={isSaving}
+            disabled={isSaving || loading}
             className="xl:hidden btn-primary w-full py-3.5 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isSaving

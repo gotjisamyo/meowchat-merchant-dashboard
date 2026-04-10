@@ -7,6 +7,8 @@ import { botAPI, marketingAPI } from '../services/api';
 const AUTOMATION_TEMPLATES = [
   {
     id: 'welcome',
+    type: 'welcome',
+    triggerKey: 'signup',
     name: 'ต้อนรับลูกค้าใหม่',
     description: 'ส่งข้อความต้อนรับเมื่อลูกค้าเพิ่มเพื่อนใน LINE OA',
     icon: '👋',
@@ -15,6 +17,8 @@ const AUTOMATION_TEMPLATES = [
   },
   {
     id: 'followup',
+    type: 'review',
+    triggerKey: 'purchase',
     name: 'ติดตามหลังซื้อ',
     description: 'ส่งข้อความติดตามลูกค้าหลังจากซื้อสินค้า 3 วัน',
     icon: '💌',
@@ -23,6 +27,8 @@ const AUTOMATION_TEMPLATES = [
   },
   {
     id: 'promotion',
+    type: 'promotion',
+    triggerKey: 'manual',
     name: 'แจ้งโปรโมชั่น',
     description: 'ส่งโปรโมชั่นพิเศษให้ลูกค้าที่ไม่ได้ซื้อมา 30 วัน',
     icon: '🎁',
@@ -31,6 +37,8 @@ const AUTOMATION_TEMPLATES = [
   },
   {
     id: 'reengagement',
+    type: 'reengage',
+    triggerKey: 'inactivity',
     name: 'ดึงลูกค้ากลับมา',
     description: 'ส่งข้อความดึงลูกค้าที่ไม่ได้มาซื้อนาน 60 วัน',
     icon: '🔔',
@@ -39,6 +47,8 @@ const AUTOMATION_TEMPLATES = [
   },
   {
     id: 'appointment',
+    type: 'reminder',
+    triggerKey: 'manual',
     name: 'แจ้งเตือนนัดหมาย',
     description: 'ส่งข้อความแจ้งเตือนก่อนนัดหมาย 1 วัน',
     icon: '📅',
@@ -47,6 +57,8 @@ const AUTOMATION_TEMPLATES = [
   },
   {
     id: 'birthday',
+    type: 'promotion',
+    triggerKey: 'manual',
     name: 'อวยพรวันเกิด',
     description: 'ส่งข้อความอวยพรวันเกิดพร้อมของขวัญพิเศษ',
     icon: '🎂',
@@ -67,9 +79,11 @@ export default function Marketing({ setSidebarOpen }) {
   useEffect(() => {
     botAPI.getMyBots().then((b) => {
       setBots(b);
-      if (b[0]?.id) setSelectedBotId(b[0].id);
+      if (b[0]?.id) {
+        setSelectedBotId(b[0].id);
+        marketingAPI.getCampaigns(b[0].id).then(setCampaigns);
+      }
     });
-    marketingAPI.getCampaigns().then(setCampaigns);
   }, []);
 
   const handleUseTemplate = (template) => {
@@ -82,9 +96,11 @@ export default function Marketing({ setSidebarOpen }) {
     setSaving(true);
     try {
       await marketingAPI.createCampaign({
-        templateId: selectedTemplate.id,
+        shopId: selectedBotId,
         name: campaignName.trim(),
-        botId: selectedBotId,
+        type: selectedTemplate.type || 'auto',
+        trigger: selectedTemplate.triggerKey || 'signup',
+        steps: [{ message: selectedTemplate.message }],
       });
       setToast({ message: `สร้าง campaign "${campaignName.trim()}" เรียบร้อยแล้ว`, type: 'success' });
       setCampaigns((prev) => [
@@ -184,7 +200,7 @@ export default function Marketing({ setSidebarOpen }) {
 
       {/* Modal */}
       {selectedTemplate && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
           <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">

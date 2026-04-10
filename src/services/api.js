@@ -162,7 +162,7 @@ export const botAPI = {
           name: bot.name || 'บอทของฉัน',
           businessName: desc.shopName || bot.name || '',
           personality: desc.botStyle || 'friendly',
-          businessScope: desc.businessScope || desc.openHours || '',
+          businessScope: desc.businessScope || '',
           channelId: bot.line_channel_id || desc.channelId || '',
           lineAccessToken: bot.line_access_token || '',
           lineChannelSecret: bot.line_channel_secret || '',
@@ -605,19 +605,15 @@ export const shopAPI = {
 // ── Marketing / Automation ────────────────────────────────────────────────────
 
 export const marketingAPI = {
-  getCampaigns: async () => {
+  getCampaigns: async (shopId) => {
     try {
-      const res = await api.get('/api/marketing/campaigns');
-      return res.data?.campaigns || [];
+      const res = await api.get(`/api/marketing/campaigns?shopId=${shopId}`);
+      return Array.isArray(res.data) ? res.data : (res.data?.campaigns || []);
     } catch { return []; }
   },
   createCampaign: async (payload) => {
-    try {
-      const res = await api.post('/api/marketing/campaigns', payload);
-      return res.data;
-    } catch {
-      return { success: true, id: `campaign_${Date.now()}` };
-    }
+    const res = await api.post('/api/marketing/campaigns', payload);
+    return res.data;
   },
 };
 

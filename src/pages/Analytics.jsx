@@ -49,9 +49,10 @@ export default function Analytics({ setSidebarOpen }) {
 
   useEffect(() => {
     botAPI.getMyBots().then((bots) => {
-      const id = bots[0]?.id || 'bot_001';
+      const id = bots[0]?.id || null;
       setBotId(id);
-    }).catch(() => setBotId('bot_001'));
+      if (!id) setLoading(false);
+    }).catch(() => { setBotId(null); setLoading(false); });
   }, []);
 
   useEffect(() => {

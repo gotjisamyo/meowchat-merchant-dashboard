@@ -32,7 +32,8 @@ export default function Dashboard({ setSidebarOpen }) {
         const bots = await botAPI.getMyBots();
         const firstBot = bots[0] || null;
         setBot(firstBot);
-        const botId = firstBot?.id || 'bot_001';
+        const botId = firstBot?.id || null;
+        if (!botId) { setLoading(false); return; }
         const [usageData, convs, kpiData, weeklyData, insightsData] = await Promise.all([
           usageAPI.getUsage(),
           conversationsAPI.getAll(botId),
@@ -169,21 +170,21 @@ export default function Dashboard({ setSidebarOpen }) {
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatCard
           label="ข้อความวันนี้"
-          value={loading ? '...' : (usage?.todayMessages ?? 0).toLocaleString()}
+          value={loading ? '...' : (kpi?.activeToday ?? 0).toLocaleString()}
           icon={<MessageSquare className="w-5 h-5 text-orange-400" />}
           color="from-orange-500/15 to-orange-500/5"
           delay="delay-100"
         />
         <StatCard
-          label="ลูกค้าใหม่วันนี้"
-          value={loading ? '...' : (usage?.newCustomersToday ?? 0).toLocaleString()}
+          label="บทสนทนาทั้งหมด"
+          value={loading ? '...' : (kpi?.totalConversations ?? 0).toLocaleString()}
           icon={<Users className="w-5 h-5 text-blue-400" />}
           color="from-blue-500/15 to-blue-500/5"
           delay="delay-200"
         />
         <StatCard
-          label="อัตราตอบกลับ"
-          value={loading ? '...' : `${usage?.responseRate ?? 0}%`}
+          label="อัตราตอบกลับ AI"
+          value={loading ? '...' : `${kpi?.aiResponseRate ?? 100}%`}
           icon={<TrendingUp className="w-5 h-5 text-emerald-400" />}
           color="from-emerald-500/15 to-emerald-500/5"
           delay="delay-300"

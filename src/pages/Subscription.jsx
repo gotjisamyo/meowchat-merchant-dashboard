@@ -134,8 +134,8 @@ export default function Subscription({ setSidebarOpen }) {
 
         if (apiPlans && apiPlans.length > 0) {
           setPlans(PLANS.map((p) => {
-            const ap = apiPlans.find((a) => a.id === p.id);
-            return ap ? { ...p, price: ap.price ?? p.price, msgLimit: ap.msgLimit ?? p.msgLimit, name: ap.name || p.name, features: ap.features?.length ? ap.features : p.features } : p;
+            const ap = apiPlans.find((a) => a.name?.toLowerCase() === p.id || a.name?.toLowerCase() === p.name?.toLowerCase());
+            return ap ? { ...p, price: ap.price ?? p.price, msgLimit: ap.max_chats ?? p.msgLimit, name: ap.name || p.name, features: ap.features?.length ? ap.features : p.features } : p;
           }));
         }
         if (id) {
@@ -546,7 +546,7 @@ export default function Subscription({ setSidebarOpen }) {
 function UpgradeModal({ plan, onClose }) {
   const isEnterprise = plan.id === 'enterprise';
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
       <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-md shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-white/[0.06]">
           <h3 className="text-lg font-bold text-white">
@@ -636,7 +636,7 @@ function TopupModal({ shopId, onClose, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
       <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-md shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-white/[0.06]">
           <h3 className="text-lg font-bold text-white">ซื้อเครดิตเพิ่มเติม</h3>

@@ -56,11 +56,13 @@ export default function KnowledgeBase({ setSidebarOpen }) {
     async function load() {
       setLoading(true);
       const [bots, shop] = await Promise.all([botAPI.getMyBots(), shopAPI.getMine()]);
-      const id = bots[0]?.id;
+      const id = bots[0]?.id || null;
       setBotId(id);
       setShopName(shop?.name || '');
-      const data = await knowledgeAPI.getAll(id);
-      setEntries(data);
+      if (id) {
+        const data = await knowledgeAPI.getAll(id);
+        setEntries(data);
+      }
       setLoading(false);
     }
     load();
@@ -77,6 +79,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
 
   const handleSave = async (entry) => {
     const id = botId;
+    if (!id) { setToast({ message: 'ไม่พบข้อมูล Bot กรุณาตั้งค่า Bot ก่อน', type: 'error' }); return; }
     let updated;
     if (editEntry) {
       const result = await knowledgeAPI.update(id, editEntry.id, entry);
@@ -101,6 +104,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
     const entryId = confirmDelete;
     setConfirmDelete(null);
     const id = botId;
+    if (!id) return;
     await knowledgeAPI.remove(id, entryId);
     const updated = entries.filter((e) => e.id !== entryId);
     setEntries(updated);
@@ -110,7 +114,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
 
   const handleImportTemplate = async (templateKey) => {
     const template = KB_TEMPLATES[templateKey];
-    if (!template) return;
+    if (!template || !botId) return;
     setImportingTemplate(templateKey);
     const id = botId;
     let updated = [...entries];
@@ -527,7 +531,7 @@ function KBModal({ entry, onSave, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
       <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-lg shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-white/[0.06]">
