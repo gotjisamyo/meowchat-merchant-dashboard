@@ -278,8 +278,8 @@ export const usageAPI = {
         const d = res.data?.data || {};
         return {
           used: d.chats || 0,
-          limit: d.maxChats === -1 ? 999999 : (d.maxChats || 300),
-          plan: d.plan_name || 'free',
+          limit: d.maxChats === -1 ? 999999 : (d.maxChats || 3000),
+          plan: d.plan_name || 'trial',
           resetDate: formatThaiDate(d.periodEnd),
           todayMessages: 0,
           newCustomersToday: 0,
@@ -291,7 +291,7 @@ export const usageAPI = {
       const d = response.data;
       return {
         used: d.messages_used || 0,
-        limit: d.messages_limit || 300,
+        limit: d.messages_limit || 3000,
         plan: d.plan || 'Trial',
         resetDate: formatThaiDate(d.period_end),
         trialEndsAt: d.trial_ends_at || null,
@@ -300,7 +300,7 @@ export const usageAPI = {
         responseRate: 0,
       };
     } catch {
-      return { used: 0, limit: 300, plan: 'Trial', resetDate: '-', trialEndsAt: null, todayMessages: 0, newCustomersToday: 0, responseRate: 0 };
+      return { used: 0, limit: 3000, plan: 'trial', resetDate: '-', trialEndsAt: null, todayMessages: 0, newCustomersToday: 0, responseRate: 0 };
     }
   },
 };
