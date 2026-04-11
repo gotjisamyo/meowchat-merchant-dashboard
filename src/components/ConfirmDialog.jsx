@@ -5,7 +5,7 @@ export default function ConfirmDialog({ isOpen, title, message, onConfirm, onCan
 
   return (
     <div
-      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[400] flex items-center justify-center p-4"
       onClick={onCancel}
     >
       <div

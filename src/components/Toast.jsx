@@ -16,7 +16,7 @@ export default function Toast({ message, type = 'success', onClose }) {
 
   return (
     <div className={`
-      fixed top-5 right-5 z-[200] flex items-center gap-3 px-5 py-4 rounded-2xl shadow-2xl animate-toast-in
+      fixed top-5 right-5 z-[400] flex items-center gap-3 px-5 py-4 rounded-2xl shadow-2xl animate-toast-in
       ${isSuccess ? 'bg-emerald-500/15 border border-emerald-500/30' : 'bg-red-500/15 border border-red-500/30'}
     `}>
       {isSuccess
