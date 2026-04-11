@@ -1,7 +1,8 @@
-import { useState, useRef } from 'react';
-import { Users, Download, Upload, X, Info, Search, Tag, Phone, Mail, StickyNote, ChevronDown } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Users, Download, Upload, X, Info, Search, Tag, Phone, Mail, StickyNote } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
+import { botAPI, crmAPI } from '../services/api';
 
 const CSV_HEADERS = ['name', 'phone', 'email', 'tag', 'note'];
 
@@ -9,21 +10,32 @@ const CSV_EXAMPLE = `name,phone,email,tag,note
 สมชาย ใจดี,0812345678,somchai@email.com,VIP,ลูกค้าประจำ
 มาลี รักดี,0898765432,malee@email.com,ใหม่,สนใจแพ็กเกจ Pro`;
 
-const MOCK_CONTACTS = [
-  { id: 1, name: 'สมชาย ใจดี', phone: '081-234-5678', email: 'somchai@email.com', tag: 'VIP', note: 'ลูกค้าประจำ', createdAt: '2026-04-01' },
-  { id: 2, name: 'มาลี รักดี', phone: '089-876-5432', email: 'malee@email.com', tag: 'ใหม่', note: 'สนใจแพ็กเกจ Pro', createdAt: '2026-04-03' },
-  { id: 3, name: 'วิชัย สุขใจ', phone: '062-111-2222', email: '', tag: 'ลูกค้า', note: '', createdAt: '2026-04-05' },
-  { id: 4, name: 'รัตนา มีสุข', phone: '091-333-4444', email: 'ratana@email.com', tag: 'VIP', note: 'โทรก่อนส่ง', createdAt: '2026-04-07' },
-];
-
 export default function CRM({ setSidebarOpen }) {
-  const [contacts, setContacts] = useState(MOCK_CONTACTS);
+  const [contacts, setContacts] = useState([]);
+  const [shopId, setShopId] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [toast, setToast] = useState(null);
   const [showTooltip, setShowTooltip] = useState(false);
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState(null);
   const fileRef = useRef(null);
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true);
+      try {
+        const bots = await botAPI.getMyBots();
+        const id = bots[0]?.id;
+        if (!id) { setLoading(false); return; }
+        setShopId(id);
+        const data = await crmAPI.getContacts(id);
+        setContacts(data);
+      } catch {}
+      setLoading(false);
+    }
+    load();
+  }, []);
 
   const filtered = contacts.filter((c) => {
     const q = search.toLowerCase();
@@ -51,7 +63,7 @@ export default function CRM({ setSidebarOpen }) {
     if (!file) return;
     setImporting(true);
     const reader = new FileReader();
-    reader.onload = (evt) => {
+    reader.onload = async (evt) => {
       try {
         const text = evt.target.result;
         const lines = text.trim().split('\n');
@@ -62,23 +74,39 @@ export default function CRM({ setSidebarOpen }) {
         const tagIdx = headers.indexOf('tag');
         const noteIdx = headers.indexOf('note');
 
-        const imported = [];
+        const rows = [];
         for (let i = 1; i < lines.length; i++) {
           const cols = lines[i].split(',').map((c) => c.trim());
           if (!cols[nameIdx]) continue;
-          imported.push({
-            id: Date.now() + i,
+          rows.push({
             name: cols[nameIdx] || '',
             phone: cols[phoneIdx] || '',
             email: cols[emailIdx] || '',
             tag: cols[tagIdx] || '',
             note: cols[noteIdx] || '',
-            createdAt: new Date().toISOString().slice(0, 10),
           });
         }
-        setContacts((prev) => [...prev, ...imported]);
-        setImportResult({ count: imported.length, total: lines.length - 1 });
-        setToast({ message: `นำเข้า ${imported.length} รายชื่อสำเร็จ`, type: 'success' });
+
+        let saved = 0;
+        if (shopId && rows.length > 0) {
+          const results = await Promise.allSettled(
+            rows.map((r) => crmAPI.createContact(shopId, r))
+          );
+          saved = results.filter((r) => r.status === 'fulfilled').length;
+          // Reload full list from backend
+          const fresh = await crmAPI.getContacts(shopId);
+          setContacts(fresh);
+        } else {
+          // No backend: add to local state
+          setContacts((prev) => [
+            ...prev,
+            ...rows.map((r, i) => ({ id: Date.now() + i, ...r, createdAt: new Date().toISOString().slice(0, 10) })),
+          ]);
+          saved = rows.length;
+        }
+
+        setImportResult({ count: saved, total: rows.length });
+        setToast({ message: `นำเข้า ${saved} รายชื่อสำเร็จ`, type: 'success' });
       } catch {
         setToast({ message: 'ไฟล์ไม่ถูกต้อง กรุณาใช้ template ที่ดาวน์โหลด', type: 'error' });
       }
@@ -189,11 +217,16 @@ export default function CRM({ setSidebarOpen }) {
       </div>
 
       {/* Contacts Table */}
-      {filtered.length === 0 ? (
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-16 gap-3">
+          <span className="w-8 h-8 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin" />
+          <p className="text-zinc-500 text-sm">กำลังโหลดรายชื่อ...</p>
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 gap-3">
           <Users className="w-12 h-12 text-zinc-600" />
-          <p className="text-zinc-400 font-semibold">ไม่พบรายชื่อ</p>
-          <p className="text-zinc-600 text-sm">ลองค้นหาด้วยคำอื่น หรือนำเข้า CSV</p>
+          <p className="text-zinc-400 font-semibold">{contacts.length === 0 ? 'ยังไม่มีรายชื่อ' : 'ไม่พบรายชื่อ'}</p>
+          <p className="text-zinc-600 text-sm">{contacts.length === 0 ? 'นำเข้า CSV เพื่อเพิ่มรายชื่อลูกค้า' : 'ลองค้นหาด้วยคำอื่น'}</p>
         </div>
       ) : (
         <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] overflow-hidden">

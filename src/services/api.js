@@ -602,6 +602,31 @@ export const shopAPI = {
   },
 };
 
+// ── CRM ───────────────────────────────────────────────────────────────────────
+
+export const crmAPI = {
+  getContacts: async (shopId, { search } = {}) => {
+    try {
+      const params = new URLSearchParams();
+      if (search) params.set('search', search);
+      const res = await api.get(`/api/crm/list/${shopId}?${params}`);
+      return Array.isArray(res.data) ? res.data.map(c => ({
+        id: c.id,
+        name: c.name || '',
+        phone: c.phone || '',
+        email: c.email || '',
+        tag: c.customer_group || '',
+        note: c.note || '',
+        createdAt: c.created_at ? c.created_at.slice(0, 10) : '',
+      })) : [];
+    } catch { return []; }
+  },
+  createContact: async (shopId, { name, phone, email, tag, note }) => {
+    const res = await api.post('/api/crm', { shopId, name, phone, email, customerGroup: tag, note });
+    return res.data;
+  },
+};
+
 // ── Marketing / Automation ────────────────────────────────────────────────────
 
 export const marketingAPI = {
