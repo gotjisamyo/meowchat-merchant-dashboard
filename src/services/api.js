@@ -343,6 +343,19 @@ export const billingAPI = {
   },
 };
 
+// ── Payment ───────────────────────────────────────────────────────────────────
+
+export const paymentAPI = {
+  getBankInfo: async () => {
+    const res = await api.get('/api/payment/info');
+    return res.data?.data || null;
+  },
+  notify: async (payload) => {
+    const res = await api.post('/api/payment/notify', payload);
+    return res.data;
+  },
+};
+
 // ── Conversations ─────────────────────────────────────────────────────────────
 
 export const conversationsAPI = {

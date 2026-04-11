@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
-import { CreditCard, Check, Zap, Crown, Building2, X, Plus, Calendar, Download, Gift } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { CreditCard, Check, Zap, Crown, Building2, X, Plus, Calendar, Download, Gift, Upload, CheckCircle2, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
-import { usageAPI, botAPI, creditsAPI, billingAPI } from '../services/api';
+import { usageAPI, botAPI, creditsAPI, billingAPI, paymentAPI } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
 // Canonical pricing — confirmed by Got 2026-04-03
@@ -538,7 +539,7 @@ export default function Subscription({ setSidebarOpen }) {
 
       {/* Upgrade Modal */}
       {showUpgradeModal && selectedPlan && (
-        <UpgradeModal plan={selectedPlan} onClose={() => setShowUpgradeModal(false)} />
+        <UpgradeModal plan={selectedPlan} shopId={shopId} onClose={() => setShowUpgradeModal(false)} />
       )}
 
       {/* Topup Modal */}
@@ -549,8 +550,62 @@ export default function Subscription({ setSidebarOpen }) {
   );
 }
 
-function UpgradeModal({ plan, onClose }) {
+function UpgradeModal({ plan, onClose, shopId }) {
+  const { user } = useAuth();
   const isEnterprise = plan.id === 'enterprise';
+  const fileInputRef = useRef(null);
+
+  const [bankInfo, setBankInfo] = useState(null);
+  const [step, setStep] = useState('form'); // 'form' | 'success'
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [slipFile, setSlipFile] = useState(null);
+  const [slipPreview, setSlipPreview] = useState(null);
+  const [form, setForm] = useState({
+    payerName: user?.name || '',
+    transferDate: new Date().toISOString().slice(0, 10),
+  });
+
+  useEffect(() => {
+    paymentAPI.getBankInfo().then(setBankInfo).catch(() => {});
+  }, []);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setSlipFile(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => setSlipPreview(ev.target.result);
+    reader.readAsDataURL(file);
+  };
+
+  const handleSubmit = async () => {
+    if (!form.payerName.trim()) { setError('กรุณากรอกชื่อผู้โอน'); return; }
+    if (!form.transferDate) { setError('กรุณาเลือกวันที่โอน'); return; }
+    if (!slipFile) { setError('กรุณาอัปโหลดสลิปการโอน'); return; }
+
+    setError('');
+    setSubmitting(true);
+    try {
+      const base64 = slipPreview.split(',')[1];
+      await paymentAPI.notify({
+        shopId,
+        payerName: form.payerName.trim(),
+        amount: plan.price,
+        transferDate: form.transferDate,
+        proofImage: { base64, fileName: slipFile.name, contentType: slipFile.type },
+        bankName: bankInfo?.bankName || '',
+        accountName: bankInfo?.accountName || '',
+        accountNumber: bankInfo?.accountNumber || '',
+      });
+      setStep('success');
+    } catch (err) {
+      setError(err?.response?.data?.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
       <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-md shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
@@ -562,55 +617,119 @@ function UpgradeModal({ plan, onClose }) {
             <X className="w-5 h-5" />
           </button>
         </div>
+
         <div className="p-4 sm:p-6 space-y-4">
-          <div className={`p-5 rounded-2xl border ${plan.borderColor} ${plan.bgColor} text-center`}>
-            <p className={`text-3xl font-extrabold ${plan.color} mb-1`}>
-              {plan.price === null ? 'Custom' : plan.price === 0 ? 'ฟรี' : `฿${plan.price.toLocaleString()}/เดือน`}
-            </p>
-            <p className="text-zinc-400 text-sm">
-              {plan.msgLimit ? `${plan.msgLimit.toLocaleString()} ข้อความ/เดือน` : 'ข้อความไม่จำกัด'}
-            </p>
-          </div>
-
-          {/* Payment steps */}
-          {!isEnterprise && (
-            <div className="bg-[#0A0A0F] rounded-2xl p-4 border border-white/[0.06] space-y-3">
-              <p className="text-sm font-bold text-white">ขั้นตอนการชำระเงิน</p>
-              <ol className="space-y-2 text-xs text-zinc-400">
-                <li className="flex gap-2">
-                  <span className="text-orange-400 font-bold flex-shrink-0">1.</span>
-                  <span>โอนเงิน <strong className="text-white">฿{plan.price?.toLocaleString()}</strong> มาที่บัญชี</span>
-                </li>
-                <div className="ml-4 p-3 bg-white/[0.04] rounded-xl border border-white/[0.06] text-xs">
-                  <p className="text-zinc-300 font-semibold">ธนาคารกสิกรไทย (KBank)</p>
-                  <p className="text-white font-mono text-base mt-1">xxx-x-xxxxx-x</p>
-                  <p className="text-zinc-500">ชื่อบัญชี: MeowChat / กฤษฐาพงศ์ จ.</p>
-                </div>
-                <li className="flex gap-2">
-                  <span className="text-orange-400 font-bold flex-shrink-0">2.</span>
-                  <span>แจ้งสลิปพร้อม Email ที่ใช้สมัครผ่าน LINE @MeowChatSupport</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-orange-400 font-bold flex-shrink-0">3.</span>
-                  <span>ทีมงาน activate แผนให้ภายใน <strong className="text-white">2 ชั่วโมง</strong> (วันจันทร์-ศุกร์ 9-18น.)</span>
-                </li>
-              </ol>
+          {step === 'success' ? (
+            /* ── Success state ── */
+            <div className="text-center py-6 space-y-4">
+              <div className="w-16 h-16 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto">
+                <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-white">ส่งสลิปเรียบร้อยแล้ว!</p>
+                <p className="text-sm text-zinc-400 mt-1">ทีมงานจะตรวจสอบและเปิดใช้งานแผน <strong className="text-white">{plan.name}</strong> ให้ภายใน 2 ชั่วโมง</p>
+                <p className="text-xs text-zinc-500 mt-2">วันจันทร์–ศุกร์ 9:00–18:00 น.</p>
+              </div>
+              <button onClick={onClose} className="btn-primary px-8 py-2.5 rounded-xl text-sm font-bold text-white">
+                ตกลง
+              </button>
             </div>
-          )}
+          ) : isEnterprise ? (
+            /* ── Enterprise contact ── */
+            <>
+              <p className="text-sm text-zinc-400">ติดต่อทีมงานเพื่อรับข้อเสนอพิเศษสำหรับองค์กร</p>
+              <a
+                href="https://line.me/ti/p/@meowchat"
+                target="_blank"
+                rel="noreferrer"
+                className="btn-primary w-full py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2"
+              >
+                ติดต่อทีมงาน MeowChat
+              </a>
+            </>
+          ) : (
+            /* ── Bank transfer form ── */
+            <>
+              {/* Plan price */}
+              <div className={`p-4 rounded-2xl border ${plan.borderColor} ${plan.bgColor} text-center`}>
+                <p className={`text-3xl font-extrabold ${plan.color} mb-0.5`}>
+                  ฿{plan.price?.toLocaleString()}<span className="text-base font-semibold text-zinc-400">/เดือน</span>
+                </p>
+                <p className="text-zinc-500 text-xs">แผน {plan.name} · {plan.msgLimit?.toLocaleString()} ข้อความ/เดือน</p>
+              </div>
 
-          <a
-            href="https://line.me/ti/p/@meowchat"
-            target="_blank"
-            rel="noreferrer"
-            className="btn-primary w-full py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2"
-          >
-            {isEnterprise ? 'ติดต่อทีมงาน MeowChat' : 'แจ้งสลิปผ่าน LINE @MeowChat'}
-          </a>
+              {/* Bank account */}
+              <div className="bg-[#0A0A0F] rounded-2xl p-4 border border-white/[0.06]">
+                <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">โอนเงินมาที่</p>
+                <div className="space-y-1.5">
+                  <p className="text-sm font-semibold text-white">{bankInfo?.bankName ?? 'กำลังโหลด...'}</p>
+                  <p className="text-xl font-mono font-bold text-orange-400 tracking-wider">{bankInfo?.accountNumber ?? '—'}</p>
+                  <p className="text-sm text-zinc-400">{bankInfo?.accountName ?? ''}</p>
+                </div>
+              </div>
 
-          {!isEnterprise && (
-            <p className="text-center text-xs text-zinc-600">
-              มีคำถาม? LINE: @MeowChat หรือ Email: support@meowchat.store
-            </p>
+              {/* Form */}
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-400 mb-1.5">ชื่อผู้โอน</label>
+                  <input
+                    className="input-premium"
+                    value={form.payerName}
+                    onChange={e => setForm(f => ({ ...f, payerName: e.target.value }))}
+                    placeholder="ชื่อ-นามสกุล"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-400 mb-1.5">วันที่โอน</label>
+                  <input
+                    type="date"
+                    className="input-premium"
+                    value={form.transferDate}
+                    max={new Date().toISOString().slice(0, 10)}
+                    onChange={e => setForm(f => ({ ...f, transferDate: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-400 mb-1.5">สลิปการโอน</label>
+                  <input type="file" accept="image/*" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
+                  {slipPreview ? (
+                    <div className="relative">
+                      <img src={slipPreview} alt="slip" className="w-full max-h-48 object-contain rounded-xl border border-white/[0.08]" />
+                      <button
+                        onClick={() => { setSlipFile(null); setSlipPreview(null); fileInputRef.current.value = ''; }}
+                        className="absolute top-2 right-2 p-1 bg-black/60 rounded-full text-zinc-400 hover:text-white"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-full py-8 rounded-xl border border-dashed border-white/[0.15] hover:border-orange-500/40 hover:bg-orange-500/[0.03] transition-all text-center text-zinc-500 hover:text-zinc-300"
+                    >
+                      <Upload className="w-5 h-5 mx-auto mb-1.5" />
+                      <p className="text-xs font-medium">คลิกเพื่ออัปโหลดสลิป</p>
+                      <p className="text-[10px] text-zinc-600 mt-0.5">JPG, PNG, PDF</p>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {error && <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2.5">{error}</p>}
+
+              <button
+                onClick={handleSubmit}
+                disabled={submitting}
+                className="btn-primary w-full py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2 disabled:opacity-60"
+              >
+                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                {submitting ? 'กำลังส่ง...' : 'ส่งสลิปและแจ้งชำระเงิน'}
+              </button>
+
+              <p className="text-center text-xs text-zinc-600">
+                ทีมงานจะ activate ภายใน 2 ชั่วโมง (จันทร์–ศุกร์ 9–18 น.)
+              </p>
+            </>
           )}
         </div>
       </div>
