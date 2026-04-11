@@ -10,13 +10,14 @@ import {
   RadialBarChart, RadialBar, Cell,
 } from 'recharts';
 import PageLayout from '../components/PageLayout';
-import { usageAPI, botAPI, conversationsAPI, kpiAPI, analyticsAPI } from '../services/api';
+import { usageAPI, billingAPI, botAPI, conversationsAPI, kpiAPI, analyticsAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 export default function Dashboard({ setSidebarOpen }) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [usage, setUsage] = useState(null);
+  const [subscription, setSubscription] = useState(null);
   const [bot, setBot] = useState(null);
   const [conversations, setConversations] = useState([]);
   const [kpi, setKpi] = useState(null);
@@ -34,14 +35,16 @@ export default function Dashboard({ setSidebarOpen }) {
         setBot(firstBot);
         const botId = firstBot?.id || null;
         if (!botId) { setLoading(false); return; }
-        const [usageData, convs, kpiData, weeklyData, insightsData] = await Promise.all([
+        const [usageData, subData, convs, kpiData, weeklyData, insightsData] = await Promise.all([
           usageAPI.getUsage(botId),
+          billingAPI.getSubscription(botId),
           conversationsAPI.getAll(botId),
           kpiAPI.getStats(botId),
           kpiAPI.getWeekly(botId),
           analyticsAPI.getTopics(botId, insightsDays),
         ]);
         setUsage(usageData);
+        setSubscription(subData);
         setConversations(convs.slice(0, 5));
         setKpi(kpiData);
         setWeekly(weeklyData);
@@ -57,7 +60,7 @@ export default function Dashboard({ setSidebarOpen }) {
   const usagePercent = usage ? Math.round((usage.used / usage.limit) * 100) : 0;
   const usageColor = usagePercent >= 90 ? '#EF4444' : usagePercent >= 70 ? '#F59E0B' : '#FF6B35';
 
-  const currentPlanId = usage?.plan?.toLowerCase() || 'trial';
+  const currentPlanId = subscription?.plan_name?.toLowerCase() || usage?.plan?.toLowerCase() || 'trial';
   const trialDaysLeft = usage?.trialEndsAt
     ? Math.max(0, Math.ceil((new Date(usage.trialEndsAt) - Date.now()) / (1000 * 60 * 60 * 24)))
     : 14;
@@ -210,7 +213,7 @@ export default function Dashboard({ setSidebarOpen }) {
               <p className="text-zinc-500 text-sm mt-0.5">รีเซ็ตวันที่ {usage?.resetDate ?? '1 เมษายน 2026'}</p>
             </div>
             <span className="px-3 py-1 text-xs font-bold rounded-full bg-orange-500/15 text-orange-400 border border-orange-500/20">
-              {usage?.plan ?? 'Starter'}
+              {subscription?.plan_name ?? usage?.plan ?? 'Starter'}
             </span>
           </div>
 

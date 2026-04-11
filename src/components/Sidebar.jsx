@@ -5,7 +5,7 @@ import {
   ChevronLeft, ChevronRight, Cat, LogOut, Loader2, PhoneCall, Gift, Megaphone, BarChart2, Users, Zap,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { handoffAPI, usageAPI, botAPI } from '../services/api';
+import { handoffAPI, billingAPI, botAPI } from '../services/api';
 
 const menuItems = [
   { path: '/',             id: 'dashboard',     label: 'Dashboard',       icon: LayoutDashboard },
@@ -68,7 +68,7 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
         const bots = await botAPI.getMyBots();
         botId = bots[0]?.id || null;
         if (botId) handoffAPI.getPendingCount(botId).then(setHandoffCount).catch(() => {});
-        usageAPI.getUsage(botId).then((d) => setUsagePlan(d?.plan?.toLowerCase() || null)).catch(() => {});
+        billingAPI.getSubscription(botId).then((sub) => setUsagePlan(sub?.plan_name?.toLowerCase() || null)).catch(() => {});
         if (botId) {
           interval = setInterval(() => {
             handoffAPI.getPendingCount(botId).then(setHandoffCount).catch(() => {});

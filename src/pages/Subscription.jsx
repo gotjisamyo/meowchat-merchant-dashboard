@@ -100,6 +100,7 @@ const STATUS_STYLE = {
 
 export default function Subscription({ setSidebarOpen }) {
   const [usage, setUsage] = useState(null);
+  const [subscription, setSubscription] = useState(null);
   const [shopId, setShopId] = useState(null);
   const [plans, setPlans] = useState(PLANS);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -127,6 +128,7 @@ export default function Subscription({ setSidebarOpen }) {
           id ? billingAPI.getSubscription(id) : Promise.resolve(null),
         ]);
         setUsage(data);
+        setSubscription(subData);
 
         // Next billing date from subscription
         if (subData?.periodEnd) setNextBillingDate(formatThaiDate(subData.periodEnd));
@@ -172,7 +174,8 @@ export default function Subscription({ setSidebarOpen }) {
     return () => window.removeEventListener('meowchat:trial-abuse', handler);
   }, []);
 
-  const currentPlanId = usage?.plan?.toLowerCase() || 'trial';
+  // Use subscription as source of truth; fall back to usage.plan if no active subscription
+  const currentPlanId = subscription?.plan_name?.toLowerCase() || usage?.plan?.toLowerCase() || 'trial';
   const trialDaysLeft = usage?.trialEndsAt
     ? Math.max(0, Math.ceil((new Date(usage.trialEndsAt) - Date.now()) / (1000 * 60 * 60 * 24)))
     : null;
