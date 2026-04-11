@@ -19,7 +19,7 @@ const menuItems = [
   { path: '/automation',   id: 'automation',    label: 'Automation',        icon: Zap },
   { path: '/subscription', id: 'subscription',  label: 'Subscription',     icon: CreditCard },
   { path: '/referral',     id: 'referral',      label: 'แนะนำเพื่อน',       icon: Gift },
-  { path: '/profile',      id: 'profile',       label: 'โปรไฟล์',           icon: User },
+  { path: '/settings',     id: 'settings',      label: 'ตั้งค่า / โปรไฟล์', icon: User },
 ];
 
 export default function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) {
