@@ -135,7 +135,10 @@ export default function Subscription({ setSidebarOpen }) {
         if (apiPlans && apiPlans.length > 0) {
           setPlans(PLANS.map((p) => {
             const ap = apiPlans.find((a) => a.name?.toLowerCase() === p.id || a.name?.toLowerCase() === p.name?.toLowerCase());
-            return ap ? { ...p, price: ap.price ?? p.price, msgLimit: ap.max_chats ?? p.msgLimit, name: ap.name || p.name, features: ap.features?.length ? ap.features : p.features } : p;
+            // -1 means unlimited in DB; null means custom/contact in UI
+            const apiPrice = (ap.price === 0 && p.price === null) ? null : (ap.price ?? p.price);
+            const apiMsgLimit = ap.max_chats === -1 ? null : (ap.max_chats ?? p.msgLimit);
+            return ap ? { ...p, price: apiPrice, msgLimit: apiMsgLimit, name: ap.name || p.name, features: ap.features?.length ? ap.features : p.features } : p;
           }));
         }
         if (id) {
