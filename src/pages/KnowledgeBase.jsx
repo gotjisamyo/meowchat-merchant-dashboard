@@ -391,7 +391,11 @@ function UnansweredQuestions({ botId, setToast, onAddedToKB }) {
   const handleAddToKB = async (q) => {
     setAdding((prev) => new Set(prev).add(q.id));
     try {
-      const res = await api.post('/api/knowledge-base', { question: q.question, answer: '' });
+      const res = await api.post(`/api/bots/${botId}/knowledge`, {
+        topic: q.question,
+        content: '',
+        keywords: [],
+      });
       onAddedToKB(res.data);
       setToast({ message: 'เพิ่มเข้า KB แล้ว รอใส่คำตอบ', type: 'success' });
       setQuestions((prev) => prev.filter((item) => item.id !== q.id));
