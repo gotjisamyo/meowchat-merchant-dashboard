@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { PhoneCall, X, Clock, User, CheckCircle, AlertCircle } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
+import ConfirmDialog from '../components/ConfirmDialog';
 import { handoffAPI, botAPI } from '../services/api';
 
 export default function Handoff({ setSidebarOpen }) {
@@ -10,6 +11,7 @@ export default function Handoff({ setSidebarOpen }) {
   const [botId, setBotId] = useState(null);
   const [actionLoading, setActionLoading] = useState(null); // handoff id currently processing
   const [toast, setToast] = useState(null);
+  const [confirmClose, setConfirmClose] = useState(null); // handoff id to confirm close
 
   const load = async (id) => {
     setLoading(true);
@@ -45,6 +47,12 @@ export default function Handoff({ setSidebarOpen }) {
   };
 
   const handleClose = async (id) => {
+    setConfirmClose(id);
+  };
+
+  const handleConfirmClose = async () => {
+    const id = confirmClose;
+    setConfirmClose(null);
     setActionLoading(id);
     try {
       await handoffAPI.close(botId, id);
@@ -63,6 +71,14 @@ export default function Handoff({ setSidebarOpen }) {
       setSidebarOpen={setSidebarOpen}
     >
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      <ConfirmDialog
+        isOpen={confirmClose !== null}
+        title="ยืนยันปิด Handoff"
+        message="คุณต้องการปิด Handoff นี้ใช่ไหม? การกระทำนี้ไม่สามารถยกเลิกได้"
+        confirmText="ปิด Handoff"
+        onConfirm={handleConfirmClose}
+        onCancel={() => setConfirmClose(null)}
+      />
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:max-w-sm">
         <div className="bg-[#12121A] rounded-2xl border border-white/[0.06] p-4 flex items-center gap-3">
