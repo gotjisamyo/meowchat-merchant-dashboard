@@ -101,11 +101,12 @@ export default function Marketing({ setSidebarOpen }) {
         type: selectedTemplate.type || 'auto',
         trigger: selectedTemplate.triggerKey || 'signup',
         steps: [{ message: selectedTemplate.message }],
+        templateId: selectedTemplate.id,
       });
       setToast({ message: `สร้าง campaign "${campaignName.trim()}" เรียบร้อยแล้ว`, type: 'success' });
       setCampaigns((prev) => [
         ...prev,
-        { id: Date.now(), name: campaignName.trim(), templateId: selectedTemplate.id, status: 'active' },
+        { id: Date.now(), name: campaignName.trim(), template_id: selectedTemplate.id, status: 'active' },
       ]);
       setSelectedTemplate(null);
       setCampaignName('');
@@ -131,7 +132,7 @@ export default function Marketing({ setSidebarOpen }) {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {AUTOMATION_TEMPLATES.map((tpl) => {
-            const active = campaigns.find((c) => c.templateId === tpl.id);
+            const active = campaigns.find((c) => (c.template_id || c.templateId) === tpl.id);
             return (
               <div
                 key={tpl.id}
@@ -180,7 +181,7 @@ export default function Marketing({ setSidebarOpen }) {
           <h2 className="text-lg font-bold text-white mb-4">Campaigns ที่ใช้งานอยู่</h2>
           <div className="space-y-3">
             {campaigns.map((c) => {
-              const tpl = AUTOMATION_TEMPLATES.find((t) => t.id === c.templateId);
+              const tpl = AUTOMATION_TEMPLATES.find((t) => t.id === (c.template_id || c.templateId));
               return (
                 <div key={c.id} className="flex items-center gap-4 p-4 rounded-2xl bg-[#12121A] border border-white/[0.06]">
                   <span className="text-2xl">{tpl?.icon || '⚡'}</span>
