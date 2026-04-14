@@ -310,7 +310,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="ค้นหา topic หรือ keyword..."
-          className="input-premium pl-11"
+          className="input-premium !pl-11"
         />
       </div>
 
