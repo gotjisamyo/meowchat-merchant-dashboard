@@ -331,7 +331,18 @@ export const billingAPI = {
   getPlans: async () => {
     try {
       const res = await api.get('/api/plans');
-      return res.data?.data || [];
+      const plans = res.data?.data || [];
+      // Enforce frontend overrides for Pro plan
+      return plans.map(p => {
+        if (p.name?.toLowerCase() === 'pro') {
+          return {
+            ...p,
+            max_bots: 2,
+            features: ['15,000 ข้อความ/เดือน', '2 LINE OA', 'Knowledge Base ไม่จำกัด', 'AI Auto Reply', 'Analytics ครบครัน', 'ซัพพอร์ตทาง LINE & Email']
+          };
+        }
+        return p;
+      });
     } catch {
       return [];
     }
