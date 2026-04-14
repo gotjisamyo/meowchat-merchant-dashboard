@@ -37,7 +37,7 @@ const PLANS = [
     name: 'Pro',
     price: 990,
     msgLimit: 15000,
-    features: ['15,000 ข้อความ/เดือน', '1 LINE OA', 'Knowledge Base ไม่จำกัด', 'AI Auto Reply', 'Analytics พื้นฐาน', 'ซัพพอร์ตทาง LINE & Email'],
+    features: ['15,000 ข้อความ/เดือน', '2 LINE OA', 'Knowledge Base ไม่จำกัด', 'AI Auto Reply', 'Analytics ครบครัน', 'ซัพพอร์ตทาง LINE & Email'],
     color: 'text-orange-400',
     borderColor: 'border-orange-500/40',
     bgColor: 'bg-orange-500/8',

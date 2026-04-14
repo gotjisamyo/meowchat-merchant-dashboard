@@ -39,7 +39,7 @@ export default function Broadcast({ setSidebarOpen }) {
     load();
   }, []);
 
-  const isAdvanced = ['business', 'enterprise'].includes(plan);
+  const isAdvanced = ['pro', 'business', 'enterprise'].includes(plan);
 
   const handleAudienceChange = (val) => {
     if (val === 'unhappy' && !isAdvanced) {

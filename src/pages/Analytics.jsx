@@ -110,7 +110,7 @@ export default function Analytics({ setSidebarOpen }) {
     link.click();
   };
 
-  const isAdvanced = ['business', 'enterprise'].includes(plan);
+  const isAdvanced = ['pro', 'business', 'enterprise'].includes(plan);
 
   const maxKeyword = topKeywords[0]?.count || 1;
 
