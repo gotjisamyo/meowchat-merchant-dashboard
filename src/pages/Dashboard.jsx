@@ -490,22 +490,22 @@ export default function Dashboard({ setSidebarOpen }) {
             <p className="text-zinc-500 text-sm text-center py-4">ยังไม่มีบทสนทนา</p>
           )}
           {conversations.map((conv) => (
-            <div key={conv.id} className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-white/[0.03] transition-colors cursor-pointer group">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500/20 to-pink-500/20 border border-white/[0.06] flex items-center justify-center text-sm font-bold text-white flex-shrink-0">
+            <div key={conv.id} className="flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-white/[0.03] transition-colors cursor-pointer group">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-500/20 to-pink-500/20 border border-white/[0.06] flex items-center justify-center text-sm font-bold text-white flex-shrink-0">
                 {conv.avatar}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <p className="font-semibold text-white text-sm">{conv.customerName}</p>
+                <div className="flex items-center gap-1.5 mb-0.5 min-w-0">
+                  <p className="font-semibold text-white text-sm truncate">{conv.customerName}</p>
                   {conv.status === 'escalated' && (
-                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20">
+                    <span className="flex-shrink-0 px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20 whitespace-nowrap">
                       escalated
                     </span>
                   )}
                 </div>
                 <p className="text-zinc-500 text-xs truncate">{conv.lastMessage}</p>
               </div>
-              <span className="text-zinc-600 text-xs flex-shrink-0">{conv.time}</span>
+              <span className="text-zinc-600 text-xs flex-shrink-0 whitespace-nowrap">{conv.time}</span>
             </div>
           ))}
         </div>
