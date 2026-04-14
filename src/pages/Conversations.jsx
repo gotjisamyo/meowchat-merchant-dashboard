@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { MessageSquare, Search, ChevronRight, X, AlertCircle, Clock, Users, RefreshCw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { MessageSquare, Search, ChevronRight, X, AlertCircle, Clock, Users, RefreshCw, Zap } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import { conversationsAPI, botAPI } from '../services/api';
 
@@ -10,6 +11,7 @@ const FILTERS = [
 ];
 
 export default function Conversations({ setSidebarOpen }) {
+  const navigate = useNavigate();
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -149,9 +151,21 @@ export default function Conversations({ setSidebarOpen }) {
                   <span className="w-6 h-6 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin" />
                 </div>
               ) : filtered.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 gap-2 text-center">
-                  <MessageSquare className="w-10 h-10 text-zinc-600" />
-                  <p className="text-zinc-500 text-sm">ไม่พบบทสนทนา</p>
+                <div className="flex flex-col items-center justify-center py-12 gap-3 text-center px-4">
+                  <div className="w-14 h-14 rounded-2xl bg-orange-500/10 border border-orange-500/15 flex items-center justify-center">
+                    <MessageSquare className="w-7 h-7 text-orange-400/60" />
+                  </div>
+                  <div>
+                    <p className="text-zinc-400 text-sm font-semibold">ยังไม่มีบทสนทนา</p>
+                    <p className="text-zinc-600 text-xs mt-0.5">เชื่อม LINE OA เพื่อเริ่มรับส่งข้อความ</p>
+                  </div>
+                  <button
+                    onClick={() => navigate('/bot')}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500/15 border border-orange-500/25 text-orange-400 hover:bg-orange-500/25 text-xs font-bold transition-all"
+                  >
+                    <Zap className="w-3.5 h-3.5" />
+                    เชื่อม LINE OA
+                  </button>
                 </div>
               ) : (
                 filtered.map((conv) => (
@@ -198,9 +212,12 @@ export default function Conversations({ setSidebarOpen }) {
           {selected ? (
             <ChatDetail conv={selected} onClose={() => setSelected(null)} loadingMsgs={loadingMsgs} />
           ) : (
-            <div className="hidden lg:flex flex-1 items-center justify-center py-16 flex-col gap-3 text-center">
-              <MessageSquare className="w-14 h-14 text-zinc-700" />
+            <div className="hidden lg:flex flex-1 items-center justify-center py-16 flex-col gap-3 text-center px-6">
+              <div className="w-16 h-16 rounded-3xl bg-orange-500/8 border border-orange-500/10 flex items-center justify-center mb-1">
+                <MessageSquare className="w-8 h-8 text-zinc-700" />
+              </div>
               <p className="text-zinc-500 font-semibold">เลือกบทสนทนาเพื่อดูรายละเอียด</p>
+              <p className="text-zinc-700 text-xs">คลิกบทสนทนาทางซ้ายเพื่ออ่านข้อความที่นี่</p>
             </div>
           )}
         </div>

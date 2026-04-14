@@ -200,6 +200,7 @@ export default function Dashboard({ setSidebarOpen }) {
             : <WifiOff className="w-5 h-5 text-zinc-500" />}
           color={bot?.status === 'online' ? 'from-emerald-500/15 to-emerald-500/5' : 'from-zinc-500/15 to-zinc-500/5'}
           delay="delay-400"
+          offlineAction={bot?.status !== 'online' ? () => navigate('/bot') : null}
         />
       </div>
 
@@ -499,7 +500,7 @@ export default function Dashboard({ setSidebarOpen }) {
   );
 }
 
-function StatCard({ label, value, icon, color, delay }) {
+function StatCard({ label, value, icon, color, delay, offlineAction }) {
   return (
     <div className={`bg-[#12121A] rounded-3xl border border-white/[0.06] p-5 hover:border-orange-500/20 transition-all animate-fade-in ${delay}`}>
       <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${color} border border-white/[0.06] flex items-center justify-center mb-4`}>
@@ -507,6 +508,14 @@ function StatCard({ label, value, icon, color, delay }) {
       </div>
       <p className="text-2xl font-extrabold text-white tracking-tight">{value}</p>
       <p className="text-zinc-500 text-xs font-semibold uppercase tracking-wider mt-1">{label}</p>
+      {offlineAction && (
+        <button
+          onClick={offlineAction}
+          className="mt-3 flex items-center gap-1.5 text-xs text-orange-400 hover:text-orange-300 font-semibold transition-colors"
+        >
+          ตั้งค่าเดี๋ยวนี้ →
+        </button>
+      )}
     </div>
   );
 }
