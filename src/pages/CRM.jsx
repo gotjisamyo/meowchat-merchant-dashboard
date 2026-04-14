@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Users, Download, Upload, X, Info, Search, Tag, Phone, Mail, StickyNote, Plus, Trash2, Filter } from 'lucide-react';
+import { Users, Download, Upload, X, Info, Search, Tag, Phone, Mail, StickyNote, Plus, Trash2, Filter, ChevronDown, ChevronUp, BookOpen, Megaphone, UserCheck, ShoppingBag, Clock, Star, Send, BarChart2, RefreshCw, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
@@ -28,6 +28,7 @@ export default function CRM({ setSidebarOpen }) {
   const [addForm, setAddForm] = useState(EMPTY_FORM);
   const [addLoading, setAddLoading] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+  const [showGuide, setShowGuide] = useState(false);
   const fileRef = useRef(null);
 
   useEffect(() => {
@@ -206,6 +207,107 @@ export default function CRM({ setSidebarOpen }) {
       }
     >
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+
+      {/* Usage Guide Panel */}
+      <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] overflow-hidden">
+        <button
+          onClick={() => setShowGuide(v => !v)}
+          className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/[0.02] transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center">
+              <BookOpen className="w-4 h-4 text-blue-400" />
+            </div>
+            <div className="text-left">
+              <p className="text-sm font-bold text-white">คู่มือการใช้งาน CRM</p>
+              <p className="text-xs text-zinc-500">หน้านี้ทำอะไรได้บ้าง? คลิกเพื่อดูตัวอย่างการใช้งาน</p>
+            </div>
+          </div>
+          {showGuide
+            ? <ChevronUp className="w-5 h-5 text-zinc-500 flex-shrink-0" />
+            : <ChevronDown className="w-5 h-5 text-zinc-500 flex-shrink-0" />}
+        </button>
+
+        {showGuide && (
+          <div className="px-5 pb-6 border-t border-white/[0.06] pt-5">
+            <p className="text-xs text-zinc-500 mb-4 font-semibold uppercase tracking-wider">ตัวอย่างการใช้งาน 10 ใช้</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {[
+                {
+                  icon: <UserCheck className="w-4 h-4 text-orange-400" />,
+                  color: 'bg-orange-500/10 border-orange-500/15',
+                  title: 'เก็บรายชื่อลูกค้า LINE',
+                  desc: 'ลูกค้าทักมาใน LINE → เพิ่มชื่อ-เบอร์ไว้ใน CRM เพื่อติดตามภายหลังได้',
+                },
+                {
+                  icon: <Tag className="w-4 h-4 text-purple-400" />,
+                  color: 'bg-purple-500/10 border-purple-500/15',
+                  title: 'ชั้นลูกค้าด้วยแท็ก',
+                  desc: 'แท็ก VIP, ลูกค้าใหม่, สนใจโปรโมชั่น, สมาชิก → กรองเพื่อส่งโปรออฯตรงเป้าหมายได้',
+                },
+                {
+                  icon: <Megaphone className="w-4 h-4 text-pink-400" />,
+                  color: 'bg-pink-500/10 border-pink-500/15',
+                  title: 'ส่งโปรโมชั่นเฉพาะกลุ่ม',
+                  desc: 'เลือกแท็ก VIP → ส่ง Broadcast ไปหาลูกค้า VIP เฉพาะลด 10% ได้ทันที',
+                },
+                {
+                  icon: <ShoppingBag className="w-4 h-4 text-emerald-400" />,
+                  color: 'bg-emerald-500/10 border-emerald-500/15',
+                  title: 'นำเข้าจาก Excel',
+                  desc: 'ร้านมีลูกค้าเก่าใน Excel → Export เป็น CSV → Import เข้า CRM ได้เลย',
+                },
+                {
+                  icon: <Clock className="w-4 h-4 text-amber-400" />,
+                  color: 'bg-amber-500/10 border-amber-500/15',
+                  title: 'ติดตามลูคถานเก่า',
+                  desc: 'ใส่ note ว่า "สนใจเคส 3 ชิ้น" → ค้นหาชื่อแล้วโทรหาได้ทันที',
+                },
+                {
+                  icon: <Star className="w-4 h-4 text-yellow-400" />,
+                  color: 'bg-yellow-500/10 border-yellow-500/15',
+                  title: 'สร้างโปรแกรมสมาชิก',
+                  desc: 'แบ่งลูคเป็น ไฟเฟ้า/ทอง/เพชร ด้วยแท็ก → ส่งโปรตรงระดับได้',
+                },
+                {
+                  icon: <Send className="w-4 h-4 text-blue-400" />,
+                  color: 'bg-blue-500/10 border-blue-500/15',
+                  title: 'สำรองข้อมูลแบบครบวงจร',
+                  desc: 'เก็บอีเมลและเบอร์ไว้ในที่เดียว เพื่อส่งต่อได้ทั้งผ่านอีเมลและโทรศัพท์',
+                },
+                {
+                  icon: <BarChart2 className="w-4 h-4 text-teal-400" />,
+                  color: 'bg-teal-500/10 border-teal-500/15',
+                  title: 'วิเคราะห์จำนวนลูกค้าแต่ละกลุ่ม',
+                  desc: 'ดูจำนวนสมาชิกแต่ละ tag → รู้ว่ากลุ่มไหนใหญ่ที่สุด คุ้มค่าใช้จ่ายโปรมอชั่นได้ smart ขึ้น',
+                },
+                {
+                  icon: <RefreshCw className="w-4 h-4 text-cyan-400" />,
+                  color: 'bg-cyan-500/10 border-cyan-500/15',
+                  title: 'สำรองข้อมูลสำรอง (Backup)',
+                  desc: 'กด Export CSV ทุกสัปดาห์ → เก็บไว้ใน Google Drive เป็นข้อมูลสำรอง',
+                },
+                {
+                  icon: <Lock className="w-4 h-4 text-red-400" />,
+                  color: 'bg-red-500/10 border-red-500/15',
+                  title: 'ค้นหาชื่อในแชทได้ทันที',
+                  desc: 'ลูกค้าทักมา → ค้นชื่อใน CRM → เห็น note และ tag ก่อนตอบ ทำให้บริการเป็นส่วนตัวมากขึ้น',
+                },
+              ].map((item, i) => (
+                <div key={i} className={`flex items-start gap-3 p-4 rounded-2xl border ${item.color}`}>
+                  <div className="w-8 h-8 rounded-xl bg-black/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    {item.icon}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-white mb-0.5">{i + 1}. {item.title}</p>
+                    <p className="text-xs text-zinc-500 leading-relaxed">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Import/Export Section */}
       <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-5 space-y-4">
