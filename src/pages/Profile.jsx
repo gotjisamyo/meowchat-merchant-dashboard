@@ -174,13 +174,13 @@ export default function Profile({ setSidebarOpen }) {
                 <FormField label="ชื่อบริษัท/ร้านค้า">
                   <div className="relative">
                     <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
-                    <input
-                      type="text"
-                      value={profile.company}
-                      onChange={(e) => setProfile((p) => ({ ...p, company: e.target.value }))}
-                      className="input-premium pl-10"
-                      placeholder="ร้านอาหารสยาม"
-                    />
+                      <input
+                        type="text"
+                        value={profile.company}
+                        onChange={(e) => setProfile((p) => ({ ...p, company: e.target.value }))}
+                        className="input-premium !pl-11"
+                        placeholder="ร้านอาหารสยาม"
+                      />
                   </div>
                 </FormField>
               </div>
