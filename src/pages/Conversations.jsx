@@ -188,9 +188,9 @@ export default function Conversations({ setSidebarOpen }) {
                       {conv.avatar}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-0.5">
-                        <p className="font-semibold text-white text-sm">{conv.customerName}</p>
-                        <span className="text-zinc-600 text-xs">{conv.time}</span>
+                      <div className="flex items-center justify-between mb-0.5 gap-2">
+                        <p className="font-semibold text-white text-sm truncate">{conv.customerName}</p>
+                        <span className="text-zinc-600 text-xs flex-shrink-0 whitespace-nowrap">{conv.time}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <p className="text-zinc-500 text-xs truncate flex-1">{conv.lastMessage}</p>
