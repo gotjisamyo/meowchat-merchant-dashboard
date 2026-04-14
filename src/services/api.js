@@ -150,6 +150,10 @@ export const authAPI = {
 // ── Bots ──────────────────────────────────────────────────────────────────────
 
 export const botAPI = {
+  setup: async (payload) => {
+    const res = await api.post('/api/bots/setup', payload);
+    return res.data;
+  },
   getMyBots: async () => {
     try {
       const response = await api.get('/api/bots');
@@ -503,18 +507,45 @@ export const analyticsAPI = {
     }
   },
   getOverview: async (botId, days = 30) => {
+    // Generate some mock heatmap data (busiest around 10:00-15:00)
+    const mockHeatmaps = Array.from({ length: 7 }, (_, d) => 
+      Array.from({ length: 24 }, (_, h) => {
+        const isBusy = h >= 10 && h <= 15;
+        const val = Math.floor(Math.random() * (isBusy ? 80 : 20));
+        return { day: d, hour: h, value: val };
+      })
+    ).flat();
+
     const fallback = {
-      stats: { totalConversations: 0, totalMessages: 0, uniqueUsers: 0, escalations: 0, aiResponseRate: 100, timeSavedHours: 0 },
+      stats: { totalConversations: 0, totalMessages: 0, uniqueUsers: 0, escalations: 0, aiResponseRate: 100, timeSavedHours: 0, csatScore: 4.8, resolvedRate: 92, aiTime: 1.2, humanTime: 510, conversionRate: 15 },
       daily: [],
       topKeywords: [],
+      intents: [
+        { name: 'สอบถามราคา', value: 45 },
+        { name: 'ตามสถานะพัสดุ', value: 25 },
+        { name: 'เวลาทำงาน', value: 15 },
+        { name: 'เงื่อนไขการรับประกัน', value: 10 },
+        { name: 'อื่นๆ', value: 5 }
+      ],
+      heatmaps: mockHeatmaps,
+      topLinks: [
+        { url: 'meowchat.store/promo', clicks: 345, conversions: 45 },
+        { url: 'meowchat.store/shop/item-a', clicks: 210, conversions: 21 },
+        { url: 'meowchat.store/contact', clicks: 89, conversions: 0 }
+      ],
+      sentiment: { happy: 65, neutral: 25, angry: 10 }
     };
     try {
       const res = await api.get(`/api/bots/${botId}/analytics/overview?days=${days}`);
       const d = res.data || {};
       return {
-        stats: d.stats || fallback.stats,
-        daily: Array.isArray(d.daily) ? d.daily : [],
-        topKeywords: Array.isArray(d.topKeywords) ? d.topKeywords : [],
+        stats: { ...fallback.stats, ...(d.stats || {}) },
+        daily: Array.isArray(d.daily) && d.daily.length > 0 ? d.daily : [],
+        topKeywords: Array.isArray(d.topKeywords) && d.topKeywords.length > 0 ? d.topKeywords : [],
+        intents: Array.isArray(d.intents) ? d.intents : fallback.intents,
+        heatmaps: Array.isArray(d.heatmaps) ? d.heatmaps : fallback.heatmaps,
+        topLinks: Array.isArray(d.topLinks) ? d.topLinks : fallback.topLinks,
+        sentiment: d.sentiment || fallback.sentiment,
       };
     } catch {
       return fallback;

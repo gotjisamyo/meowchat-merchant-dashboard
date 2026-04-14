@@ -58,9 +58,21 @@ export default function Onboarding() {
     try {
       const bots = await botAPI.getMyBots();
       const existing = bots[0];
-      const id = existing?.id;
-      if (id) {
+      let id = existing?.id;
+      
+      if (!id) {
+        const setupRes = await botAPI.setup({
+          shopName: botInfo.businessName || 'ร้านค้าใหม่',
+          botName: botInfo.name || 'แมวส้ม',
+          botStyle: botInfo.personality || 'friendly',
+          businessType: botInfo.businessScope || '',
+        });
+        id = setupRes.botId;
+      } else {
         await botAPI.updateBot(id, botInfo);
+      }
+
+      if (id) {
         for (const entry of kb.filter(e => e.enabled)) {
           await knowledgeAPI.create(id, {
             topic: entry.topic,
@@ -71,7 +83,7 @@ export default function Onboarding() {
         setBotId(id);
         setStep(3);
       } else {
-        setSaveError('ไม่พบบอทในระบบ กรุณาติดต่อทีมงาน');
+        setSaveError('สร้างบอทไม่สำเร็จ กรุณาติดต่อทีมงาน');
       }
     } catch (e) {
       console.error('Onboarding save error:', e);

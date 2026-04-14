@@ -181,7 +181,9 @@ export default function Subscription({ setSidebarOpen }) {
     ? Math.max(0, Math.ceil((new Date(usage.trialEndsAt) - Date.now()) / (1000 * 60 * 60 * 24)))
     : null;
   const currentPlan = plans.find((p) => p.id === currentPlanId) || plans[0];
-  const usagePercent = usage ? Math.round((usage.used / (usage.limit || 1)) * 100) : 0;
+  
+  const effectiveLimit = usage?.limit || currentPlan.msgLimit || 3000;
+  const usagePercent = usage ? Math.round((usage.used / effectiveLimit) * 100) : 0;
   const usageColor = usagePercent >= 90 ? '#EF4444' : usagePercent >= 70 ? '#F59E0B' : '#FF6B35';
 
   const handleUpgradeClick = (plan) => {
@@ -315,7 +317,7 @@ export default function Subscription({ setSidebarOpen }) {
                 </span>
                 <span className="text-zinc-500 text-sm ml-2">ข้อความ</span>
               </div>
-              <span className="text-zinc-500 text-sm">จาก {(usage?.limit ?? 300).toLocaleString()}</span>
+              <span className="text-zinc-500 text-sm">จาก {effectiveLimit.toLocaleString()}</span>
             </div>
             <div className="progress-bar h-3">
               <div

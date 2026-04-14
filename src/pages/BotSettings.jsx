@@ -106,16 +106,34 @@ export default function BotSettings({ setSidebarOpen }) {
   }, [testMessages]);
 
   const handleSave = async () => {
-    if (!bot?.id) {
-      setToast({ message: 'ไม่พบข้อมูลบอท กรุณารีเฟรชหน้าและลองใหม่', type: 'error' });
-      return;
-    }
+    let currentBotId = bot?.id;
     setIsSaving(true);
+    
+    if (!currentBotId) {
+      try {
+        const setupRes = await botAPI.setup({
+          shopName: form.name || 'ร้านค้าใหม่',
+          botName: form.name || 'แมวส้ม',
+          botStyle: 'friendly',
+          businessType: form.description || '',
+          lineChannelId: form.lineChannelId || '',
+          lineChannelToken: form.lineAccessToken || '',
+          lineChannelSecret: form.lineChannelSecret || '',
+        });
+        currentBotId = setupRes.botId;
+        setBot(prev => ({ ...(prev || {}), id: currentBotId }));
+      } catch (err) {
+        setToast({ message: 'สร้างข้อมูลบอทไม่สำเร็จ กรุณาลองใหม่', type: 'error' });
+        setIsSaving(false);
+        return;
+      }
+    }
+
     try {
-      await botAPI.updateBot(bot.id, { ...form, slip_verify_mode: form.slipVerifyMode, showBranding: form.showBranding, escalationKeywords: form.escalationKeywords, aiModel: form.aiModel });
+      await botAPI.updateBot(currentBotId, { ...form, slip_verify_mode: form.slipVerifyMode, showBranding: form.showBranding, escalationKeywords: form.escalationKeywords, aiModel: form.aiModel });
       // กรองออก quick replies ที่ label ว่าง ก่อน save
       const validQR = quickReplies.filter(q => q.label.trim()).map(({ _id, ...q }) => q);
-      await quickRepliesAPI.save(bot.id, validQR);
+      await quickRepliesAPI.save(currentBotId, validQR);
       setToast({ message: 'บันทึกการตั้งค่าเรียบร้อยแล้ว', type: 'success' });
     } catch (err) {
       const msg = err?.response?.data?.message || err?.response?.data?.error || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';

@@ -78,20 +78,30 @@ export default function KnowledgeBase({ setSidebarOpen }) {
   });
 
   const handleSave = async (entry) => {
-    const id = botId;
-    if (!id) { setToast({ message: 'ไม่พบข้อมูล Bot กรุณาตั้งค่า Bot ก่อน', type: 'error' }); return; }
+    let currentBotId = botId;
+    if (!currentBotId) {
+      try {
+        const setupRes = await botAPI.setup({ shopName: shopName || 'ร้านค้าใหม่', botName: 'บอทใหม่', botStyle: 'friendly' });
+        currentBotId = setupRes.botId;
+        setBotId(currentBotId);
+      } catch (err) {
+        setToast({ message: 'ไม่พบข้อมูล Bot กรุณาตั้งค่า Bot ก่อน และระบบไม่สามารถสร้างให้อัตโนมัติได้', type: 'error' });
+        return;
+      }
+    }
+    
     let updated;
     if (editEntry) {
-      const result = await knowledgeAPI.update(id, editEntry.id, entry);
+      const result = await knowledgeAPI.update(currentBotId, editEntry.id, entry);
       updated = entries.map((e) => (e.id === editEntry.id ? { ...e, ...result } : e));
       setToast({ message: 'แก้ไขรายการเรียบร้อยแล้ว', type: 'success' });
     } else {
-      const result = await knowledgeAPI.create(id, entry);
+      const result = await knowledgeAPI.create(currentBotId, entry);
       updated = [...entries, result];
       setToast({ message: 'เพิ่มรายการใหม่เรียบร้อยแล้ว', type: 'success' });
     }
     setEntries(updated);
-    knowledgeAPI.saveLocal(id, updated);
+    knowledgeAPI.saveLocal(currentBotId, updated);
     setModalOpen(false);
     setEditEntry(null);
   };
@@ -103,27 +113,39 @@ export default function KnowledgeBase({ setSidebarOpen }) {
   const handleConfirmDelete = async () => {
     const entryId = confirmDelete;
     setConfirmDelete(null);
-    const id = botId;
-    if (!id) return;
-    await knowledgeAPI.remove(id, entryId);
+    const currentBotId = botId;
+    if (!currentBotId) return;
+    await knowledgeAPI.remove(currentBotId, entryId);
     const updated = entries.filter((e) => e.id !== entryId);
     setEntries(updated);
-    knowledgeAPI.saveLocal(id, updated);
+    knowledgeAPI.saveLocal(currentBotId, updated);
     setToast({ message: 'ลบรายการเรียบร้อยแล้ว', type: 'success' });
   };
 
   const handleImportTemplate = async (templateKey) => {
     const template = KB_TEMPLATES[templateKey];
-    if (!template || !botId) return;
+    if (!template) return;
+    
+    let currentBotId = botId;
+    if (!currentBotId) {
+      try {
+        const setupRes = await botAPI.setup({ shopName: shopName || 'ร้านค้าใหม่', botName: 'บอทใหม่', botStyle: 'friendly' });
+        currentBotId = setupRes.botId;
+        setBotId(currentBotId);
+      } catch (err) {
+        setToast({ message: 'ไม่พบข้อมูล Bot กรุณาตั้งค่า Bot ก่อน', type: 'error' });
+        return;
+      }
+    }
+
     setImportingTemplate(templateKey);
-    const id = botId;
     let updated = [...entries];
     for (const entry of template.entries) {
-      const result = await knowledgeAPI.create(id, entry);
+      const result = await knowledgeAPI.create(currentBotId, entry);
       updated = [...updated, result];
     }
     setEntries(updated);
-    knowledgeAPI.saveLocal(id, updated);
+    knowledgeAPI.saveLocal(currentBotId, updated);
     setShowTemplates(false);
     setImportingTemplate(null);
     setToast({ message: `นำเข้า template "${template.label}" เรียบร้อย (${template.entries.length} รายการ)`, type: 'success' });
@@ -507,6 +529,7 @@ function KBModal({ entry, onSave, onClose }) {
   const [keywords, setKeywords] = useState(entry?.keywords || []);
   const [kwInput, setKwInput] = useState('');
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
   const kwRef = useRef(null);
 
   const addKeyword = (raw) => {
@@ -528,7 +551,15 @@ function KBModal({ entry, onSave, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!topic.trim() || !content.trim()) return;
+    if (!topic.trim()) {
+      setError('กรุณาระบุหัวข้อ');
+      return;
+    }
+    if (!content.trim()) {
+      setError('กรุณาระบุเนื้อหา');
+      return;
+    }
+    setError(null);
     setSaving(true);
     await onSave({ topic: topic.trim(), content: content.trim(), keywords });
     setSaving(false);
@@ -552,12 +583,18 @@ function KBModal({ entry, onSave, onClose }) {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-5">
+          {error && (
+            <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl">
+              {error}
+            </div>
+          )}
+          
           <div>
             <label className="block text-sm font-semibold text-zinc-300 mb-2">หัวข้อ *</label>
             <input
               type="text"
               value={topic}
-              onChange={(e) => setTopic(e.target.value)}
+              onChange={(e) => { setTopic(e.target.value); setError(null); }}
               className="input-premium"
               placeholder="เช่น เมนูอาหาร, เวลาทำการ"
               required

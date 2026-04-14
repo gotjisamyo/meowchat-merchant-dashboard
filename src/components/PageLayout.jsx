@@ -14,7 +14,7 @@ export default function PageLayout({ title, subtitle, setSidebarOpen, children, 
   return (
     <div className="flex flex-col min-h-screen w-full min-w-0 animate-fade-in">
       {/* Mobile Header */}
-      <header className="h-14 flex items-center justify-between px-4 bg-[#0A0A0F]/95 backdrop-blur-xl border-b border-white/[0.04] sticky top-0 z-30 md:hidden">
+      <header className="h-14 flex items-center justify-between px-4 bg-[#0A0A0F]/95 backdrop-blur-xl border-b border-white/[0.04] sticky top-0 z-30 lg:hidden">
         <button
           onClick={() => setSidebarOpen(true)}
           className="p-2 hover:bg-white/[0.06] rounded-xl text-zinc-400 transition-colors"
@@ -37,7 +37,7 @@ export default function PageLayout({ title, subtitle, setSidebarOpen, children, 
       </header>
 
       {/* Desktop Header */}
-      <header className="hidden md:flex items-center justify-between gap-4 px-6 lg:px-8 py-5 flex-shrink-0 border-b border-white/[0.04]">
+      <header className="hidden lg:flex items-center justify-between gap-4 px-6 lg:px-8 py-5 flex-shrink-0 border-b border-white/[0.04]">
         <div>
           <h1 className="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">{title}</h1>
           {subtitle && <p className="text-zinc-500 mt-0.5 text-sm">{subtitle}</p>}

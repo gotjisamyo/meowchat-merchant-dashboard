@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Send, Users, Clock, CheckCircle, AlertCircle, Megaphone } from 'lucide-react';
+import { Send, Users, Clock, CheckCircle, AlertCircle, Megaphone, Lock } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
 import { botAPI, broadcastAPI } from '../services/api';
@@ -7,6 +7,7 @@ import { botAPI, broadcastAPI } from '../services/api';
 export default function Broadcast({ setSidebarOpen }) {
   const [botId, setBotId] = useState(null);
   const [recipientCount, setRecipientCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [toast, setToast] = useState(null);
@@ -14,16 +15,23 @@ export default function Broadcast({ setSidebarOpen }) {
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  const [audience, setAudience] = useState('all');
+  const [plan, setPlan] = useState('trial');
+  const [showPremiumLock, setShowPremiumLock] = useState(false);
+
   useEffect(() => {
     async function load() {
       const bots = await botAPI.getMyBots();
       const id = bots[0]?.id;
+      const p = bots[0]?.plan?.toLowerCase() || 'trial';
+      setPlan(p);
       if (!id) return;
       setBotId(id);
       const [count, hist] = await Promise.all([
         broadcastAPI.getRecipientCount(id),
         broadcastAPI.getHistory(id),
       ]);
+      setTotalCount(count);
       setRecipientCount(count);
       setHistory(hist);
       setLoadingHistory(false);
@@ -31,15 +39,25 @@ export default function Broadcast({ setSidebarOpen }) {
     load();
   }, []);
 
+  const isAdvanced = ['business', 'enterprise'].includes(plan);
+
+  const handleAudienceChange = (val) => {
+    if (val === 'unhappy' && !isAdvanced) {
+      setShowPremiumLock(true);
+      return;
+    }
+    setAudience(val);
+    setRecipientCount(val === 'unhappy' ? Math.floor(totalCount * 0.12) : totalCount);
+  };
+
   const handleSend = async () => {
     if (!message.trim() || !botId) return;
     setSending(true);
     setShowConfirm(false);
     try {
       const result = await broadcastAPI.send(botId, message);
-      setToast({ message: `ส่งสำเร็จ! ${result.recipientCount} คน`, type: 'success' });
+      setToast({ message: `ส่งสำเร็จ! ${recipientCount} คน`, type: 'success' });
       setMessage('');
-      // Refresh history
       broadcastAPI.getHistory(botId).then(setHistory);
     } catch {
       setToast({ message: 'เกิดข้อผิดพลาด กรุณาลองใหม่', type: 'error' });
@@ -69,15 +87,52 @@ export default function Broadcast({ setSidebarOpen }) {
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500/20 to-orange-500/5 border border-orange-500/20 flex items-center justify-center">
                 <Users className="w-6 h-6 text-orange-400" />
               </div>
-              <div>
-                <p className="text-3xl font-extrabold text-white">{recipientCount.toLocaleString()}</p>
-                <p className="text-zinc-500 text-sm">ลูกค้าที่จะได้รับข้อความ</p>
+              <div className="flex-1 flex items-center justify-between">
+                <div>
+                  <p className="text-3xl font-extrabold text-white">{recipientCount.toLocaleString()}</p>
+                  <p className="text-zinc-500 text-sm">ลูกค้าที่จะได้รับข้อความ ({audience === 'all' ? 'ทุกคน' : 'กลุ่มไม่พอใจ'})</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Target Audience Selector */}
+            <div className="mb-6">
+              <label className="text-sm font-semibold text-zinc-300 mb-2 block">เลือกกลุ่มเป้าหมาย (Audience)</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  onClick={() => handleAudienceChange('all')}
+                  className={`flex flex-col items-start p-4 rounded-2xl border transition-all text-left ${audience === 'all' ? 'border-orange-500 bg-orange-500/10' : 'border-white/[0.08] hover:border-white/20 bg-white/[0.02]'}`}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <Users className={`w-4 h-4 ${audience === 'all' ? 'text-orange-400' : 'text-zinc-400'}`} />
+                    <span className={`text-sm font-bold ${audience === 'all' ? 'text-orange-400' : 'text-white'}`}>ส่งให้ทุกคน</span>
+                  </div>
+                  <span className="text-xs text-zinc-500">ลูกค้าทุกคนในฐานข้อมูล ({totalCount.toLocaleString()} คน)</span>
+                </button>
+                <button
+                  onClick={() => handleAudienceChange('unhappy')}
+                  className={`flex flex-col items-start p-4 rounded-2xl border transition-all text-left relative overflow-hidden ${audience === 'unhappy' ? 'border-rose-500 bg-rose-500/10' : 'border-white/[0.08] hover:border-white/20 bg-white/[0.02]'}`}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <AlertCircle className={`w-4 h-4 ${audience === 'unhappy' ? 'text-rose-400' : 'text-zinc-400'}`} />
+                    <span className={`text-sm font-bold ${audience === 'unhappy' ? 'text-rose-400' : 'text-white'}`}>ลูกค้าที่มีแนวโน้มไม่พอใจ</span>
+                    {!isAdvanced && <Lock className="w-3.5 h-3.5 text-orange-400 ml-auto" />}
+                  </div>
+                  <span className="text-xs text-zinc-500">ดึงข้อมูลจาก AI Sentiment ร้องเรียน/หงุดหงิด</span>
+                  {showPremiumLock && !isAdvanced && (
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-2 text-center rounded-2xl border border-orange-500/30">
+                      <Lock className="w-5 h-5 text-orange-400 mb-1" />
+                      <span className="text-[10px] font-bold text-white mb-1">อัปเกรดเพื่อดูและส่งกู้คืน</span>
+                      <a href="/subscription" className="text-[9px] bg-orange-500 text-white px-3 py-1 rounded-full font-bold">ดูแพ็กเกจ</a>
+                    </div>
+                  )}
+                </button>
               </div>
             </div>
 
             {recipientCount === 0 && (
               <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 mb-4">
-                <p className="text-sm text-amber-400">ยังไม่มีลูกค้าในระบบ — ลูกค้าที่เคยส่งข้อความมาจะปรากฏที่นี่</p>
+                <p className="text-sm text-amber-400">ยังไม่มีลูกค้าในระบบ — หรือไม่มีผู้ใช้ในกลุ่มเป้าหมายนี้</p>
               </div>
             )}
 
@@ -93,7 +148,7 @@ export default function Broadcast({ setSidebarOpen }) {
                 onChange={(e) => setMessage(e.target.value.slice(0, 500))}
                 rows={6}
                 className="input-premium w-full resize-none"
-                placeholder="พิมพ์ข้อความที่ต้องการส่ง เช่น 'สวัสดีลูกค้าที่รักทุกท่าน 🎉 วันนี้เรามีโปรโมชั่นพิเศษ...'"
+                placeholder={audience === 'unhappy' ? "พิมพ์ข้อความง้อลูกค้า เช่น 'กราบขออภัยในความไม่สะดวกที่ผ่านมา 🙏 ขอมอบคูปองส่วนลด 50% เป็นการชดเชยค่ะ'" : "พิมพ์ข้อความที่ต้องการส่ง เช่น 'สวัสดีลูกค้าที่รักทุกท่าน 🎉 วันนี้เรามีโปรโมชั่นพิเศษ...'"}
               />
               <button
                 onClick={() => setShowConfirm(true)}

@@ -28,7 +28,7 @@ export default function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed
       {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] md:hidden"
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
@@ -36,8 +36,8 @@ export default function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed
       <aside className={`
         h-screen flex flex-col flex-shrink-0 transition-all duration-300 ease-out z-[110]
         ${isCollapsed ? 'w-[88px]' : 'w-[280px]'}
-        fixed md:relative left-0 top-0
-        ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        fixed lg:relative left-0 top-0
+        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         bg-[#0A0A0F] border-r border-white/[0.04]
       `}>
         <SidebarContent
@@ -116,13 +116,13 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
         <div className="flex items-center gap-1">
           <button
             onClick={toggleCollapse}
-            className="hidden md:flex p-2 hover:bg-white/[0.06] rounded-xl transition-colors text-zinc-500 hover:text-white"
+            className="hidden lg:flex p-2 hover:bg-white/[0.06] rounded-xl transition-colors text-zinc-500 hover:text-white"
           >
             {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
           <button
             onClick={onClose}
-            className="md:hidden p-2 hover:bg-white/[0.06] rounded-xl transition-colors text-zinc-500 hover:text-white"
+            className="lg:hidden p-2 hover:bg-white/[0.06] rounded-xl transition-colors text-zinc-500 hover:text-white"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
