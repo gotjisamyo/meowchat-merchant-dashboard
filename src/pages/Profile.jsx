@@ -178,7 +178,8 @@ export default function Profile({ setSidebarOpen }) {
                         type="text"
                         value={profile.company}
                         onChange={(e) => setProfile((p) => ({ ...p, company: e.target.value }))}
-                        className="input-premium !pl-11"
+                        className="input-premium"
+                        style={{ paddingLeft: '44px' }}
                         placeholder="ร้านอาหารสยาม"
                       />
                   </div>
