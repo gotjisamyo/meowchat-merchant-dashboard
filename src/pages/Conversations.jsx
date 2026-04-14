@@ -242,9 +242,9 @@ function ChatDetail({ conv, onClose, loadingMsgs }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <p className="font-bold text-white">{conv.customerName}</p>
+            <p className="font-bold text-white truncate">{conv.customerName}</p>
             {conv.status === 'escalated' && (
-              <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20">
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20 whitespace-nowrap">
                 escalated
               </span>
             )}
@@ -277,8 +277,8 @@ function ChatDetail({ conv, onClose, loadingMsgs }) {
                 {conv.avatar}
               </div>
             )}
-            <div className={`max-w-[75%] break-words`}>
-              <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+            <div className="max-w-[85%] sm:max-w-[75%] min-w-0">
+              <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words ${
                 msg.from === 'customer'
                   ? 'bg-[#1E1E28] text-white rounded-tl-sm'
                   : 'bg-gradient-to-r from-orange-500 to-orange-400 text-white rounded-tr-sm'
