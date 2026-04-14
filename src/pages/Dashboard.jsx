@@ -409,13 +409,27 @@ export default function Dashboard({ setSidebarOpen }) {
 
         {/* Keyword pills */}
         {insights?.topKeywords?.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {insights.topKeywords.slice(0, 12).map(({ word, count }) => (
-              <span key={word} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-xs font-semibold text-zinc-300 hover:bg-white/[0.07] transition-colors">
-                {word}
-                <span className="text-[10px] text-zinc-500 font-bold">{count}</span>
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-2">
+              {insights.topKeywords.slice(0, 5).map(({ word, count }) => (
+                <span key={word} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-xs font-semibold text-zinc-300 hover:bg-white/[0.07] transition-colors">
+                  {word}
+                  <span className="text-[10px] text-zinc-500 font-bold">{count}</span>
+                </span>
+              ))}
+              <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-white/[0.02] border border-dashed border-white/10 text-[10px] font-bold text-zinc-600">
+                +{Math.max(0, insights.topKeywords.length - 5)} keywords อื่นๆ
               </span>
-            ))}
+            </div>
+            
+            <button
+              onClick={() => navigate('/analytics')}
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 hover:border-purple-500/40 text-xs font-bold text-purple-400 transition-all flex items-center justify-center gap-2 group"
+            >
+              <Sparkles className="w-3.5 h-3.5 group-hover:animate-pulse" />
+              ดูบทวิเคราะห์และพฤติกรรมลูกค้าเชิงลึก (Advanced Insights)
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
           </div>
         ) : (
           <p className="text-zinc-600 text-sm text-center py-4">ยังไม่มีข้อมูล — รอให้ลูกค้าส่งข้อความมาก่อน</p>
