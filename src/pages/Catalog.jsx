@@ -1,6 +1,65 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Plus, Search, Package, Edit2, Trash2, ToggleLeft, ToggleRight, X, Loader, AlertCircle, ShoppingBag, Wrench, UtensilsCrossed, BookOpen, Tag } from 'lucide-react';
-import { catalogAPI, botAPI } from '../services/api';
+import { Plus, Search, Package, Edit2, Trash2, ToggleLeft, ToggleRight, X, Loader, AlertCircle, ShoppingBag, Wrench, UtensilsCrossed, BookOpen, Tag, Brain } from 'lucide-react';
+import { catalogAPI, knowledgeAPI, botAPI } from '../services/api';
+
+// ── KB sync helpers ────────────────────────────────────────────────────────────
+
+const KB_MAP_KEY = 'catalog_kb_map';
+
+function loadKbMap() {
+  try { return JSON.parse(localStorage.getItem(KB_MAP_KEY) || '{}'); } catch { return {}; }
+}
+
+function saveKbMap(map) {
+  localStorage.setItem(KB_MAP_KEY, JSON.stringify(map));
+}
+
+function formatKbEntry(item) {
+  const priceStr = item.price > 0 ? `฿${Number(item.price).toLocaleString()}` : 'ฟรี';
+  const statusStr = item.status === 'active' ? 'พร้อมให้บริการ / มีสินค้า' : 'ไม่พร้อมให้บริการ / หมด';
+  const stockStr = (item.stock !== null && item.stock !== undefined && item.stock !== '')
+    ? `จำนวนคงเหลือ ${item.stock} ชิ้น` : '';
+
+  const lines = [
+    `ประเภท: ${item.category}`,
+    `ราคา: ${priceStr}`,
+    `สถานะ: ${statusStr}`,
+    stockStr,
+    item.description ? `รายละเอียด: ${item.description}` : '',
+  ].filter(Boolean);
+
+  const keywords = [
+    item.name,
+    item.category,
+    ...(item.description || '').split(/\s+/).filter(w => w.length > 2).slice(0, 5),
+    item.price > 0 ? priceStr : '',
+  ].filter(Boolean);
+
+  return {
+    topic: item.name,
+    content: lines.join('\n'),
+    keywords,
+  };
+}
+
+async function syncItemToKB(item, botId, kbMap) {
+  const entry = formatKbEntry(item);
+  const existingKbId = kbMap[item.id];
+  let kbId = existingKbId;
+
+  if (existingKbId) {
+    await knowledgeAPI.update(botId, existingKbId, entry);
+  } else {
+    const res = await knowledgeAPI.create(botId, entry);
+    kbId = res?.id || res?.data?.id || `kb_catalog_${item.id}`;
+  }
+  return kbId;
+}
+
+async function removeItemFromKB(itemId, botId, kbMap) {
+  const kbId = kbMap[itemId];
+  if (kbId) await knowledgeAPI.remove(botId, kbId);
+}
 import PageLayout from '../components/PageLayout';
 import ConfirmDialog from '../components/ConfirmDialog';
 import Toast from '../components/Toast';
@@ -38,12 +97,21 @@ export default function Catalog({ setSidebarOpen }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [shopId, setShopId] = useState(null);
+  const [kbMap, setKbMap] = useState(loadKbMap);
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState('ทั้งหมด');
   const [filterStatus, setFilterStatus] = useState('ทั้งหมด');
   const [modal, setModal] = useState(null); // null | 'add' | { item }
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [toast, setToast] = useState(null);
+
+  // shopId === botId in this system
+  const botId = shopId;
+
+  function updateKbMap(newMap) {
+    setKbMap(newMap);
+    saveKbMap(newMap);
+  }
 
   useEffect(() => {
     async function load() {
@@ -84,15 +152,27 @@ export default function Catalog({ setSidebarOpen }) {
         status: form.status,
       };
 
+      let savedItemId;
       if (modal?.item) {
         await catalogAPI.update(modal.item.id, payload);
         setItems(prev => prev.map(i => i.id === modal.item.id ? { ...i, ...payload } : i));
-        setToast({ message: 'อัพเดทรายการสำเร็จ', type: 'success' });
+        savedItemId = modal.item.id;
+        setToast({ message: 'อัพเดทรายการสำเร็จ + sync KB แล้ว', type: 'success' });
       } else {
         const res = await catalogAPI.create(shopId, payload);
-        setItems(prev => [{ id: res.id, ...payload }, ...prev]);
-        setToast({ message: 'เพิ่มรายการสำเร็จ', type: 'success' });
+        savedItemId = res.id;
+        setItems(prev => [{ id: savedItemId, ...payload }, ...prev]);
+        setToast({ message: 'เพิ่มรายการสำเร็จ + sync KB แล้ว', type: 'success' });
       }
+
+      // Sync to Knowledge Base
+      if (botId && savedItemId) {
+        const fullItem = { id: savedItemId, ...payload };
+        const newKbId = await syncItemToKB(fullItem, botId, kbMap);
+        const newMap = { ...kbMap, [savedItemId]: newKbId };
+        updateKbMap(newMap);
+      }
+
       setModal(null);
     } catch {
       setToast({ message: 'บันทึกไม่สำเร็จ กรุณาลองใหม่', type: 'error' });
@@ -103,21 +183,41 @@ export default function Catalog({ setSidebarOpen }) {
     const next = item.status === 'active' ? 'inactive' : 'active';
     try {
       await catalogAPI.update(item.id, { status: next });
-      setItems(prev => prev.map(i => i.id === item.id ? { ...i, status: next } : i));
+      const updatedItem = { ...item, status: next };
+      setItems(prev => prev.map(i => i.id === item.id ? updatedItem : i));
+
+      // Sync status change to KB
+      if (botId) {
+        const newKbId = await syncItemToKB(updatedItem, botId, kbMap);
+        if (!kbMap[item.id]) {
+          const newMap = { ...kbMap, [item.id]: newKbId };
+          updateKbMap(newMap);
+        }
+      }
     } catch {
       setToast({ message: 'เปลี่ยนสถานะไม่สำเร็จ', type: 'error' });
     }
   }
 
   async function handleDelete() {
+    const target = confirmDelete;
+    setConfirmDelete(null);
     try {
-      await catalogAPI.delete(confirmDelete.id);
-      setItems(prev => prev.filter(i => i.id !== confirmDelete.id));
-      setToast({ message: `ลบ "${confirmDelete.name}" แล้ว`, type: 'success' });
+      await catalogAPI.delete(target.id);
+      setItems(prev => prev.filter(i => i.id !== target.id));
+
+      // Remove from Knowledge Base
+      if (botId) {
+        await removeItemFromKB(target.id, botId, kbMap);
+        const newMap = { ...kbMap };
+        delete newMap[target.id];
+        updateKbMap(newMap);
+      }
+
+      setToast({ message: `ลบ "${target.name}" และ KB entry แล้ว`, type: 'success' });
     } catch {
       setToast({ message: 'ลบไม่สำเร็จ กรุณาลองใหม่', type: 'error' });
     }
-    setConfirmDelete(null);
   }
 
   const typeOptions = ['ทั้งหมด', ...ITEM_TYPES.map(t => t.value)];
@@ -189,6 +289,7 @@ export default function Catalog({ setSidebarOpen }) {
             <ItemCard
               key={item.id}
               item={item}
+              inKB={!!kbMap[item.id]}
               onEdit={() => setModal({ item })}
               onDelete={() => setConfirmDelete(item)}
               onToggle={() => handleToggleStatus(item)}
@@ -218,7 +319,7 @@ export default function Catalog({ setSidebarOpen }) {
   );
 }
 
-function ItemCard({ item, onEdit, onDelete, onToggle }) {
+function ItemCard({ item, inKB, onEdit, onDelete, onToggle }) {
   const typeInfo = getTypeInfo(item.category);
   const TypeIcon = typeInfo.icon;
   const status = statusLabel(item.status);
@@ -238,9 +339,16 @@ function ItemCard({ item, onEdit, onDelete, onToggle }) {
             <p className="text-xs text-zinc-500">{item.category}</p>
           </div>
         </div>
-        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border flex-shrink-0 ${status.cls}`}>
-          {status.text}
-        </span>
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          {inKB && (
+            <span className="flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-purple-500/15 text-purple-400 border border-purple-500/20" title="sync ใน Knowledge Base แล้ว">
+              <Brain className="w-2.5 h-2.5" />KB
+            </span>
+          )}
+          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${status.cls}`}>
+            {status.text}
+          </span>
+        </div>
       </div>
 
       {/* Description */}
