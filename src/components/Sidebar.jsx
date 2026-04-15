@@ -68,9 +68,7 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
         const bots = await botAPI.getMyBots();
         botId = bots[0]?.id || null;
         if (botId) handoffAPI.getPendingCount(botId).then(setHandoffCount).catch(() => {});
-        if (user?.role !== 'admin') {
-          billingAPI.getSubscription(botId).then((sub) => setUsagePlan(sub?.plan_name?.toLowerCase() || null)).catch(() => {});
-        }
+        billingAPI.getSubscription(botId).then((sub) => setUsagePlan(sub?.plan_name?.toLowerCase() || null)).catch(() => {});
         if (botId) {
           interval = setInterval(() => {
             handoffAPI.getPendingCount(botId).then(setHandoffCount).catch(() => {});
@@ -197,11 +195,7 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-white truncate">{user.name || 'Merchant'}</p>
               <p className="text-xs text-zinc-500 truncate">{user.email || ''}</p>
-              {user?.role === 'admin' ? (
-                <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-pink-500/20 text-pink-400 border border-pink-500/30">
-                  Admin
-                </span>
-              ) : usagePlan ? (
+              {usagePlan && (
                 <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide
                   ${usagePlan === 'pro' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
                   : usagePlan === 'starter' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
@@ -211,7 +205,7 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
                 >
                   {usagePlan}
                 </span>
-              ) : null}
+              )}
             </div>
           </div>
         )}
