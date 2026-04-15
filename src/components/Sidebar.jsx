@@ -69,7 +69,7 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
         const bots = await botAPI.getMyBots();
         botId = bots[0]?.id || null;
         if (botId) handoffAPI.getPendingCount(botId).then(setHandoffCount).catch(() => {});
-        billingAPI.getSubscription(botId).then((sub) => setUsagePlan(sub?.plan_name?.toLowerCase() || null)).catch(() => {});
+        billingAPI.getSubscription(botId).then((sub) => setUsagePlan(sub?.plan_name?.toLowerCase() || sub?.plan?.toLowerCase() || null)).catch(() => {});
         if (botId) {
           interval = setInterval(() => {
             handoffAPI.getPendingCount(botId).then(setHandoffCount).catch(() => {});

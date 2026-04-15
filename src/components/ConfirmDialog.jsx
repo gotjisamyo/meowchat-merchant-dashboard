@@ -1,11 +1,12 @@
 import { X } from 'lucide-react';
+import { createPortal } from 'react-dom';
 
 export default function ConfirmDialog({ isOpen, title, message, onConfirm, onCancel }) {
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[400] flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[9000] flex items-center justify-center p-4"
       onClick={onCancel}
     >
       <div
@@ -39,6 +40,7 @@ export default function ConfirmDialog({ isOpen, title, message, onConfirm, onCan
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
