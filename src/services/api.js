@@ -331,18 +331,7 @@ export const billingAPI = {
   getPlans: async () => {
     try {
       const res = await api.get('/api/plans');
-      const plans = res.data?.data || [];
-      // Enforce frontend overrides for Pro plan
-      return plans.map(p => {
-        if (p.name?.toLowerCase() === 'pro') {
-          return {
-            ...p,
-            max_bots: 2,
-            features: ['15,000 ข้อความ/เดือน', '2 LINE OA', 'Knowledge Base ไม่จำกัด', 'AI Auto Reply', 'Analytics ครบครัน', 'ซัพพอร์ตทาง LINE & Email']
-          };
-        }
-        return p;
-      });
+      return res.data?.data || [];
     } catch {
       return [];
     }
@@ -587,9 +576,26 @@ export const creditsAPI = {
       return { credits: [], totalAvailable: 0 };
     }
   },
+  // Purchase a pack — returns { ok, paymentId, refNumber, pack, bankInfo, instructions }
   purchase: async (shopId, packId) => {
     const res = await api.post(`/api/credits/purchase/${shopId}`, { packId });
     return res.data;
+  },
+  // Submit slip image after transferring payment
+  submitSlip: async (shopId, { paymentId, refNumber, proofBase64, proofFileName, proofContentType }) => {
+    const res = await api.post(`/api/credits/submit-slip/${shopId}`, {
+      paymentId, refNumber, proofBase64, proofFileName, proofContentType,
+    });
+    return res.data;
+  },
+  // Get pending/unapproved credit purchases for this shop
+  getPending: async (shopId) => {
+    try {
+      const res = await api.get(`/api/credits/pending/${shopId}`);
+      return res.data?.pending || [];
+    } catch {
+      return [];
+    }
   },
 };
 
@@ -678,6 +684,10 @@ export const crmAPI = {
   },
   createContact: async (shopId, { name, phone, email, tag, note }) => {
     const res = await api.post('/api/crm', { shopId, name, phone, email, customerGroup: tag, note });
+    return res.data;
+  },
+  deleteContact: async (shopId, contactId) => {
+    const res = await api.delete(`/api/crm/${contactId}?shopId=${shopId}`);
     return res.data;
   },
 };
