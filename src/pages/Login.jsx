@@ -181,7 +181,7 @@ export default function Login() {
 
       {/* Forgot Password Modal */}
       {forgotModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="w-full max-w-sm bg-[#12121A] rounded-3xl border border-white/[0.08] p-7 shadow-2xl animate-fade-in">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
