@@ -3,7 +3,7 @@ import { CreditCard, Check, Zap, Crown, Building2, X, Plus, Calendar, Download, 
 import { Link } from 'react-router-dom';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
-import { usageAPI, botAPI, creditsAPI, billingAPI, paymentAPI } from '../services/api';
+import { usageAPI, botAPI, creditsAPI, billingAPI, paymentAPI, referralAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
@@ -114,6 +114,7 @@ export default function Subscription({ setSidebarOpen }) {
   const [billingHistory, setBillingHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [nextBillingDate, setNextBillingDate] = useState(null);
+  const [referralDiscount, setReferralDiscount] = useState(null);
 
   const dismissToast = useCallback(() => setToast(null), []);
 
@@ -123,11 +124,13 @@ export default function Subscription({ setSidebarOpen }) {
         const bots = await botAPI.getMyBots();
         const id = bots[0]?.id;
         setShopId(id);
-        const [data, apiPlans, subData] = await Promise.all([
+        const [data, apiPlans, subData, discountData] = await Promise.all([
           usageAPI.getUsage(id),
           billingAPI.getPlans(),
           id ? billingAPI.getSubscription(id) : Promise.resolve(null),
+          referralAPI.getDiscount().catch(() => null),
         ]);
+        if (discountData?.eligible) setReferralDiscount(discountData.discount);
         setUsage(data);
         setSubscription(subData);
 
@@ -371,6 +374,17 @@ export default function Subscription({ setSidebarOpen }) {
         </div>
       </div>
 
+      {/* Referral discount banner */}
+      {referralDiscount && (
+        <div className="rounded-2xl border border-green-500/20 bg-green-500/10 p-4 flex items-center gap-3">
+          <Gift className="w-5 h-5 text-green-400 flex-shrink-0" />
+          <div>
+            <p className="text-sm font-bold text-white">ยินดีด้วย! คุณได้ส่วนลด {referralDiscount}% สำหรับเดือนแรก</p>
+            <p className="text-xs text-zinc-400">ส่วนลดจากการสมัครผ่านลิงก์แนะนำเพื่อน — โอนยอดที่แสดงด้านล่างได้เลย</p>
+          </div>
+        </div>
+      )}
+
       {/* Plan Comparison */}
       <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
         <h2 className="text-xl font-bold text-white mb-6">เปรียบเทียบแผน</h2>
@@ -406,10 +420,20 @@ export default function Subscription({ setSidebarOpen }) {
                 </div>
 
                 <p className="mb-4">
-                  <span className={`text-2xl font-extrabold ${plan.color}`}>
-                    {plan.price === null ? 'Custom' : plan.price === 0 ? 'ฟรี' : `฿${plan.price.toLocaleString()}`}
+                  {referralDiscount && plan.price > 0 && (
+                    <span className="text-sm line-through text-zinc-600 block">
+                      ฿{plan.price.toLocaleString()}
+                    </span>
+                  )}
+                  <span className={`text-2xl font-extrabold ${plan.price > 0 && referralDiscount ? 'text-green-400' : plan.color}`}>
+                    {plan.price === null ? 'Custom' : plan.price === 0 ? 'ฟรี' : referralDiscount
+                      ? `฿${Math.round(plan.price * (1 - referralDiscount / 100)).toLocaleString()}`
+                      : `฿${plan.price.toLocaleString()}`}
                   </span>
                   {plan.price !== null && plan.price > 0 && <span className="text-zinc-600 text-sm">/เดือน</span>}
+                  {referralDiscount && plan.price > 0 && (
+                    <span className="text-[10px] font-bold text-green-400 ml-1">-{referralDiscount}%</span>
+                  )}
                 </p>
 
                 <p className={`text-sm font-semibold mb-4 ${plan.color}`}>

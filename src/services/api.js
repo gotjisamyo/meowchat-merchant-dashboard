@@ -539,7 +539,7 @@ export const analyticsAPI = {
       const res = await api.get(`/api/bots/${botId}/analytics/overview?days=${days}`);
       const d = res.data || {};
       return {
-        stats: { ...fallback.stats, ...(d.stats || {}) },
+        stats: { ...fallback.stats, ...d.stats },
         daily: Array.isArray(d.daily) && d.daily.length > 0 ? d.daily : [],
         topKeywords: Array.isArray(d.topKeywords) && d.topKeywords.length > 0 ? d.topKeywords : [],
         intents: Array.isArray(d.intents) ? d.intents : fallback.intents,
@@ -606,6 +606,10 @@ export const referralAPI = {
   },
   trackClick: async (code) => {
     await api.post('/api/referral/click', { code });
+  },
+  getDiscount: async () => {
+    const res = await api.get('/api/referral/discount');
+    return res.data;
   },
 };
 
