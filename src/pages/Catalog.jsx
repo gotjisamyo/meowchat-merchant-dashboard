@@ -239,6 +239,30 @@ export default function Catalog({ setSidebarOpen }) {
     >
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
+      {/* Stock Alert Banner */}
+      {(() => {
+        const lowStock = items.filter(i => i.category === 'สินค้า' && i.stock !== null && Number(i.stock) <= 5 && i.stock !== '');
+        const outOfStock = lowStock.filter(i => Number(i.stock) === 0);
+        if (lowStock.length === 0) return null;
+        return (
+          <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-amber-500/10 border border-amber-500/20">
+            <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0" />
+            <p className="text-sm text-amber-300 flex-1">
+              {outOfStock.length > 0
+                ? <><span className="font-bold">{outOfStock.length} รายการหมดสต็อก</span>{lowStock.length > outOfStock.length ? ` และ ${lowStock.length - outOfStock.length} รายการเหลือน้อย` : ''}</>
+                : <><span className="font-bold">{lowStock.length} รายการสต็อกเหลือน้อย</span> (≤ 5 ชิ้น)</>
+              }
+            </p>
+            <button
+              onClick={() => { setFilterType('สินค้า'); setFilterStatus('active'); }}
+              className="text-xs font-bold text-amber-400 hover:text-amber-300 flex-shrink-0"
+            >
+              ดูทั้งหมด →
+            </button>
+          </div>
+        );
+      })()}
+
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">

@@ -5,14 +5,14 @@ import {
   ChevronLeft, ChevronRight, Cat, LogOut, Loader2, PhoneCall, Gift, Megaphone, BarChart2, Users, Zap, HelpCircle, Package, ShoppingCart,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { handoffAPI, billingAPI, botAPI } from '../services/api';
+import { handoffAPI, billingAPI, botAPI, ordersAPI } from '../services/api';
 
 const menuItems = [
   { path: '/',             id: 'dashboard',     label: 'Dashboard',       icon: LayoutDashboard },
   { path: '/bot',          id: 'bot',           label: 'ตั้งค่าบอท',        icon: Bot },
   { path: '/knowledge',    id: 'knowledge',     label: 'Knowledge Base',   icon: BookOpen },
   { path: '/catalog',      id: 'catalog',       label: 'รายการ',            icon: Package },
-  { path: '/orders',       id: 'orders',        label: 'ออเดอร์',           icon: ShoppingCart },
+  { path: '/orders',       id: 'orders',        label: 'ออเดอร์',           icon: ShoppingCart, badgeKey: 'orders' },
   { path: '/conversations',id: 'conversations', label: 'บทสนทนา',          icon: MessageSquare },
   { path: '/crm',          id: 'crm',           label: 'CRM',              icon: Users },
   { path: '/handoff',      id: 'handoff',       label: 'Handoff',          icon: PhoneCall, badgeKey: 'handoff' },
@@ -60,22 +60,26 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
   const location = useLocation();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [handoffCount, setHandoffCount] = useState(0);
+  const [ordersCount, setOrdersCount] = useState(0);
   const [usagePlan, setUsagePlan] = useState(null);
 
   useEffect(() => {
     let botId = null;
     let interval = null;
 
+    async function fetchCounts(id) {
+      handoffAPI.getPendingCount(id).then(setHandoffCount).catch(() => {});
+      ordersAPI.getList(id, { status: 'pending' }).then(r => setOrdersCount(r?.length ?? 0)).catch(() => {});
+    }
+
     async function init() {
       try {
         const bots = await botAPI.getMyBots();
         botId = bots[0]?.id || null;
-        if (botId) handoffAPI.getPendingCount(botId).then(setHandoffCount).catch(() => {});
-        billingAPI.getSubscription(botId).then((sub) => setUsagePlan(sub?.plan_name?.toLowerCase() || sub?.plan?.toLowerCase() || null)).catch(() => {});
         if (botId) {
-          interval = setInterval(() => {
-            handoffAPI.getPendingCount(botId).then(setHandoffCount).catch(() => {});
-          }, 30000);
+          fetchCounts(botId);
+          billingAPI.getSubscription(botId).then((sub) => setUsagePlan(sub?.plan_name?.toLowerCase() || sub?.plan?.toLowerCase() || null)).catch(() => {});
+          interval = setInterval(() => fetchCounts(botId), 30000);
         }
       } catch {
         // No bot or API unavailable — sidebar renders without badge/plan
@@ -141,7 +145,9 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeId === item.id;
-          const badge = item.badgeKey === 'handoff' && handoffCount > 0 ? handoffCount : null;
+          const badge = (item.badgeKey === 'handoff' && handoffCount > 0 ? handoffCount : 0)
+            || (item.badgeKey === 'orders' && ordersCount > 0 ? ordersCount : 0)
+            || null;
 
           return (
             <button

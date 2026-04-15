@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import {
   MessageSquare, Users, TrendingUp, Wifi, WifiOff,
   ChevronRight, RefreshCw, Zap, AlertTriangle, Bot, Activity,
-  Clock, Sparkles, Crown, CheckCircle2, Circle,
+  Clock, Sparkles, Crown, CheckCircle2, Circle, ShoppingCart, Package,
 } from 'lucide-react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   RadialBarChart, RadialBar, Cell,
 } from 'recharts';
 import PageLayout from '../components/PageLayout';
-import { usageAPI, billingAPI, botAPI, conversationsAPI, kpiAPI, analyticsAPI } from '../services/api';
+import { usageAPI, billingAPI, botAPI, conversationsAPI, kpiAPI, analyticsAPI, ordersAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 export default function Dashboard({ setSidebarOpen }) {
@@ -25,6 +25,7 @@ export default function Dashboard({ setSidebarOpen }) {
   const [loading, setLoading] = useState(true);
   const [insights, setInsights] = useState(null);
   const [insightsDays, setInsightsDays] = useState(30);
+  const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -35,13 +36,14 @@ export default function Dashboard({ setSidebarOpen }) {
         setBot(firstBot);
         const botId = firstBot?.id || null;
         if (!botId) { setLoading(false); return; }
-        const [usageData, subData, convs, kpiData, weeklyData, insightsData] = await Promise.all([
+        const [usageData, subData, convs, kpiData, weeklyData, insightsData, ordersData] = await Promise.all([
           usageAPI.getUsage(botId),
           billingAPI.getSubscription(botId),
           conversationsAPI.getAll(botId),
           kpiAPI.getStats(botId),
           kpiAPI.getWeekly(botId),
           analyticsAPI.getTopics(botId, insightsDays),
+          ordersAPI.getList(botId, {}).catch(() => []),
         ]);
         setUsage(usageData);
         setSubscription(subData);
@@ -49,6 +51,7 @@ export default function Dashboard({ setSidebarOpen }) {
         setKpi(kpiData);
         setWeekly(weeklyData);
         setInsights(insightsData);
+        setOrders(ordersData ?? []);
       } catch {
         // Already handled with mock fallbacks in api.js
       }
@@ -69,6 +72,16 @@ export default function Dashboard({ setSidebarOpen }) {
   const totalReplies = usage?.used ?? 0;
   const timeSavedHours = Math.round((totalReplies * 3) / 60);
   const moneySaved = Math.round(timeSavedHours * 150);
+
+  // Orders stats
+  const today = new Date().toISOString().slice(0, 10);
+  const pendingOrders = orders.filter(o => o.status === 'pending');
+  const todayRevenue = orders
+    .filter(o => o.status === 'completed' && o.created_at?.slice(0, 10) === today)
+    .reduce((s, o) => s + (Number(o.total_amount) || 0), 0);
+  const totalRevenue = orders
+    .filter(o => o.status === 'completed')
+    .reduce((s, o) => s + (Number(o.total_amount) || 0), 0);
 
   return (
     <PageLayout
@@ -203,6 +216,52 @@ export default function Dashboard({ setSidebarOpen }) {
           offlineAction={bot?.status !== 'online' ? () => navigate('/bot') : null}
         />
       </div>
+
+      {/* Orders Stats Row */}
+      {orders.length > 0 && (
+        <div
+          className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 cursor-pointer hover:border-orange-500/20 transition-colors"
+          onClick={() => navigate('/orders')}
+        >
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+              <ShoppingCart className="w-5 h-5 text-orange-400" />
+            </div>
+            <div>
+              <p className="text-xs text-zinc-500 font-semibold">ออเดอร์</p>
+              <p className="text-sm font-bold text-white">{loading ? '...' : `${orders.length} รายการ`}</p>
+            </div>
+          </div>
+          <div className="w-px h-10 bg-white/[0.06] hidden sm:block" />
+          <div className="flex gap-6 flex-wrap">
+            <div>
+              <p className="text-xs text-zinc-500 mb-0.5">รอดำเนินการ</p>
+              <p className={`text-lg font-extrabold ${pendingOrders.length > 0 ? 'text-amber-400' : 'text-zinc-400'}`}>
+                {loading ? '...' : pendingOrders.length}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-zinc-500 mb-0.5">รายได้วันนี้</p>
+              <p className="text-lg font-extrabold text-emerald-400">
+                {loading ? '...' : `฿${todayRevenue.toLocaleString()}`}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-zinc-500 mb-0.5">รายได้รวม</p>
+              <p className="text-lg font-extrabold text-white">
+                {loading ? '...' : `฿${totalRevenue.toLocaleString()}`}
+              </p>
+            </div>
+          </div>
+          {pendingOrders.length > 0 && (
+            <div className="sm:ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold flex-shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              {pendingOrders.length} รอยืนยัน
+            </div>
+          )}
+          <ChevronRight className="w-4 h-4 text-zinc-600 hidden sm:block flex-shrink-0" />
+        </div>
+      )}
 
       {/* Main Grid: Usage + Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6">
