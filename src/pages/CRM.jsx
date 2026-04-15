@@ -3,6 +3,7 @@ import { Users, Download, Upload, X, Info, Search, Tag, Phone, Mail, StickyNote,
 import { useNavigate } from 'react-router-dom';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
+import ConfirmDialog from '../components/ConfirmDialog';
 import { botAPI, crmAPI } from '../services/api';
 
 const CSV_HEADERS = ['name', 'phone', 'email', 'tag', 'note'];
@@ -28,6 +29,7 @@ export default function CRM({ setSidebarOpen }) {
   const [addForm, setAddForm] = useState(EMPTY_FORM);
   const [addLoading, setAddLoading] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+  const [confirmDeleteContact, setConfirmDeleteContact] = useState(null);
   const [showGuide, setShowGuide] = useState(false);
   const fileRef = useRef(null);
 
@@ -207,6 +209,14 @@ export default function CRM({ setSidebarOpen }) {
       }
     >
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      {confirmDeleteContact && (
+        <ConfirmDialog
+          title="ลบรายชื่อ"
+          message={`ต้องการลบ "${confirmDeleteContact.name}" ออกจากรายชื่อใช่หรือไม่?`}
+          onConfirm={() => { handleDelete(confirmDeleteContact); setConfirmDeleteContact(null); }}
+          onClose={() => setConfirmDeleteContact(null)}
+        />
+      )}
 
       {/* Usage Guide Panel */}
       <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] overflow-hidden">
@@ -498,7 +508,7 @@ export default function CRM({ setSidebarOpen }) {
                 )}
               </div>
               <button
-                onClick={() => handleDelete(contact)}
+                onClick={() => setConfirmDeleteContact(contact)}
                 disabled={deleteId === contact.id}
                 className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-all disabled:opacity-50"
                 title="ลบรายชื่อ"
