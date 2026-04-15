@@ -764,25 +764,67 @@ function UpgradeModal({ plan, onClose, shopId }) {
 }
 
 function TopupModal({ shopId, onClose, onSuccess }) {
+  const fileInputRef = useRef(null);
   const [packs, setPacks] = useState([]);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [purchasing, setPurchasing] = useState(false);
-  const [done, setDone] = useState(false);
+  const [step, setStep] = useState('select'); // 'select' | 'payment' | 'success'
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
+  const [autoApproved, setAutoApproved] = useState(false);
+  const [purchaseInfo, setPurchaseInfo] = useState(null); // { paymentId, bankInfo, pack }
+  const [slipFile, setSlipFile] = useState(null);
+  const [slipPreview, setSlipPreview] = useState(null);
 
   useEffect(() => {
-    creditsAPI.getPacks().then(p => { setPacks(p); setPurchasing(false); setLoading(false); });
+    creditsAPI.getPacks().then(p => { setPacks(p); setLoading(false); });
   }, []);
 
-  const handlePurchase = async () => {
+  const handleContinue = async () => {
     if (!selected || !shopId) return;
-    setPurchasing(true);
+    setSubmitting(true);
+    setError('');
     try {
-      await creditsAPI.purchase(shopId, selected.id);
-      onSuccess?.(selected.messages);
-      setDone(true);
+      const data = await creditsAPI.purchase(shopId, selected.id);
+      setPurchaseInfo(data);
+      setStep('payment');
     } catch {
-      setPurchasing(false);
+      setError('เกิดข้อผิดพลาด กรุณาลองใหม่');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setSlipFile(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => setSlipPreview(ev.target.result);
+    reader.readAsDataURL(file);
+  };
+
+  const handleSubmitSlip = async () => {
+    if (!slipFile || !purchaseInfo) return;
+    setError('');
+    setSubmitting(true);
+    try {
+      const base64 = slipPreview.split(',')[1];
+      const result = await creditsAPI.submitSlip(shopId, {
+        paymentId: purchaseInfo.paymentId,
+        proofBase64: base64,
+        proofFileName: slipFile.name,
+        proofContentType: slipFile.type,
+      });
+      if (result.autoApproved) onSuccess?.(selected.messages);
+      setAutoApproved(!!result.autoApproved);
+      setSuccessMsg(result.message || 'บันทึกสลิปแล้ว ทีมงานจะตรวจสอบภายใน 24 ชั่วโมง');
+      setStep('success');
+    } catch (err) {
+      setError(err?.response?.data?.error || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -795,16 +837,77 @@ function TopupModal({ shopId, onClose, onSuccess }) {
             <X className="w-5 h-5" />
           </button>
         </div>
+
         <div className="p-4 sm:p-6 space-y-4">
-          {done ? (
-            <div className="text-center py-6">
-              <div className="text-5xl mb-3">✅</div>
-              <p className="text-lg font-bold text-white mb-1">สั่งซื้อสำเร็จ</p>
-              <p className="text-sm text-zinc-400">แจ้งสลิปผ่าน LINE @MeowChat ทีมงานจะ activate เครดิตภายใน 2 ชั่วโมง</p>
-              <button onClick={onClose} className="btn-primary mt-5 px-8 py-2.5 rounded-xl text-sm font-bold text-white">
-                ปิด
-              </button>
+          {step === 'success' ? (
+            <div className="text-center py-6 space-y-4">
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto ${autoApproved ? 'bg-emerald-500/15' : 'bg-amber-500/15'}`}>
+                <CheckCircle2 className={`w-8 h-8 ${autoApproved ? 'text-emerald-400' : 'text-amber-400'}`} />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-white">{autoApproved ? 'เปิดเครดิตแล้ว!' : 'รับสลิปแล้ว!'}</p>
+                <p className="text-sm text-zinc-400 mt-1">{successMsg}</p>
+              </div>
+              <button onClick={onClose} className="btn-primary px-8 py-2.5 rounded-xl text-sm font-bold text-white">ตกลง</button>
             </div>
+
+          ) : step === 'payment' ? (
+            <>
+              {/* Pack summary */}
+              <div className="p-4 rounded-2xl border border-orange-500/20 bg-orange-500/5 text-center">
+                <p className="text-2xl font-extrabold text-orange-400 mb-0.5">฿{purchaseInfo?.pack?.price?.toLocaleString()}</p>
+                <p className="text-xs text-zinc-500">+{purchaseInfo?.pack?.messages?.toLocaleString()} ข้อความ · ใช้ได้ 90 วัน</p>
+              </div>
+
+              {/* Bank info */}
+              <div className="bg-[#0A0A0F] rounded-2xl p-4 border border-white/[0.06]">
+                <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">โอนเงินมาที่</p>
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-white">{purchaseInfo?.bankInfo?.bankName}</p>
+                  <p className="text-xl font-mono font-bold text-orange-400 tracking-wider">{purchaseInfo?.bankInfo?.accountNumber}</p>
+                  <p className="text-sm text-zinc-400">{purchaseInfo?.bankInfo?.accountName}</p>
+                </div>
+              </div>
+
+              {/* Slip upload */}
+              <div>
+                <label className="block text-xs font-semibold text-zinc-400 mb-1.5">สลิปการโอน</label>
+                <input type="file" accept="image/*" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
+                {slipPreview ? (
+                  <div className="relative">
+                    <img src={slipPreview} alt="slip" className="w-full max-h-48 object-contain rounded-xl border border-white/[0.08]" />
+                    <button
+                      onClick={() => { setSlipFile(null); setSlipPreview(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+                      className="absolute top-2 right-2 p-1 bg-black/60 rounded-full text-zinc-400 hover:text-white"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full py-8 rounded-xl border border-dashed border-white/[0.15] hover:border-orange-500/40 hover:bg-orange-500/[0.03] transition-all text-center text-zinc-500 hover:text-zinc-300"
+                  >
+                    <Upload className="w-5 h-5 mx-auto mb-1.5" />
+                    <p className="text-xs font-medium">คลิกเพื่ออัปโหลดสลิป</p>
+                    <p className="text-[10px] text-zinc-600 mt-0.5">JPG, PNG</p>
+                  </button>
+                )}
+              </div>
+
+              {error && <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2.5">{error}</p>}
+
+              <button
+                onClick={handleSubmitSlip}
+                disabled={!slipFile || submitting}
+                className="btn-primary w-full py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2 disabled:opacity-60"
+              >
+                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                {submitting ? 'กำลังตรวจสอบสลิป...' : 'ส่งสลิปและยืนยันการชำระ'}
+              </button>
+              <p className="text-center text-xs text-zinc-600">ระบบ AI จะตรวจสอบสลิปอัตโนมัติ เปิดเครดิตทันทีหากยอดตรง</p>
+            </>
+
           ) : (
             <>
               <p className="text-sm text-zinc-400">เลือกแพ็กเกจที่ต้องการ เครดิตใช้ได้ 90 วัน ไม่หมดอายุตามรอบบิล</p>
@@ -822,13 +925,7 @@ function TopupModal({ shopId, onClose, onSuccess }) {
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <input
-                          type="radio"
-                          name="pack"
-                          checked={selected?.id === pack.id}
-                          onChange={() => setSelected(pack)}
-                          className="accent-orange-500"
-                        />
+                        <input type="radio" name="pack" checked={selected?.id === pack.id} onChange={() => setSelected(pack)} className="accent-orange-500" />
                         <div>
                           <p className="text-sm font-bold text-white">Pack {pack.name} — +{pack.messages.toLocaleString()} ข้อความ</p>
                           <p className="text-xs text-zinc-500">ใช้ได้ 90 วัน นับจากวัน activate</p>
@@ -840,23 +937,16 @@ function TopupModal({ shopId, onClose, onSuccess }) {
                 </div>
               )}
 
-              <div className="bg-[#0A0A0F] rounded-2xl p-3 border border-white/[0.06] space-y-2">
-                <p className="text-xs font-semibold text-zinc-300">ขั้นตอนหลังสั่งซื้อ:</p>
-                <p className="text-xs text-blue-300">
-                  โอนเงินตามจำนวน → แจ้งสลิป + อีเมล ที่ <strong>LINE @MeowChat</strong> → activate ภายใน 2 ชั่วโมง
-                </p>
-              </div>
+              {error && <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2.5">{error}</p>}
 
               <div className="flex gap-3">
-                <button onClick={onClose} className="flex-1 py-3 rounded-xl text-sm font-semibold btn-secondary border border-white/[0.08]">
-                  ยกเลิก
-                </button>
+                <button onClick={onClose} className="flex-1 py-3 rounded-xl text-sm font-semibold btn-secondary border border-white/[0.08]">ยกเลิก</button>
                 <button
-                  onClick={handlePurchase}
-                  disabled={!selected || purchasing}
+                  onClick={handleContinue}
+                  disabled={!selected || submitting}
                   className="flex-1 py-3 rounded-xl text-sm font-bold btn-primary text-white disabled:opacity-50"
                 >
-                  {purchasing ? 'กำลังดำเนินการ...' : `สั่งซื้อ${selected ? ` ฿${selected.price}` : ''}`}
+                  {submitting ? 'กำลังโหลด...' : `ดำเนินการต่อ${selected ? ` ฿${selected.price}` : ''}`}
                 </button>
               </div>
             </>
