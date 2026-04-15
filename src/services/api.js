@@ -604,8 +604,11 @@ export const referralAPI = {
     const res = await api.get('/api/referral/my');
     return res.data;
   },
-  trackClick: async (code) => {
+  click: async (code) => {
     await api.post('/api/referral/click', { code });
+  },
+  convert: async (code) => {
+    await api.post('/api/referral/convert', { code });
   },
   getDiscount: async () => {
     const res = await api.get('/api/referral/discount');

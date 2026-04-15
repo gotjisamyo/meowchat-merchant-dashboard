@@ -30,7 +30,8 @@ export default function Login() {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || '/';
+  const fromLoc = location.state?.from;
+  const from = fromLoc ? (fromLoc.pathname || '/') + (fromLoc.search || '') : '/';
 
   useEffect(() => {
     if (isAuthenticated) navigate(from, { replace: true });

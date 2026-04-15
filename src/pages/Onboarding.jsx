@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircle, ChevronRight, ChevronLeft, Bot, BookOpen, Zap, Loader } from 'lucide-react';
-import { botAPI, knowledgeAPI } from '../services/api';
+import { botAPI, knowledgeAPI, referralAPI } from '../services/api';
 
 const STEPS = [
   { id: 1, title: 'ตั้งชื่อบอท', icon: <Bot className="w-5 h-5" /> },
@@ -36,10 +36,16 @@ const KB_TEMPLATES = [
 
 export default function Onboarding() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const refCode = searchParams.get('ref');
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
   const [botId, setBotId] = useState(null);
   const [saveError, setSaveError] = useState(null);
+
+  useEffect(() => {
+    if (refCode) referralAPI.click(refCode).catch(() => {});
+  }, [refCode]);
 
   const [botInfo, setBotInfo] = useState({
     name: '',
@@ -81,6 +87,7 @@ export default function Onboarding() {
           });
         }
         setBotId(id);
+        if (refCode) referralAPI.convert(refCode).catch(() => {});
         setStep(3);
       } else {
         setSaveError('สร้างบอทไม่สำเร็จ กรุณาติดต่อทีมงาน');
