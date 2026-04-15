@@ -20,6 +20,7 @@ import LineSetupGuide from './pages/LineSetupGuide';
 import CRM from './pages/CRM';
 import Marketing from './pages/Marketing';
 import Settings from './pages/Settings';
+import FAQ from './pages/FAQ';
 
 function MerchantLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -73,6 +74,7 @@ export default function App() {
                       <Route path="/line-guide" element={<LineSetupGuide setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/crm" element={<CRM setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/automation" element={<Marketing setSidebarOpen={setSidebarOpen} />} />
+                      <Route path="/faq" element={<FAQ setSidebarOpen={setSidebarOpen} />} />
                       <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                   )}

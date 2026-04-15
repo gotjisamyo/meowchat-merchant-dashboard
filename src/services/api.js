@@ -228,6 +228,11 @@ export const botAPI = {
     const response = await api.post(`/api/bots/${botId}/simulate`, { message });
     return response.data;
   },
+
+  getUnansweredQuestions: async (botId) => {
+    const res = await api.get(`/api/bots/${botId}/unanswered-questions`);
+    return res.data.questions || [];
+  },
 };
 
 // ── Knowledge Base ────────────────────────────────────────────────────────────

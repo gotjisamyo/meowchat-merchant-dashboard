@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Bot, BookOpen, MessageSquare, CreditCard, User,
-  ChevronLeft, ChevronRight, Cat, LogOut, Loader2, PhoneCall, Gift, Megaphone, BarChart2, Users, Zap,
+  ChevronLeft, ChevronRight, Cat, LogOut, Loader2, PhoneCall, Gift, Megaphone, BarChart2, Users, Zap, HelpCircle,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { handoffAPI, billingAPI, botAPI } from '../services/api';
@@ -19,6 +19,7 @@ const menuItems = [
   { path: '/automation',   id: 'automation',    label: 'Automation',        icon: Zap },
   { path: '/subscription', id: 'subscription',  label: 'Subscription',     icon: CreditCard },
   { path: '/referral',     id: 'referral',      label: 'แนะนำเพื่อน',       icon: Gift },
+  { path: '/faq',          id: 'faq',           label: 'คำถาม / FAQ',       icon: HelpCircle },
   { path: '/settings',     id: 'settings',      label: 'ตั้งค่า / โปรไฟล์', icon: User },
 ];
 
