@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { CheckCircle, ChevronRight, ChevronLeft, Bot, BookOpen, Zap, Loader } from 'lucide-react';
+import { CheckCircle, ChevronRight, ChevronLeft, Bot, BookOpen, Link2, Loader } from 'lucide-react';
 import { botAPI, knowledgeAPI, referralAPI } from '../services/api';
 
 const STEPS = [
   { id: 1, title: 'ตั้งชื่อบอท', icon: <Bot className="w-5 h-5" /> },
   { id: 2, title: 'Knowledge Base', icon: <BookOpen className="w-5 h-5" /> },
-  { id: 3, title: 'พร้อมใช้งาน!', icon: <Zap className="w-5 h-5" /> },
+  { id: 3, title: 'เชื่อม LINE OA', icon: <Link2 className="w-5 h-5" /> },
 ];
 
 const PERSONALITY_OPTIONS = [
@@ -274,8 +274,8 @@ function StepKB({ kb, setKb, onBack, onFinish, saving, saveError }) {
           disabled={saving}
           className="btn-primary flex-2 flex-grow py-3.5 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2"
         >
-          {saving ? <Loader className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
-          {saving ? 'กำลังบันทึก...' : 'เสร็จสิ้น — เริ่มใช้งาน!'}
+          {saving ? <Loader className="w-4 h-4 animate-spin" /> : <ChevronRight className="w-4 h-4" />}
+          {saving ? 'กำลังบันทึก...' : 'ถัดไป — เชื่อม LINE OA'}
         </button>
       </div>
     </div>
@@ -293,19 +293,18 @@ function StepDone({ botId, onGo }) {
   };
 
   return (
-    <div className="text-center space-y-6 py-4">
-      <div className="text-6xl">🎉</div>
+    <div className="space-y-5">
       <div>
-        <h2 className="text-xl font-extrabold text-white mb-2">บอทพร้อมใช้งานแล้ว!</h2>
-        <p className="text-zinc-400 text-sm leading-relaxed">
-          ตั้งค่าพื้นฐานเสร็จแล้ว ขั้นตอนต่อไปคือ<br />
-          เชื่อม LINE OA กับ Webhook URL ด้านล่าง
-        </p>
+        <div className="flex items-center gap-2 mb-1">
+          <Link2 className="w-5 h-5 text-orange-400" />
+          <h2 className="text-lg font-bold text-white">เชื่อม LINE OA กับบอท</h2>
+        </div>
+        <p className="text-zinc-500 text-sm">คัดลอก Webhook URL แล้วนำไปใส่ใน LINE OA Manager เพื่อให้บอทรับข้อความได้</p>
       </div>
 
-      <div className="bg-[#0A0A0F] rounded-2xl p-4 border border-white/[0.06] text-left space-y-2">
-        <p className="text-xs text-zinc-500 font-semibold">Webhook URL (นำไปใส่ใน LINE OA Manager)</p>
-        <code className="text-xs text-orange-300 break-all block">{webhookUrl}</code>
+      <div className="bg-[#0A0A0F] rounded-2xl p-4 border border-orange-500/20 text-left space-y-2">
+        <p className="text-xs text-zinc-500 font-semibold">Webhook URL</p>
+        <code className="text-xs text-orange-300 break-all block leading-relaxed">{webhookUrl}</code>
         <button
           onClick={handleCopy}
           className={`mt-1 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
@@ -319,22 +318,30 @@ function StepDone({ botId, onGo }) {
       </div>
 
       <div className="bg-[#0A0A0F] rounded-2xl p-4 border border-white/[0.06] text-left">
-        <p className="text-xs text-zinc-500 font-semibold mb-2">วิธีเชื่อมต่อ LINE OA</p>
-        <ol className="space-y-1.5 text-xs text-zinc-400">
-          <li className="flex gap-2"><span className="text-orange-400 font-bold">1.</span>เข้า LINE Official Account Manager</li>
-          <li className="flex gap-2"><span className="text-orange-400 font-bold">2.</span>Settings → Messaging API → เปิดใช้งาน</li>
-          <li className="flex gap-2"><span className="text-orange-400 font-bold">3.</span>ใส่ Webhook URL ด้านบน แล้วกด Verify</li>
-          <li className="flex gap-2"><span className="text-orange-400 font-bold">4.</span>เปิด "Use webhook" แล้วกด Update</li>
+        <p className="text-xs text-zinc-500 font-semibold mb-3">วิธีเชื่อมต่อ LINE OA</p>
+        <ol className="space-y-2 text-xs text-zinc-400">
+          <li className="flex gap-2"><span className="text-orange-400 font-bold w-4 flex-shrink-0">1.</span>เข้า LINE Official Account Manager → Settings</li>
+          <li className="flex gap-2"><span className="text-orange-400 font-bold w-4 flex-shrink-0">2.</span>เลือก Messaging API → เปิดใช้งาน</li>
+          <li className="flex gap-2"><span className="text-orange-400 font-bold w-4 flex-shrink-0">3.</span>วาง Webhook URL ด้านบน → กด Verify</li>
+          <li className="flex gap-2"><span className="text-orange-400 font-bold w-4 flex-shrink-0">4.</span>เปิด "Use webhook" → Update</li>
         </ol>
       </div>
 
-      <button
-        onClick={onGo}
-        className="btn-primary w-full py-3.5 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2"
-      >
-        ไปที่ Dashboard
-        <ChevronRight className="w-4 h-4" />
-      </button>
+      <div className="flex gap-3 pt-1">
+        <button
+          onClick={onGo}
+          className="btn-secondary flex-1 py-3 rounded-xl text-sm font-semibold text-zinc-400 flex items-center justify-center gap-2"
+        >
+          ข้ามก่อน
+        </button>
+        <button
+          onClick={onGo}
+          className="btn-primary flex-[2] py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2"
+        >
+          เชื่อมแล้ว → เข้าสู่ Dashboard
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
     </div>
   );
 }
