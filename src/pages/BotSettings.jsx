@@ -19,6 +19,10 @@ const PERSONALITIES = [
   { value: 'thai_polite',  icon: '🙏', label: 'สุภาพแบบไทย',          desc: 'ใช้คำสุภาพ ค่ะ/ครับ เต็มที่ แบบไทยแท้' },
   { value: 'mentor',       icon: '📚', label: 'ผู้เชี่ยวชาญ',         desc: 'ตอบแบบผู้รู้ ให้คำแนะนำ อธิบายละเอียด' },
   { value: 'sales',        icon: '🚀', label: 'Sales เชิงรุก',        desc: 'แนะนำสินค้า โปรโมชั่น กระตุ้นยอดขาย' },
+  { value: 'cute',         icon: '🌸', label: 'น่ารัก หวาน',          desc: 'ตอบแบบน่ารัก หวานๆ สร้างความประทับใจ' },
+  { value: 'serious',      icon: '🧠', label: 'จริงจัง มีสาระ',       desc: 'ให้ข้อมูลเชิงลึก ไม่เบี่ยงเรื่อง ตรงประเด็น' },
+  { value: 'caring',       icon: '💝', label: 'ห่วงใย บริการดี',      desc: 'ใส่ใจปัญหาลูกค้า ติดตาม อยากแก้ไขจริงๆ' },
+  { value: 'cool',         icon: '😎', label: 'สุขุม เท่',            desc: 'ตอบแบบ cool สุขุม มั่นใจ ไม่รีบร้อน' },
 ];
 
 export default function BotSettings({ setSidebarOpen }) {
@@ -41,6 +45,7 @@ export default function BotSettings({ setSidebarOpen }) {
     escalationKeywords: '',
     aiModel: 'gemini-2.0-flash',
   });
+  const [customMode, setCustomMode] = useState(false);
   const [quickReplies, setQuickReplies] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState(null);
@@ -83,6 +88,9 @@ export default function BotSettings({ setSidebarOpen }) {
             escalationKeywords: b.escalationKeywords || '',
             aiModel: b.aiModel || 'gemini-2.0-flash',
           });
+          if (b.personality && !PERSONALITIES.some(p => p.value === b.personality)) {
+            setCustomMode(true);
+          }
           try {
             const qr = await quickRepliesAPI.get(b.id);
             // เพิ่ม stable _id สำหรับ React key
@@ -121,7 +129,7 @@ export default function BotSettings({ setSidebarOpen }) {
           lineChannelSecret: form.lineChannelSecret || '',
         });
         currentBotId = setupRes.botId;
-        setBot(prev => ({ ...(prev || {}), id: currentBotId }));
+        setBot(prev => ({ ...prev, id: currentBotId }));
       } catch (err) {
         setToast({ message: 'สร้างข้อมูลบอทไม่สำเร็จ กรุณาลองใหม่', type: 'error' });
         setIsSaving(false);
@@ -249,23 +257,48 @@ export default function BotSettings({ setSidebarOpen }) {
                     <button
                       key={p.value}
                       type="button"
-                      onClick={() => update('personality', p.value)}
+                      onClick={() => { setCustomMode(false); update('personality', p.value); }}
                       className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-all ${
-                        form.personality === p.value
+                        !customMode && form.personality === p.value
                           ? 'bg-orange-500/10 border-orange-500/40'
                           : 'bg-[#0A0A0F] border-white/[0.06] hover:border-white/15'
                       }`}
                     >
                       <span className="text-xl flex-shrink-0 mt-0.5">{p.icon}</span>
                       <div className="min-w-0">
-                        <p className={`text-xs font-semibold leading-tight ${form.personality === p.value ? 'text-orange-300' : 'text-zinc-300'}`}>
+                        <p className={`text-xs font-semibold leading-tight ${!customMode && form.personality === p.value ? 'text-orange-300' : 'text-zinc-300'}`}>
                           {p.label}
                         </p>
                         <p className="text-[10px] text-zinc-600 mt-0.5 leading-tight">{p.desc}</p>
                       </div>
                     </button>
                   ))}
+                  {/* Custom personality option */}
+                  <button
+                    type="button"
+                    onClick={() => { setCustomMode(true); update('personality', ''); }}
+                    className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-all ${
+                      customMode
+                        ? 'bg-orange-500/10 border-orange-500/40'
+                        : 'bg-[#0A0A0F] border-white/[0.06] hover:border-white/15'
+                    }`}
+                  >
+                    <span className="text-xl flex-shrink-0 mt-0.5">✏️</span>
+                    <div className="min-w-0">
+                      <p className={`text-xs font-semibold leading-tight ${customMode ? 'text-orange-300' : 'text-zinc-300'}`}>กำหนดเอง</p>
+                      <p className="text-[10px] text-zinc-600 mt-0.5 leading-tight">พิมพ์บุคลิกแบบที่ต้องการ</p>
+                    </div>
+                  </button>
                 </div>
+                {customMode && (
+                  <textarea
+                    rows={3}
+                    className="input-premium resize-none mt-2"
+                    placeholder="เช่น: ตอบแบบพยาบาลที่ใจดี อธิบายเรื่องยาด้วยภาษาเข้าใจง่าย ไม่ใช้ศัพท์แพทย์"
+                    value={form.personality}
+                    onChange={(e) => update('personality', e.target.value)}
+                  />
+                )}
               </FormField>
 
               <FormField label="ขอบเขตการตอบ" hint="ระบุหัวข้อที่บอทควรตอบ เช่น เมนู ราคา เวลาทำการ">
