@@ -8,6 +8,12 @@ const STEPS = [
     number: 1,
     title: 'สร้าง LINE Official Account',
     description: 'เข้าไปที่ LINE Official Account Manager แล้วสร้างบัญชีใหม่ หรือใช้บัญชีที่มีอยู่แล้วก็ได้',
+    visual: {
+      site: 'manager.line.biz',
+      path: ['Home', '➜', 'Create', '➜', 'Create LINE Official Account'],
+      highlight: '📝 กรอก: ชื่อร้าน · ประเภทธุรกิจ · อีเมล',
+      note: 'จะได้รับ email ยืนยัน ให้กดยืนยันก่อนดำเนินการต่อ',
+    },
     details: [
       'ไปที่ manager.line.biz แล้วล็อกอินด้วย LINE account',
       'กด "Create" → "Create LINE Official Account"',
@@ -21,6 +27,12 @@ const STEPS = [
     number: 2,
     title: 'เปิดใช้งาน Messaging API',
     description: 'LINE Official Account ต้องเปิด Messaging API ก่อนถึงจะเชื่อมต่อ MeowChat ได้',
+    visual: {
+      site: 'manager.line.biz',
+      path: ['เลือก Account', '➜', 'Settings', '➜', 'Messaging API'],
+      highlight: '🔘 กด "Enable Messaging API" → เลือก Provider → Confirm',
+      note: 'ระบบจะ redirect ไป LINE Developers Console อัตโนมัติ',
+    },
     details: [
       'เข้า LINE Official Account Manager → เลือก Account ของคุณ',
       'ไปที่ Settings → Messaging API',
@@ -35,6 +47,12 @@ const STEPS = [
     number: 3,
     title: 'คัดลอก Channel Access Token และ Channel Secret',
     description: 'ใน LINE Developers Console ให้คัดลอก 2 ค่านี้มาใส่ใน MeowChat',
+    visual: {
+      site: 'developers.line.biz',
+      path: ['Provider', '➜', 'Channel ของคุณ'],
+      highlight: '🔑 Tab "Basic settings" → Channel secret\n🔑 Tab "Messaging API" → Channel access token → กด Issue',
+      note: 'Channel access token ต้องกด "Issue" ก่อนถึงจะมีค่าให้คัดลอก',
+    },
     details: [
       'ใน LINE Developers Console → เลือก Provider → เลือก Channel ของคุณ',
       'Tab "Basic settings" → คัดลอก Channel secret',
@@ -51,6 +69,12 @@ const STEPS = [
     number: 4,
     title: 'ใส่ข้อมูลใน BotSettings',
     description: 'นำ Token และ Secret ที่คัดลอกมาใส่ในหน้า Bot Settings แล้วกดบันทึก',
+    visual: {
+      site: 'my.meowchat.store',
+      path: ['ตั้งค่าบอท', '➜', 'LINE OA Connection'],
+      highlight: '📋 วาง Channel Access Token\n📋 วาง Channel Secret\n💾 กด "บันทึก" มุมขวาบน',
+      note: 'หลังบันทึกแล้ว กดปุ่ม "ทดสอบการเชื่อมต่อ" เพื่อตรวจสอบ',
+    },
     details: [
       'ไปที่หน้า Bot Settings (เมนู "ตั้งค่าบอท")',
       'หัวข้อ "LINE OA Connection"',
@@ -64,6 +88,12 @@ const STEPS = [
     number: 5,
     title: 'ตั้งค่า Webhook URL ใน LINE Developers',
     description: 'ขั้นตอนสุดท้าย — ให้ LINE รู้ว่าต้องส่งข้อความมาที่ไหน',
+    visual: {
+      site: 'developers.line.biz',
+      path: ['Channel ของคุณ', '➜', 'Messaging API', '➜', 'Webhook settings'],
+      highlight: '🔗 วาง Webhook URL → กด Update → กด Verify\n✅ ต้องขึ้น "Success" → เปิด "Use webhook" เป็น On',
+      note: 'ถ้า Verify ไม่ผ่าน ให้ตรวจสอบว่าบันทึก Token/Secret ถูกต้องแล้วใน BotSettings',
+    },
     details: [
       'กลับไปที่ LINE Developers Console → Messaging API tab',
       'เลื่อนลงหา "Webhook settings"',
@@ -79,11 +109,45 @@ const STEPS = [
   },
 ];
 
-function ImagePlaceholder({ label }) {
+function StepVisual({ visual }) {
+  if (!visual) return null;
   return (
-    <div className="w-full h-44 rounded-xl bg-zinc-800/60 border border-white/[0.06] flex flex-col items-center justify-center gap-2">
-      <div className="w-10 h-10 rounded-lg bg-zinc-700/60 flex items-center justify-center text-xl">🖼️</div>
-      <p className="text-xs text-zinc-600">{label}</p>
+    <div className="w-full rounded-xl bg-[#0A0A0F] border border-white/[0.06] overflow-hidden mb-4">
+      {/* Browser bar */}
+      <div className="flex items-center gap-2 px-4 py-2.5 bg-zinc-900/80 border-b border-white/[0.04]">
+        <div className="flex gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
+          <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
+        </div>
+        <div className="flex-1 bg-zinc-800/80 rounded-md px-3 py-1 text-[10px] text-zinc-500 font-mono">
+          🔒 {visual.site}
+        </div>
+      </div>
+      {/* Content */}
+      <div className="p-4 space-y-3">
+        {/* Navigation path */}
+        <div className="flex flex-wrap items-center gap-1.5">
+          {visual.path.map((item, i) => (
+            <span key={i} className={`text-xs font-medium ${item === '➜' ? 'text-zinc-600' : 'bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded-md'}`}>
+              {item}
+            </span>
+          ))}
+        </div>
+        {/* Highlight action */}
+        <div className="bg-orange-500/5 border border-orange-500/20 rounded-xl p-3">
+          {visual.highlight.split('\n').map((line, i) => (
+            <p key={i} className="text-xs text-orange-300 font-medium leading-relaxed">{line}</p>
+          ))}
+        </div>
+        {/* Note */}
+        {visual.note && (
+          <p className="text-[10px] text-zinc-600 flex items-start gap-1.5">
+            <span className="text-blue-500 mt-0.5">ℹ</span>
+            {visual.note}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -157,7 +221,7 @@ export default function LineSetupGuide({ setSidebarOpen }) {
             </div>
 
             {/* Screenshot placeholder */}
-            <ImagePlaceholder label={`ภาพ screenshot — ขั้นตอนที่ ${step.number}: ${step.title}`} />
+            <StepVisual visual={step.visual} />
 
             {/* Steps list */}
             <ol className="mt-4 space-y-2">
