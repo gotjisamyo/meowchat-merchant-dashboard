@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Bot, BookOpen, MessageSquare, CreditCard, User,
-  ChevronLeft, ChevronRight, Cat, LogOut, Loader2, PhoneCall, Gift, Megaphone, BarChart2, Users, Zap, HelpCircle, Package,
+  ChevronLeft, ChevronRight, Cat, LogOut, Loader2, PhoneCall, Gift, Megaphone, BarChart2, Users, Zap, HelpCircle, Package, ShoppingCart,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { handoffAPI, billingAPI, botAPI } from '../services/api';
@@ -12,6 +12,7 @@ const menuItems = [
   { path: '/bot',          id: 'bot',           label: 'ตั้งค่าบอท',        icon: Bot },
   { path: '/knowledge',    id: 'knowledge',     label: 'Knowledge Base',   icon: BookOpen },
   { path: '/catalog',      id: 'catalog',       label: 'รายการ',            icon: Package },
+  { path: '/orders',       id: 'orders',        label: 'ออเดอร์',           icon: ShoppingCart },
   { path: '/conversations',id: 'conversations', label: 'บทสนทนา',          icon: MessageSquare },
   { path: '/crm',          id: 'crm',           label: 'CRM',              icon: Users },
   { path: '/handoff',      id: 'handoff',       label: 'Handoff',          icon: PhoneCall, badgeKey: 'handoff' },

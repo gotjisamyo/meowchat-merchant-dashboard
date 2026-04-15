@@ -749,6 +749,31 @@ function generateMockBillingHistory(from, to) {
   return items.reverse();
 }
 
+// ── Orders ────────────────────────────────────────────────────────────────────
+
+export const ordersAPI = {
+  getOrders: async (shopId, { status } = {}) => {
+    try {
+      const params = new URLSearchParams();
+      if (status) params.set('status', status);
+      const res = await api.get(`/api/orders/${shopId}?${params}`);
+      return Array.isArray(res.data) ? res.data : [];
+    } catch { return []; }
+  },
+  getOrder: async (shopId, orderId) => {
+    const res = await api.get(`/api/orders/${shopId}/${orderId}`);
+    return res.data;
+  },
+  updateStatus: async (shopId, orderId, status) => {
+    const res = await api.put(`/api/orders/${shopId}/${orderId}/status`, { status });
+    return res.data;
+  },
+  create: async (shopId, payload) => {
+    const res = await api.post('/api/orders', { shopId, ...payload });
+    return res.data;
+  },
+};
+
 // ── Catalog (Products & Services) ─────────────────────────────────────────────
 
 export const catalogAPI = {
