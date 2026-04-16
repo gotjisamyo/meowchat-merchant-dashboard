@@ -4,16 +4,6 @@ import { catalogAPI, knowledgeAPI, botAPI } from '../services/api';
 
 // ── KB sync helpers ────────────────────────────────────────────────────────────
 
-const KB_MAP_KEY = 'catalog_kb_map';
-
-function loadKbMap() {
-  try { return JSON.parse(localStorage.getItem(KB_MAP_KEY) || '{}'); } catch { return {}; }
-}
-
-function saveKbMap(map) {
-  localStorage.setItem(KB_MAP_KEY, JSON.stringify(map));
-}
-
 function formatKbEntry(item) {
   const priceStr = item.price > 0 ? `฿${Number(item.price).toLocaleString()}` : 'ฟรี';
   const statusStr = item.status === 'active' ? 'พร้อมให้บริการ / มีสินค้า' : 'ไม่พร้อมให้บริการ / หมด';
@@ -42,23 +32,19 @@ function formatKbEntry(item) {
   };
 }
 
-async function syncItemToKB(item, botId, kbMap) {
+async function syncItemToKB(item, botId) {
   const entry = formatKbEntry(item);
-  const existingKbId = kbMap[item.id];
-  let kbId = existingKbId;
-
-  if (existingKbId) {
-    await knowledgeAPI.update(botId, existingKbId, entry);
+  if (item.kb_entry_id) {
+    await knowledgeAPI.update(botId, item.kb_entry_id, entry);
+    return item.kb_entry_id;
   } else {
     const res = await knowledgeAPI.create(botId, entry);
-    kbId = res?.id || res?.data?.id || `kb_catalog_${item.id}`;
+    return res?.id || res?.data?.id || `kb_catalog_${item.id}`;
   }
-  return kbId;
 }
 
-async function removeItemFromKB(itemId, botId, kbMap) {
-  const kbId = kbMap[itemId];
-  if (kbId) await knowledgeAPI.remove(botId, kbId);
+async function removeItemFromKB(item, botId) {
+  if (item.kb_entry_id) await knowledgeAPI.remove(botId, item.kb_entry_id);
 }
 import PageLayout from '../components/PageLayout';
 import ConfirmDialog from '../components/ConfirmDialog';
@@ -97,7 +83,6 @@ export default function Catalog({ setSidebarOpen }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [shopId, setShopId] = useState(null);
-  const [kbMap, setKbMap] = useState(loadKbMap);
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState('ทั้งหมด');
   const [filterStatus, setFilterStatus] = useState('ทั้งหมด');
@@ -107,11 +92,6 @@ export default function Catalog({ setSidebarOpen }) {
 
   // shopId === botId in this system
   const botId = shopId;
-
-  function updateKbMap(newMap) {
-    setKbMap(newMap);
-    saveKbMap(newMap);
-  }
 
   useEffect(() => {
     async function load() {
@@ -167,10 +147,15 @@ export default function Catalog({ setSidebarOpen }) {
 
       // Sync to Knowledge Base
       if (botId && savedItemId) {
-        const fullItem = { id: savedItemId, ...payload };
-        const newKbId = await syncItemToKB(fullItem, botId, kbMap);
-        const newMap = { ...kbMap, [savedItemId]: newKbId };
-        updateKbMap(newMap);
+        const existingKbId = modal?.item
+          ? items.find(i => i.id === savedItemId)?.kb_entry_id
+          : undefined;
+        const fullItem = { id: savedItemId, ...payload, kb_entry_id: existingKbId };
+        const newKbId = await syncItemToKB(fullItem, botId);
+        if (newKbId !== existingKbId) {
+          await catalogAPI.update(savedItemId, { kb_entry_id: newKbId });
+        }
+        setItems(prev => prev.map(i => i.id === savedItemId ? { ...i, kb_entry_id: newKbId } : i));
       }
 
       setModal(null);
@@ -188,10 +173,10 @@ export default function Catalog({ setSidebarOpen }) {
 
       // Sync status change to KB
       if (botId) {
-        const newKbId = await syncItemToKB(updatedItem, botId, kbMap);
-        if (!kbMap[item.id]) {
-          const newMap = { ...kbMap, [item.id]: newKbId };
-          updateKbMap(newMap);
+        const newKbId = await syncItemToKB(updatedItem, botId);
+        if (!item.kb_entry_id && newKbId) {
+          await catalogAPI.update(item.id, { kb_entry_id: newKbId });
+          setItems(prev => prev.map(i => i.id === item.id ? { ...i, kb_entry_id: newKbId } : i));
         }
       }
     } catch {
@@ -208,10 +193,7 @@ export default function Catalog({ setSidebarOpen }) {
 
       // Remove from Knowledge Base
       if (botId) {
-        await removeItemFromKB(target.id, botId, kbMap);
-        const newMap = { ...kbMap };
-        delete newMap[target.id];
-        updateKbMap(newMap);
+        await removeItemFromKB(target, botId);
       }
 
       setToast({ message: `ลบ "${target.name}" และ KB entry แล้ว`, type: 'success' });
@@ -313,7 +295,7 @@ export default function Catalog({ setSidebarOpen }) {
             <ItemCard
               key={item.id}
               item={item}
-              inKB={!!kbMap[item.id]}
+              inKB={!!item.kb_entry_id}
               onEdit={() => setModal({ item })}
               onDelete={() => setConfirmDelete(item)}
               onToggle={() => handleToggleStatus(item)}
