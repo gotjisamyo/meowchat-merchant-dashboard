@@ -125,7 +125,7 @@ export default function Dashboard({ setSidebarOpen }) {
             className="btn-primary px-4 py-2 rounded-xl text-xs font-bold text-white whitespace-nowrap flex items-center gap-1.5"
           >
             <Crown className="w-3.5 h-3.5" />
-            ฿376/เดือน
+            ฿490/เดือน
           </button>
         </div>
       )}
@@ -424,12 +424,12 @@ export default function Dashboard({ setSidebarOpen }) {
             <p className="text-xs text-zinc-600 mt-1">vs จ้างพนักงานตอบ LINE</p>
           </div>
         </div>
-        {!loading && moneySaved > 376 && (
+        {!loading && moneySaved > 490 && (
           <div className="mt-4 flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
             <Sparkles className="w-4 h-4 text-emerald-400 flex-shrink-0" />
             <p className="text-xs text-emerald-400">
-              MeowChat สร้างมูลค่า <strong>฿{moneySaved.toLocaleString()}</strong> ให้คุณเดือนนี้ — คุ้มกว่าค่าสมัคร ฿376 ถึง{' '}
-              <strong>{Math.round(moneySaved / 376)}x</strong>
+              MeowChat สร้างมูลค่า <strong>฿{moneySaved.toLocaleString()}</strong> ให้คุณเดือนนี้ — คุ้มกว่าค่าสมัคร ฿490 ถึง{' '}
+              <strong>{Math.round(moneySaved / 490)}x</strong>
             </p>
           </div>
         )}
