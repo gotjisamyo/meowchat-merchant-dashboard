@@ -44,21 +44,39 @@ export default function Orders({ setSidebarOpen }) {
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
-    async function load() {
+    let intervalId;
+    let currentShopId;
+
+    async function load(isInitial = false) {
       try {
-        const bots = await botAPI.getMyBots();
-        const id = bots[0]?.id;
-        if (id) {
-          setShopId(id);
-          const data = await ordersAPI.getOrders(id);
-          setOrders(data);
+        if (isInitial) {
+          const bots = await botAPI.getMyBots();
+          currentShopId = bots[0]?.id;
+          if (currentShopId) setShopId(currentShopId);
         }
+        if (!currentShopId) return;
+        const data = await ordersAPI.getOrders(currentShopId);
+        setOrders(prev => {
+          // Notify on new pending orders (after initial load)
+          if (!isInitial) {
+            const prevPending = prev.filter(o => o.status === 'pending').length;
+            const newPending = data.filter(o => o.status === 'pending').length;
+            if (newPending > prevPending) {
+              setToast({ message: `🛒 มีออเดอร์ใหม่ ${newPending - prevPending} รายการ`, type: 'success' });
+            }
+          }
+          return data;
+        });
       } catch {
-        setToast({ message: 'โหลด order ไม่สำเร็จ', type: 'error' });
+        if (isInitial) setToast({ message: 'โหลด order ไม่สำเร็จ', type: 'error' });
       }
-      setLoading(false);
+      if (isInitial) setLoading(false);
     }
-    load();
+
+    load(true);
+    // Poll every 30s for new bot orders
+    intervalId = setInterval(() => load(false), 30000);
+    return () => clearInterval(intervalId);
   }, []);
 
   const filtered = useMemo(() => {
