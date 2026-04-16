@@ -634,8 +634,8 @@ export const broadcastAPI = {
       return res.data?.broadcasts || [];
     } catch { return []; }
   },
-  send: async (botId, message) => {
-    const res = await api.post(`/api/bots/${botId}/broadcast`, { message });
+  send: async (botId, message, imageUrl) => {
+    const res = await api.post(`/api/bots/${botId}/broadcast`, { message, imageUrl: imageUrl || undefined });
     return res.data;
   },
 };

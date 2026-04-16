@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Plus, Search, Package, Edit2, Trash2, ToggleLeft, ToggleRight, X, Loader, AlertCircle, ShoppingBag, Wrench, UtensilsCrossed, BookOpen, Tag, Brain } from 'lucide-react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { Plus, Search, Package, Edit2, Trash2, ToggleLeft, ToggleRight, X, Loader, AlertCircle, ShoppingBag, Wrench, UtensilsCrossed, BookOpen, Tag, Brain, Upload, Image } from 'lucide-react';
 import { catalogAPI, knowledgeAPI, botAPI } from '../services/api';
 
 // ── KB sync helpers ────────────────────────────────────────────────────────────
@@ -416,10 +416,44 @@ function ItemModal({ item, onSave, onClose }) {
   } : EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [uploadingImg, setUploadingImg] = useState(false);
+  const fileInputRef = useRef(null);
 
   const update = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
   const typeInfo = getTypeInfo(form.category);
   const valid = form.name.trim().length > 0;
+
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'ml_default';
+
+  async function handleImageUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!cloudName) {
+      setError('กรุณาตั้งค่า VITE_CLOUDINARY_CLOUD_NAME ใน .env ก่อนอัพโหลดรูป');
+      return;
+    }
+    setUploadingImg(true);
+    setError('');
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', uploadPreset);
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: 'POST',
+        body: fd,
+      });
+      const data = await res.json();
+      if (data.secure_url) {
+        update('imageUrl', data.secure_url);
+      } else {
+        setError('อัพโหลดรูปไม่สำเร็จ: ' + (data.error?.message || 'ลองใหม่'));
+      }
+    } catch (err) {
+      setError('อัพโหลดรูปไม่สำเร็จ: ' + err.message);
+    }
+    setUploadingImg(false);
+  }
 
   async function submit() {
     if (!valid) return;
@@ -520,14 +554,48 @@ function ItemModal({ item, onSave, onClose }) {
             />
           </div>
 
-          {/* URL รูป */}
+          {/* รูปภาพ */}
           <div>
-            <label className="block text-xs font-semibold text-zinc-400 mb-1.5">URL รูปภาพ <span className="text-zinc-600">(ไม่บังคับ)</span></label>
+            <label className="block text-xs font-semibold text-zinc-400 mb-1.5">รูปภาพ <span className="text-zinc-600">(ไม่บังคับ)</span></label>
+            {form.imageUrl && (
+              <div className="relative mb-2 rounded-xl overflow-hidden border border-white/[0.06] bg-black/20">
+                <img src={form.imageUrl} alt="preview" className="w-full h-32 object-cover" onError={e => e.target.style.display='none'} />
+                <button
+                  type="button"
+                  onClick={() => update('imageUrl', '')}
+                  className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/60 flex items-center justify-center hover:bg-black/80"
+                >
+                  <X className="w-3 h-3 text-white" />
+                </button>
+              </div>
+            )}
+            <div className="flex gap-2">
+              <input
+                className="input-premium flex-1 text-sm"
+                placeholder="https://... หรืออัพโหลดรูปด้านขวา"
+                value={form.imageUrl}
+                onChange={e => update('imageUrl', e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadingImg}
+                className="px-3 py-2 rounded-xl bg-white/[0.06] border border-white/[0.1] text-zinc-300 hover:bg-white/[0.1] text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50 flex-shrink-0"
+              >
+                {uploadingImg ? (
+                  <span className="w-3.5 h-3.5 border border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <Upload className="w-3.5 h-3.5" />
+                )}
+                {uploadingImg ? 'กำลังอัพ...' : 'อัพโหลด'}
+              </button>
+            </div>
             <input
-              className="input-premium w-full"
-              placeholder="https://..."
-              value={form.imageUrl}
-              onChange={e => update('imageUrl', e.target.value)}
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageUpload}
             />
           </div>
 

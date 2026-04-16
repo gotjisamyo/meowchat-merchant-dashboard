@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Send, Users, Clock, CheckCircle, AlertCircle, Megaphone, Lock } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Send, Users, Clock, CheckCircle, AlertCircle, Megaphone, Lock, Upload, Image, X } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
 import { botAPI, broadcastAPI } from '../services/api';
@@ -15,9 +15,37 @@ export default function Broadcast({ setSidebarOpen }) {
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  const [imageUrl, setImageUrl] = useState('');
+  const [uploadingImg, setUploadingImg] = useState(false);
+  const fileInputRef = useRef(null);
+
   const [audience, setAudience] = useState('all');
   const [plan, setPlan] = useState('trial');
   const [showPremiumLock, setShowPremiumLock] = useState(false);
+
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'ml_default';
+
+  async function handleImageUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!cloudName) {
+      alert('กรุณาตั้งค่า VITE_CLOUDINARY_CLOUD_NAME ใน .env');
+      return;
+    }
+    setUploadingImg(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', uploadPreset);
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, { method: 'POST', body: fd });
+      const data = await res.json();
+      if (data.secure_url) setImageUrl(data.secure_url);
+    } catch (err) {
+      alert('อัพโหลดรูปไม่สำเร็จ: ' + err.message);
+    }
+    setUploadingImg(false);
+  }
 
   useEffect(() => {
     async function load() {
@@ -55,9 +83,10 @@ export default function Broadcast({ setSidebarOpen }) {
     setSending(true);
     setShowConfirm(false);
     try {
-      const result = await broadcastAPI.send(botId, message);
+      await broadcastAPI.send(botId, message, imageUrl || undefined);
       setToast({ message: `ส่งสำเร็จ! ${recipientCount} คน`, type: 'success' });
       setMessage('');
+      setImageUrl('');
       broadcastAPI.getHistory(botId).then(setHistory);
     } catch {
       setToast({ message: 'เกิดข้อผิดพลาด กรุณาลองใหม่', type: 'error' });
@@ -150,6 +179,46 @@ export default function Broadcast({ setSidebarOpen }) {
                 className="input-premium w-full resize-none"
                 placeholder={audience === 'unhappy' ? "พิมพ์ข้อความง้อลูกค้า เช่น 'กราบขออภัยในความไม่สะดวกที่ผ่านมา 🙏 ขอมอบคูปองส่วนลด 50% เป็นการชดเชยค่ะ'" : "พิมพ์ข้อความที่ต้องการส่ง เช่น 'สวัสดีลูกค้าที่รักทุกท่าน 🎉 วันนี้เรามีโปรโมชั่นพิเศษ...'"}
               />
+
+              {/* Image section */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-semibold text-zinc-300 flex items-center gap-1.5">
+                    <Image className="w-4 h-4 text-zinc-500" />
+                    รูปภาพโปรโมชั่น <span className="text-zinc-600 font-normal">(ไม่บังคับ)</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingImg}
+                    className="text-xs flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-zinc-400 hover:text-white hover:bg-white/[0.1] disabled:opacity-50"
+                  >
+                    {uploadingImg ? <span className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" /> : <Upload className="w-3 h-3" />}
+                    {uploadingImg ? 'กำลังอัพ...' : 'อัพโหลดรูป'}
+                  </button>
+                </div>
+                {imageUrl ? (
+                  <div className="relative rounded-xl overflow-hidden border border-white/[0.06]">
+                    <img src={imageUrl} alt="broadcast" className="w-full h-32 object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setImageUrl('')}
+                      className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/60 flex items-center justify-center hover:bg-black/80"
+                    >
+                      <X className="w-3 h-3 text-white" />
+                    </button>
+                  </div>
+                ) : (
+                  <input
+                    className="input-premium w-full text-sm"
+                    placeholder="วาง URL รูปภาพ หรือกด 'อัพโหลดรูป' ด้านบน"
+                    value={imageUrl}
+                    onChange={e => setImageUrl(e.target.value)}
+                  />
+                )}
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+              </div>
+
               <button
                 onClick={() => setShowConfirm(true)}
                 disabled={!message.trim() || sending || recipientCount === 0}
@@ -221,11 +290,20 @@ export default function Broadcast({ setSidebarOpen }) {
                   <p className="text-xs text-zinc-500">Official Account</p>
                 </div>
               </div>
-              <div className="min-h-[120px] flex items-start">
-                {message ? (
-                  <div className="bg-white text-[#1A1A1A] rounded-2xl rounded-tl-sm px-4 py-3 text-sm max-w-[85%] shadow-sm whitespace-pre-wrap">
-                    {message}
-                  </div>
+              <div className="min-h-[120px] flex flex-col items-start gap-2">
+                {message || imageUrl ? (
+                  <>
+                    {message && (
+                      <div className="bg-white text-[#1A1A1A] rounded-2xl rounded-tl-sm px-4 py-3 text-sm max-w-[85%] shadow-sm whitespace-pre-wrap">
+                        {message}
+                      </div>
+                    )}
+                    {imageUrl && (
+                      <div className="max-w-[85%] rounded-2xl rounded-tl-sm overflow-hidden shadow-sm">
+                        <img src={imageUrl} alt="preview" className="w-full object-cover max-h-40" onError={e => e.target.style.display='none'} />
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <p className="text-zinc-600 text-xs">พิมพ์ข้อความด้านซ้ายเพื่อ preview</p>
                 )}
