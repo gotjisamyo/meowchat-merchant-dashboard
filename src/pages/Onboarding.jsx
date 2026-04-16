@@ -131,10 +131,10 @@ export default function Onboarding() {
         {/* Card */}
         <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-4 sm:p-8">
           {step === 1 && (
-            <StepBotInfo info={botInfo} setInfo={setBotInfo} onNext={() => setStep(2)} />
+            <StepBotInfo info={botInfo} setInfo={setBotInfo} onNext={() => setStep(2)} onSkip={() => navigate('/')} />
           )}
           {step === 2 && (
-            <StepKB kb={kb} setKb={setKb} onBack={() => setStep(1)} onFinish={handleFinish} saving={saving} saveError={saveError} />
+            <StepKB kb={kb} setKb={setKb} onBack={() => setStep(1)} onFinish={handleFinish} onSkip={() => navigate('/')} saving={saving} saveError={saveError} />
           )}
           {step === 3 && (
             <StepDone botId={botId} onGo={() => navigate('/')} />
@@ -145,9 +145,14 @@ export default function Onboarding() {
   );
 }
 
-function StepBotInfo({ info, setInfo, onNext }) {
+function StepBotInfo({ info, setInfo, onNext, onSkip }) {
   const update = (k, v) => setInfo(prev => ({ ...prev, [k]: v }));
-  const valid = info.name.trim() && info.businessName.trim();
+
+  const handleNext = () => {
+    if (!info.name.trim()) setInfo(prev => ({ ...prev, name: 'แมวส้ม' }));
+    if (!info.businessName.trim()) setInfo(prev => ({ ...prev, businessName: 'ร้านของฉัน' }));
+    onNext();
+  };
 
   return (
     <div className="space-y-5">
@@ -157,7 +162,7 @@ function StepBotInfo({ info, setInfo, onNext }) {
       </div>
 
       <div className="space-y-4">
-        <Field label="ชื่อบอท *">
+        <Field label="ชื่อบอท">
           <input
             className="input-premium"
             placeholder="เช่น แมวส้ม, น้องออย, หนูแดง"
@@ -165,7 +170,7 @@ function StepBotInfo({ info, setInfo, onNext }) {
             onChange={e => update('name', e.target.value)}
           />
         </Field>
-        <Field label="ชื่อร้าน/ธุรกิจ *">
+        <Field label="ชื่อร้าน/ธุรกิจ">
           <input
             className="input-premium"
             placeholder="เช่น ร้านข้าวแม่มณี, คาเฟ่โรส"
@@ -200,19 +205,26 @@ function StepBotInfo({ info, setInfo, onNext }) {
         </Field>
       </div>
 
-      <button
-        onClick={onNext}
-        disabled={!valid}
-        className="btn-primary w-full py-3.5 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2 disabled:opacity-40"
-      >
-        ถัดไป — Knowledge Base
-        <ChevronRight className="w-4 h-4" />
-      </button>
+      <div className="flex gap-3">
+        <button
+          onClick={onSkip}
+          className="btn-secondary flex-1 py-3.5 rounded-xl text-sm font-semibold text-zinc-400 flex items-center justify-center"
+        >
+          ข้ามก่อน
+        </button>
+        <button
+          onClick={handleNext}
+          className="btn-primary flex-[2] py-3.5 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2"
+        >
+          ถัดไป — Knowledge Base
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
     </div>
   );
 }
 
-function StepKB({ kb, setKb, onBack, onFinish, saving, saveError }) {
+function StepKB({ kb, setKb, onBack, onFinish, onSkip, saving, saveError }) {
   const toggleKb = (i) => setKb(prev => prev.map((e, idx) => idx === i ? { ...e, enabled: !e.enabled } : e));
   const updateContent = (i, v) => setKb(prev => prev.map((e, idx) => idx === i ? { ...e, content: v } : e));
 
@@ -264,15 +276,20 @@ function StepKB({ kb, setKb, onBack, onFinish, saving, saveError }) {
       <div className="flex gap-3">
         <button
           onClick={onBack}
-          className="btn-secondary flex-1 py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2"
+          className="btn-secondary px-4 py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2"
         >
           <ChevronLeft className="w-4 h-4" />
-          ย้อนกลับ
+        </button>
+        <button
+          onClick={onSkip}
+          className="btn-secondary flex-1 py-3.5 rounded-xl text-sm font-semibold text-zinc-400 flex items-center justify-center"
+        >
+          ข้ามก่อน
         </button>
         <button
           onClick={onFinish}
           disabled={saving}
-          className="btn-primary flex-2 flex-grow py-3.5 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2"
+          className="btn-primary flex-[2] py-3.5 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2"
         >
           {saving ? <Loader className="w-4 h-4 animate-spin" /> : <ChevronRight className="w-4 h-4" />}
           {saving ? 'กำลังบันทึก...' : 'ถัดไป — เชื่อม LINE OA'}
