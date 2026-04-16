@@ -256,12 +256,12 @@ export default function Catalog({ setSidebarOpen }) {
             onChange={e => setSearch(e.target.value)}
           />
         </div>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
           {typeOptions.map(t => (
             <button
               key={t}
               onClick={() => setFilterType(t)}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all border ${
+              className={`flex-shrink-0 whitespace-nowrap px-3 py-2 rounded-xl text-xs font-bold transition-all border ${
                 filterType === t
                   ? 'bg-orange-500/15 border-orange-500/30 text-orange-300'
                   : 'bg-white/[0.03] border-white/[0.06] text-zinc-500 hover:border-white/20'
@@ -449,7 +449,7 @@ function ItemModal({ item, onSave, onClose }) {
           {/* ประเภท */}
           <div>
             <label className="block text-xs font-semibold text-zinc-400 mb-2">ประเภท</label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {ITEM_TYPES.map(t => {
                 const Icon = t.icon;
                 return (
@@ -482,7 +482,7 @@ function ItemModal({ item, onSave, onClose }) {
           </div>
 
           {/* ราคา + สต็อก */}
-          <div className={`grid gap-3 ${typeInfo.hasStock ? 'grid-cols-2' : 'grid-cols-1'}`}>
+          <div className={`grid gap-3 ${typeInfo.hasStock ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
             <div>
               <label className="block text-xs font-semibold text-zinc-400 mb-1.5">ราคา (฿)</label>
               <input

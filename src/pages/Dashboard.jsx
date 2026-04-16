@@ -312,7 +312,7 @@ export default function Dashboard({ setSidebarOpen }) {
         </div>
 
         {/* Weekly Messages Chart */}
-        <div className="lg:col-span-2 bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
+        <div className="lg:col-span-2 bg-[#12121A] rounded-3xl border border-white/[0.06] p-4 sm:p-6">
           <h2 className="text-lg font-bold text-white mb-1">ข้อความรายสัปดาห์</h2>
           <p className="text-zinc-500 text-sm mb-5">7 วันที่ผ่านมา</p>
           <ResponsiveContainer width="100%" height={200}>

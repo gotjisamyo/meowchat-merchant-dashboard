@@ -107,7 +107,7 @@ export default function Conversations({ setSidebarOpen }) {
       <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] overflow-hidden">
         <div className="flex flex-col lg:flex-row h-full">
           {/* List Panel */}
-          <div className={`${selected ? 'hidden lg:flex' : 'flex'} flex-col w-full lg:w-[380px] lg:border-r border-white/[0.06] flex-shrink-0`}>
+          <div className={`${selected ? 'hidden lg:flex' : 'flex'} flex-col w-full md:w-[320px] lg:w-[380px] lg:border-r border-white/[0.06] flex-shrink-0`}>
             {/* Toolbar */}
             <div className="p-4 border-b border-white/[0.06] space-y-3">
               <div className="relative">
@@ -145,7 +145,7 @@ export default function Conversations({ setSidebarOpen }) {
             </div>
 
             {/* Conversation List */}
-            <div className="overflow-y-auto flex-1 max-h-[500px]">
+            <div className="overflow-y-auto flex-1 max-h-[60vh] lg:max-h-[500px]">
               {loading ? (
                 <div className="flex items-center justify-center py-12">
                   <span className="w-6 h-6 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin" />
@@ -260,7 +260,7 @@ function ChatDetail({ conv, onClose, loadingMsgs }) {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-4 max-h-[450px]">
+      <div className="flex-1 overflow-y-auto p-5 space-y-4 max-h-[55vh] lg:max-h-[450px]">
         {loadingMsgs && (
           <div className="flex items-center justify-center py-8 gap-2 text-zinc-500 text-sm">
             <span className="w-4 h-4 border-2 border-zinc-700 border-t-orange-400 rounded-full animate-spin" />

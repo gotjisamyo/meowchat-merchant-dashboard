@@ -133,12 +133,12 @@ export default function Orders({ setSidebarOpen }) {
       </div>
 
       {/* Filter tabs */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
         {STATUSES.map(s => (
           <button
             key={s.value}
             onClick={() => setFilterStatus(s.value)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+            className={`flex-shrink-0 whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
               filterStatus === s.value
                 ? s.value === 'all'
                   ? 'bg-orange-500/15 border-orange-500/30 text-orange-300'
