@@ -23,24 +23,22 @@ export default function Broadcast({ setSidebarOpen }) {
   const [plan, setPlan] = useState('trial');
   const [showPremiumLock, setShowPremiumLock] = useState(false);
 
-  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'ml_default';
-
   async function handleImageUpload(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!cloudName) {
-      alert('กรุณาตั้งค่า VITE_CLOUDINARY_CLOUD_NAME ใน .env');
-      return;
-    }
     setUploadingImg(true);
     try {
       const fd = new FormData();
       fd.append('file', file);
-      fd.append('upload_preset', uploadPreset);
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, { method: 'POST', body: fd });
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://api.meowchat.store'}/api/upload/image`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
       const data = await res.json();
-      if (data.secure_url) setImageUrl(data.secure_url);
+      if (data.url) setImageUrl(data.url);
+      else alert('อัพโหลดรูปไม่สำเร็จ: ' + (data.error || 'ลองใหม่'));
     } catch (err) {
       alert('อัพโหลดรูปไม่สำเร็จ: ' + err.message);
     }
