@@ -1,8 +1,27 @@
 import { useState, useEffect, useMemo } from 'react';
-import { ShoppingCart, ChevronDown, ChevronUp, Loader, Package, Clock, CheckCircle2, XCircle, Truck, RefreshCw, ClipboardList } from 'lucide-react';
+import { ShoppingCart, ChevronDown, ChevronUp, Loader, Package, Clock, CheckCircle2, XCircle, Truck, RefreshCw, ClipboardList, Calendar } from 'lucide-react';
 import { ordersAPI, botAPI } from '../services/api';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
+
+const DATE_RANGES = [
+  { value: 'today',   label: 'วันนี้' },
+  { value: 'week',    label: '7 วัน' },
+  { value: 'month',   label: '30 วัน' },
+  { value: '3months', label: '3 เดือน' },
+  { value: 'year',    label: '1 ปี' },
+  { value: 'all',     label: 'ทั้งหมด' },
+];
+
+function getDateStart(range) {
+  const now = new Date();
+  if (range === 'today')   { const d = new Date(now); d.setHours(0,0,0,0); return d; }
+  if (range === 'week')    return new Date(now - 7*24*60*60*1000);
+  if (range === 'month')   return new Date(now - 30*24*60*60*1000);
+  if (range === '3months') return new Date(now - 90*24*60*60*1000);
+  if (range === 'year')    return new Date(now - 365*24*60*60*1000);
+  return null;
+}
 
 const STATUSES = [
   { value: 'all',        label: 'ทั้งหมด',          cls: '' },
@@ -39,6 +58,7 @@ export default function Orders({ setSidebarOpen }) {
   const [loading, setLoading] = useState(true);
   const [shopId, setShopId] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
+  const [dateRange, setDateRange] = useState('month');
   const [expandedId, setExpandedId] = useState(null);
   const [updatingId, setUpdatingId] = useState(null);
   const [toast, setToast] = useState(null);
@@ -79,19 +99,26 @@ export default function Orders({ setSidebarOpen }) {
     return () => clearInterval(intervalId);
   }, []);
 
-  const filtered = useMemo(() => {
-    if (filterStatus === 'all') return orders;
-    return orders.filter(o => o.status === filterStatus);
-  }, [orders, filterStatus]);
+  const dateStart = useMemo(() => getDateStart(dateRange), [dateRange]);
 
-  // Stats
+  const dateFiltered = useMemo(() => {
+    if (!dateStart) return orders;
+    return orders.filter(o => new Date(o.created_at) >= dateStart);
+  }, [orders, dateStart]);
+
+  const filtered = useMemo(() => {
+    if (filterStatus === 'all') return dateFiltered;
+    return dateFiltered.filter(o => o.status === filterStatus);
+  }, [dateFiltered, filterStatus]);
+
+  // Stats (scoped to current date range)
   const stats = useMemo(() => {
     const today = new Date().toDateString();
     const todayOrders = orders.filter(o => new Date(o.created_at).toDateString() === today);
     const pending = orders.filter(o => o.status === 'pending').length;
-    const revenue = orders.filter(o => o.status === 'completed').reduce((s, o) => s + Number(o.total_amount || 0), 0);
-    return { total: orders.length, todayCount: todayOrders.length, pending, revenue };
-  }, [orders]);
+    const revenue = dateFiltered.filter(o => o.status === 'completed').reduce((s, o) => s + Number(o.total_amount || 0), 0);
+    return { total: dateFiltered.length, todayCount: todayOrders.length, pending, revenue };
+  }, [orders, dateFiltered]);
 
   async function handleUpdateStatus(order, nextStatus) {
     setUpdatingId(order.id);
@@ -109,7 +136,7 @@ export default function Orders({ setSidebarOpen }) {
   return (
     <PageLayout
       title="ออเดอร์"
-      subtitle={`${orders.length} รายการทั้งหมด`}
+      subtitle={`${dateFiltered.length} รายการ${dateRange !== 'all' ? ` · ${DATE_RANGES.find(d => d.value === dateRange)?.label}` : ''}`}
       setSidebarOpen={setSidebarOpen}
       headerRight={
         <button
@@ -135,7 +162,7 @@ export default function Orders({ setSidebarOpen }) {
           { label: 'ทั้งหมด',       value: stats.total,                icon: ClipboardList, cls: 'text-white' },
           { label: 'วันนี้',         value: stats.todayCount,           icon: Clock,         cls: 'text-orange-400' },
           { label: 'รอยืนยัน',      value: stats.pending,              icon: Package,       cls: 'text-amber-400' },
-          { label: 'รายได้รวม',      value: `฿${stats.revenue.toLocaleString()}`, icon: ShoppingCart, cls: 'text-emerald-400' },
+          { label: `รายได้ (${DATE_RANGES.find(d => d.value === dateRange)?.label})`, value: `฿${stats.revenue.toLocaleString()}`, icon: ShoppingCart, cls: 'text-emerald-400' },
         ].map(s => {
           const Icon = s.icon;
           return (
@@ -150,7 +177,25 @@ export default function Orders({ setSidebarOpen }) {
         })}
       </div>
 
-      {/* Filter tabs */}
+      {/* Date range filter */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <Calendar className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+        {DATE_RANGES.map(r => (
+          <button
+            key={r.value}
+            onClick={() => setDateRange(r.value)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex-shrink-0 ${
+              dateRange === r.value
+                ? 'bg-orange-500/15 border-orange-500/30 text-orange-300'
+                : 'bg-white/[0.03] border-white/[0.06] text-zinc-500 hover:border-white/20'
+            }`}
+          >
+            {r.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Status filter tabs */}
       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
         {STATUSES.map(s => (
           <button
@@ -167,7 +212,7 @@ export default function Orders({ setSidebarOpen }) {
             {s.label}
             {s.value !== 'all' && (
               <span className="ml-1 opacity-60">
-                {orders.filter(o => o.status === s.value).length}
+                {dateFiltered.filter(o => o.status === s.value).length}
               </span>
             )}
           </button>
