@@ -768,6 +768,14 @@ export const ordersAPI = {
     const res = await api.put(`/api/orders/${shopId}/${orderId}/status`, { status });
     return res.data;
   },
+  getList: async (shopId, { status } = {}) => {
+    try {
+      const params = new URLSearchParams();
+      if (status) params.set('status', status);
+      const res = await api.get(`/api/orders/${shopId}?${params}`);
+      return Array.isArray(res.data) ? res.data : [];
+    } catch { return []; }
+  },
   create: async (shopId, payload) => {
     const res = await api.post('/api/orders', { shopId, ...payload });
     return res.data;
@@ -795,6 +803,23 @@ export const catalogAPI = {
   },
   delete: async (itemId) => {
     const res = await api.delete(`/api/products/${itemId}`);
+    return res.data;
+  },
+};
+
+// ── Bookings ────────────────────────────────────────────────────────────────
+
+export const bookingsAPI = {
+  getList: async (shopId, { status } = {}) => {
+    try {
+      const params = new URLSearchParams();
+      if (status) params.set('status', status);
+      const res = await api.get(`/api/bookings/${shopId}?${params}`);
+      return Array.isArray(res.data) ? res.data : [];
+    } catch { return []; }
+  },
+  updateStatus: async (bookingId, status) => {
+    const res = await api.put(`/api/bookings/${bookingId}/status`, { status });
     return res.data;
   },
 };

@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Bot, BookOpen, MessageSquare, CreditCard, User,
-  ChevronLeft, ChevronRight, Cat, LogOut, Loader2, PhoneCall, Gift, Megaphone, BarChart2, Users, Zap, HelpCircle, Package, ShoppingCart,
+  ChevronLeft, ChevronRight, Cat, LogOut, Loader2, PhoneCall, Gift, Megaphone, BarChart2, Users, Zap, HelpCircle, Package, ShoppingCart, Calendar,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { handoffAPI, billingAPI, botAPI, ordersAPI } from '../services/api';
+import { handoffAPI, billingAPI, botAPI, ordersAPI, bookingsAPI } from '../services/api';
 
 const menuItems = [
   { path: '/',             id: 'dashboard',     label: 'Dashboard',       icon: LayoutDashboard },
@@ -13,6 +13,7 @@ const menuItems = [
   { path: '/knowledge',    id: 'knowledge',     label: 'Knowledge Base',   icon: BookOpen },
   { path: '/catalog',      id: 'catalog',       label: 'รายการ',            icon: Package },
   { path: '/orders',       id: 'orders',        label: 'ออเดอร์',           icon: ShoppingCart, badgeKey: 'orders' },
+  { path: '/bookings',     id: 'bookings',      label: 'นัดหมาย',           icon: Calendar,     badgeKey: 'bookings' },
   { path: '/conversations',id: 'conversations', label: 'บทสนทนา',          icon: MessageSquare },
   { path: '/crm',          id: 'crm',           label: 'CRM',              icon: Users },
   { path: '/handoff',      id: 'handoff',       label: 'Handoff',          icon: PhoneCall, badgeKey: 'handoff' },
@@ -61,6 +62,7 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [handoffCount, setHandoffCount] = useState(0);
   const [ordersCount, setOrdersCount] = useState(0);
+  const [bookingsCount, setBookingsCount] = useState(0);
   const [usagePlan, setUsagePlan] = useState(null);
 
   useEffect(() => {
@@ -70,6 +72,7 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
     async function fetchCounts(id) {
       handoffAPI.getPendingCount(id).then(setHandoffCount).catch(() => {});
       ordersAPI.getList(id, { status: 'pending' }).then(r => setOrdersCount(r?.length ?? 0)).catch(() => {});
+      bookingsAPI.getList(id, { status: 'pending' }).then(r => setBookingsCount(r?.length ?? 0)).catch(() => {});
     }
 
     async function init() {
@@ -147,6 +150,7 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
           const isActive = activeId === item.id;
           const badge = (item.badgeKey === 'handoff' && handoffCount > 0 ? handoffCount : 0)
             || (item.badgeKey === 'orders' && ordersCount > 0 ? ordersCount : 0)
+            || (item.badgeKey === 'bookings' && bookingsCount > 0 ? bookingsCount : 0)
             || null;
 
           return (

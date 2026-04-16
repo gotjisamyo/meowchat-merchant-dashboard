@@ -23,6 +23,7 @@ import Settings from './pages/Settings';
 import FAQ from './pages/FAQ';
 import Catalog from './pages/Catalog';
 import Orders from './pages/Orders';
+import Bookings from './pages/Bookings';
 
 function MerchantLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -79,6 +80,7 @@ export default function App() {
                       <Route path="/faq" element={<FAQ setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/catalog" element={<Catalog setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/orders" element={<Orders setSidebarOpen={setSidebarOpen} />} />
+                      <Route path="/bookings" element={<Bookings setSidebarOpen={setSidebarOpen} />} />
                       <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                   )}
