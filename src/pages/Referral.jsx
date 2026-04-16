@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Copy, Gift, Users, Check, Share2, ChevronRight, Clock, QrCode, Download } from 'lucide-react';
+import { Copy, Gift, Users, Check, Share2, ChevronRight, QrCode, Download } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import { useAuth } from '../context/AuthContext';
 import { referralAPI } from '../services/api';
@@ -53,15 +53,6 @@ export default function Referral({ setSidebarOpen }) {
       subtitle="แนะนำเพื่อน รับ 1 เดือนฟรี / เพื่อนได้ส่วนลด 20%"
       setSidebarOpen={setSidebarOpen}
     >
-      {/* Coming soon banner */}
-      <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 flex items-center gap-3">
-        <Clock className="w-5 h-5 text-amber-400 flex-shrink-0" />
-        <div>
-          <p className="text-sm font-bold text-white">Referral rewards เปิดเร็วๆ นี้</p>
-          <p className="text-xs text-zinc-400">ลิงก์ของคุณพร้อมแล้ว — แชร์ได้เลย รางวัลจะเข้าบัญชีอัตโนมัติเมื่อเปิดระบบ</p>
-        </div>
-      </div>
-
       {/* How it works */}
       <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
         <h2 className="text-lg font-bold text-white mb-5 flex items-center gap-2">

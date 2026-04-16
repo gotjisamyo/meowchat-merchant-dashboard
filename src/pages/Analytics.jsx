@@ -12,7 +12,8 @@ import PageLayout from '../components/PageLayout';
 import { analyticsAPI, botAPI } from '../services/api';
 import { Link } from 'react-router-dom';
 
-const DAYS_OPTIONS = [7, 30, 90];
+const DAYS_OPTIONS = [7, 30, 90, 180, 365];
+const DAYS_LABEL = { 7: '7 วัน', 30: '30 วัน', 90: '3 เดือน', 180: '6 เดือน', 365: '1 ปี' };
 const COLORS = ['#FF6B35', '#A78BFA', '#34D399', '#60A5FA', '#F59E0B'];
 const DAYS_TH = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
 
@@ -131,7 +132,7 @@ export default function Analytics({ setSidebarOpen }) {
                   : 'text-zinc-500 hover:text-zinc-300 border border-transparent'
               }`}
             >
-              {d} วัน
+              {DAYS_LABEL[d]}
             </button>
           ))}
           <button
