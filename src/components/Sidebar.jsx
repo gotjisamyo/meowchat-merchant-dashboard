@@ -81,7 +81,16 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
         botId = bots[0]?.id || null;
         if (botId) {
           fetchCounts(botId);
-          billingAPI.getSubscription(botId).then((sub) => setUsagePlan(sub?.plan_name?.toLowerCase() || sub?.plan?.toLowerCase() || null)).catch(() => {});
+          Promise.all([
+            billingAPI.getSubscription(botId).catch(() => null),
+            billingAPI.getUsage(botId).catch(() => null),
+          ]).then(([sub, usage]) => {
+            const plan = sub?.plan_name?.toLowerCase()
+              || sub?.plan?.toLowerCase()
+              || usage?.plan_name?.toLowerCase()
+              || null;
+            setUsagePlan(plan);
+          });
           interval = setInterval(() => fetchCounts(botId), 30000);
         }
       } catch {

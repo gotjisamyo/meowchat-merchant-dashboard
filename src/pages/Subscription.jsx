@@ -633,7 +633,7 @@ function UpgradeModal({ plan, onClose, shopId }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
       <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-md shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-white/[0.06]">
           <h3 className="text-lg font-bold text-white">
@@ -829,7 +829,7 @@ function TopupModal({ shopId, onClose, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
       <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-md shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-white/[0.06]">
           <h3 className="text-lg font-bold text-white">ซื้อเครดิตเพิ่มเติม</h3>
