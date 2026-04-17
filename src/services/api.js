@@ -411,6 +411,7 @@ export const handoffAPI = {
         customerName: h.customer_name || 'ลูกค้า',
         lastMessage: h.message || '',
         time: formatRelativeTime(h.created_at),
+        createdAt: h.created_at,
         status: h.status === 'pending' ? 'waiting' : h.status,
         avatar: (h.customer_name || 'ล').charAt(0),
       }));
