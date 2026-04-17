@@ -40,7 +40,7 @@ export default function Register() {
     if (!form.shopName.trim()) { setError('กรุณากรอกชื่อร้าน'); return; }
     if (!form.email.trim()) { setError('กรุณากรอกอีเมล'); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { setError('รูปแบบอีเมลไม่ถูกต้อง'); return; }
-    if (form.password.length < 6) { setError('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'); return; }
+    if (form.password.length < 8) { setError('รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร'); return; }
     if (form.password !== form.confirmPassword) { setError('รหัสผ่านไม่ตรงกัน'); return; }
 
     setIsLoading(true);
