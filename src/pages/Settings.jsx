@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   User, Lock, Bell, CreditCard, Save, Eye, EyeOff,
   Building2, Check, Zap, Crown, ChevronRight,
+  Link2, Link2Off, Copy, CheckCircle2,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
-import { authAPI, usageAPI, botAPI } from '../services/api';
+import { authAPI, usageAPI, botAPI, ownerLineAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
@@ -172,6 +173,7 @@ function NotificationsTab() {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
+  const [botId, setBotId] = useState(null);
 
   useEffect(() => {
     async function load() {
@@ -184,6 +186,12 @@ function NotificationsTab() {
         });
       } catch {
         // use defaults
+      }
+      try {
+        const bots = await botAPI.getMyBots();
+        if (bots?.[0]?.id) setBotId(bots[0].id);
+      } catch {
+        // ignore
       }
       setLoading(false);
     }
@@ -245,6 +253,8 @@ function NotificationsTab() {
           </div>
         )}
 
+        {settings.line && botId && <LineNotificationCard botId={botId} />}
+
         <div className="flex justify-end pt-2">
           <button
             onClick={handleSave}
@@ -257,6 +267,176 @@ function NotificationsTab() {
         </div>
       </div>
     </>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────── */
+/* LINE Notification Pairing Card                              */
+/* ─────────────────────────────────────────────────────────── */
+function LineNotificationCard({ botId }) {
+  const [phase, setPhase] = useState('loading'); // loading | unpaired | code | paired
+  const [code, setCode]   = useState(null);
+  const [lineUserId, setLineUserId] = useState(null);
+  const [countdown, setCountdown] = useState(0);
+  const [copied, setCopied] = useState(false);
+  const [toast, setToast] = useState(null);
+  const pollRef = useRef(null);
+  const timerRef = useRef(null);
+
+  // Load initial status
+  useEffect(() => {
+    ownerLineAPI.getStatus(botId)
+      .then(data => {
+        if (data.paired) {
+          setLineUserId(data.line_user_id);
+          setPhase('paired');
+        } else {
+          setPhase('unpaired');
+        }
+      })
+      .catch(() => setPhase('unpaired'));
+  }, [botId]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      clearInterval(pollRef.current);
+      clearInterval(timerRef.current);
+    };
+  }, []);
+
+  const startPolling = () => {
+    clearInterval(pollRef.current);
+    pollRef.current = setInterval(async () => {
+      try {
+        const data = await ownerLineAPI.getStatus(botId);
+        if (data.paired) {
+          clearInterval(pollRef.current);
+          clearInterval(timerRef.current);
+          setLineUserId(data.line_user_id);
+          setPhase('paired');
+          setToast({ message: 'เชื่อมต่อ LINE สำเร็จ!', type: 'success' });
+        }
+      } catch { /* ignore */ }
+    }, 3000);
+  };
+
+  const handleConnect = async () => {
+    try {
+      const data = await ownerLineAPI.generateCode(botId);
+      setCode(data.code);
+      setCountdown(data.expires_in || 600);
+      setPhase('code');
+      startPolling();
+      // Countdown timer
+      clearInterval(timerRef.current);
+      timerRef.current = setInterval(() => {
+        setCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(timerRef.current);
+            clearInterval(pollRef.current);
+            setPhase('unpaired');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } catch {
+      setToast({ message: 'ไม่สามารถสร้างรหัสได้ กรุณาลองใหม่', type: 'error' });
+    }
+  };
+
+  const handleDisconnect = async () => {
+    try {
+      await ownerLineAPI.disconnect(botId);
+      setLineUserId(null);
+      setPhase('unpaired');
+      setToast({ message: 'ยกเลิกการเชื่อมต่อแล้ว', type: 'success' });
+    } catch {
+      setToast({ message: 'ไม่สามารถยกเลิกได้ กรุณาลองใหม่', type: 'error' });
+    }
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const fmt = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+
+  if (phase === 'loading') return null;
+
+  return (
+    <div className="mt-3 p-4 rounded-2xl bg-[#0A0A0F] border border-white/[0.06]">
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+
+      {phase === 'unpaired' && (
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold text-white flex items-center gap-2">
+              <Link2 className="w-4 h-4 text-green-400" />
+              เชื่อมต่อ LINE เพื่อรับแจ้งเตือน
+            </p>
+            <p className="text-xs text-zinc-500 mt-1">กด "เชื่อมต่อ" แล้วส่งรหัสไปที่ bot LINE ของร้าน</p>
+          </div>
+          <button
+            onClick={handleConnect}
+            className="btn-primary px-4 py-2 rounded-xl text-xs font-bold text-white whitespace-nowrap flex-shrink-0"
+          >
+            เชื่อมต่อ LINE
+          </button>
+        </div>
+      )}
+
+      {phase === 'code' && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-zinc-400">รหัสของคุณ:</p>
+            <p className="text-xs text-zinc-600">หมดอายุใน {fmt(countdown)}</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-2xl font-mono font-bold text-white tracking-widest">{code}</span>
+            <button
+              onClick={handleCopy}
+              className="p-2 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] transition-colors"
+              title="คัดลอกรหัส"
+            >
+              {copied
+                ? <CheckCircle2 className="w-4 h-4 text-green-400" />
+                : <Copy className="w-4 h-4 text-zinc-400" />}
+            </button>
+          </div>
+          <p className="text-xs text-zinc-500">ส่งรหัสนี้ไปที่บอท LINE ของร้านคุณ</p>
+          <p className="text-xs text-zinc-600 flex items-center gap-1.5">
+            <span className="w-3.5 h-3.5 border-2 border-zinc-600 border-t-orange-400 rounded-full animate-spin inline-block" />
+            กำลังรอการยืนยัน...
+          </p>
+        </div>
+      )}
+
+      {phase === 'paired' && (
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold text-green-400 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4" />
+              เชื่อมต่อ LINE แล้ว
+            </p>
+            {lineUserId && (
+              <p className="text-xs text-zinc-500 mt-1 font-mono">
+                LINE: {lineUserId.slice(0, 8)}...
+              </p>
+            )}
+          </div>
+          <button
+            onClick={handleDisconnect}
+            className="px-4 py-2 rounded-xl text-xs font-bold text-red-400 border border-red-500/20 hover:bg-red-500/10 transition-colors whitespace-nowrap flex-shrink-0"
+          >
+            ยกเลิกการเชื่อมต่อ
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 
