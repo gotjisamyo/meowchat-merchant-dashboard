@@ -444,6 +444,18 @@ export const handoffAPI = {
       return 0;
     }
   },
+  getMessages: async (handoffId) => {
+    try {
+      const res = await api.get(`/api/handoffs/${handoffId}/messages`);
+      return res.data?.messages || [];
+    } catch {
+      return [];
+    }
+  },
+  sendReply: async (handoffId, text) => {
+    const res = await api.post(`/api/handoffs/${handoffId}/reply`, { text });
+    return res.data;
+  },
 };
 
 // ── KPI ───────────────────────────────────────────────────────────────────────
