@@ -666,6 +666,23 @@ export const quickRepliesAPI = {
   },
 };
 
+// ── Owner LINE API ────────────────────────────────────────────────────────────
+
+export const ownerLineAPI = {
+  generateCode: async (botId) => {
+    const res = await api.post(`/api/bots/${botId}/owner-line/pair`);
+    return res.data;
+  },
+  getStatus: async (botId) => {
+    const res = await api.get(`/api/bots/${botId}/owner-line/status`);
+    return res.data;
+  },
+  disconnect: async (botId) => {
+    const res = await api.delete(`/api/bots/${botId}/owner-line/pair`);
+    return res.data;
+  },
+};
+
 // ── Shops ─────────────────────────────────────────────────────────────────────
 
 export const shopAPI = {
