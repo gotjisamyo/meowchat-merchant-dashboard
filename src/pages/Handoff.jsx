@@ -213,16 +213,20 @@ export default function Handoff({ setSidebarOpen }) {
   const acceptedCount = handoffs.filter((h) => h.status === 'accepted').length;
 
   const filtered = handoffs.filter((h) => {
+    if (h.status === 'closed') return false; // closed go to separate section
     if (filter === 'waiting') return h.status === 'waiting';
     if (filter === 'accepted') return h.status === 'accepted';
     return true;
   });
+
+  const closedHandoffs = handoffs.filter((h) => h.status === 'closed');
 
   const handleAccept = async (id) => {
     setActionLoading(id);
     try {
       await handoffAPI.accept(botId, id);
       setHandoffs((prev) => prev.map((h) => (h.id === id ? { ...h, status: 'accepted' } : h)));
+      setOpenChatId(id);
       setToast({ message: 'รับสายเรียบร้อยแล้ว', type: 'success' });
     } catch {
       setToast({ message: 'เกิดข้อผิดพลาด กรุณาลองใหม่', type: 'error' });
@@ -242,9 +246,9 @@ export default function Handoff({ setSidebarOpen }) {
     setActionLoading(id);
     try {
       await handoffAPI.close(botId, id);
-      setHandoffs((prev) => prev.filter((h) => h.id !== id));
+      setHandoffs((prev) => prev.map((h) => h.id === id ? { ...h, status: 'closed' } : h));
       setOpenChatId(prev => prev === id ? null : prev);
-      setToast({ message: 'ปิด Handoff เรียบร้อยแล้ว', type: 'success' });
+      setToast({ message: 'ปิดการสนทนาเรียบร้อยแล้ว', type: 'success' });
     } catch {
       setToast({ message: 'เกิดข้อผิดพลาด กรุณาลองใหม่', type: 'error' });
     }
@@ -419,6 +423,33 @@ export default function Handoff({ setSidebarOpen }) {
           </div>
         )}
       </div>
+
+      {/* คุยเสร็จแล้ว */}
+      {closedHandoffs.length > 0 && (
+        <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] overflow-hidden">
+          <div className="px-5 py-4 border-b border-white/[0.04] flex items-center gap-3">
+            <div className="w-7 h-7 rounded-xl bg-zinc-500/15 border border-zinc-500/20 flex items-center justify-center">
+              <CheckCircle className="w-3.5 h-3.5 text-zinc-500" />
+            </div>
+            <p className="text-sm font-bold text-zinc-400">คุยเสร็จแล้ว</p>
+            <span className="ml-auto text-xs text-zinc-600">{closedHandoffs.length} รายการ</span>
+          </div>
+          <div className="divide-y divide-white/[0.04]">
+            {closedHandoffs.map((h) => (
+              <div key={h.id} className="flex items-center gap-4 px-5 py-3 opacity-60">
+                <div className="w-9 h-9 rounded-full bg-zinc-800 border border-white/[0.04] flex items-center justify-center text-sm font-bold text-zinc-500 flex-shrink-0">
+                  {h.avatar || <User className="w-4 h-4" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-zinc-400 text-sm">{h.customerName}</p>
+                  <p className="text-zinc-600 text-xs truncate">{h.lastMessage}</p>
+                </div>
+                <span className="text-xs text-zinc-600 flex-shrink-0">{h.time}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <p className="text-center text-xs text-zinc-700">อัปเดต Real-time · กด "รีเฟรช" เพื่อดูล่าสุดทันที</p>
     </PageLayout>
