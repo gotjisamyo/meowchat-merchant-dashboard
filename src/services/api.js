@@ -350,6 +350,16 @@ export const billingAPI = {
       return [];
     }
   },
+  checkout: async ({ planId, shopId }) => {
+    const origin = window.location.origin;
+    const res = await api.post('/api/billing/checkout', {
+      planId,
+      shopId,
+      successUrl: `${origin}/subscription?payment=success`,
+      cancelUrl: `${origin}/subscription?payment=cancel`,
+    });
+    return res.data?.data;
+  },
 };
 
 // ── Payment ───────────────────────────────────────────────────────────────────
@@ -440,7 +450,8 @@ export const handoffAPI = {
       const response = await api.get(`/api/bots/${botId}/handoffs`);
       const handoffs = response.data?.handoffs || [];
       return handoffs.filter(h => h.status === 'pending').length;
-    } catch {
+    } catch (err) {
+      if (err?.response?.status === 401) throw err;
       return 0;
     }
   },

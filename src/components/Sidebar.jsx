@@ -70,7 +70,9 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
     let interval = null;
 
     async function fetchCounts(id) {
-      handoffAPI.getPendingCount(id).then(setHandoffCount).catch(() => {});
+      handoffAPI.getPendingCount(id).then(setHandoffCount).catch((err) => {
+        if (err?.response?.status === 401) clearInterval(interval);
+      });
       ordersAPI.getList(id, { status: 'pending' }).then(r => setOrdersCount(r?.length ?? 0)).catch(() => {});
       bookingsAPI.getList(id, { status: 'pending' }).then(r => setBookingsCount(r?.length ?? 0)).catch(() => {});
     }
