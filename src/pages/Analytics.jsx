@@ -164,7 +164,7 @@ export default function Analytics({ setSidebarOpen }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <StatCard icon={MessageSquare} label="บทสนทนาทั้งหมด" value={stats?.totalConversations ?? 0} color="#FF6B35" loading={loading} />
         <StatCard icon={Users} label="ผู้ใช้ไม่ซ้ำ" value={stats?.uniqueUsers ?? 0} color="#A78BFA" loading={loading} />
-        <StatCard icon={Zap} label="AI ตอบจบ/ความพึงพอใจ" value={`${stats?.resolvedRate ?? 100}%`} sub={`CSAT ${stats?.csatScore || 4.8} ดาว`} color="#34D399" loading={loading} />
+        <StatCard icon={Zap} label="AI ตอบจบ/ความพึงพอใจ" value={`${stats?.resolvedRate ?? 0}%`} sub={`CSAT ${stats?.csatScore > 0 ? stats.csatScore : '—'} ดาว`} color="#34D399" loading={loading} />
         <StatCard icon={AlertTriangle} label="ขอคุยกับคน" value={stats?.escalations ?? 0} sub="ส่งต่อแอดมิน" color="#F59E0B" loading={loading} />
       </div>
 
@@ -409,7 +409,7 @@ export default function Analytics({ setSidebarOpen }) {
               <div>
                 <p className="text-zinc-400 text-sm mb-1">AI ทำได้</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-extrabold text-blue-400">{stats?.aiTime || 1.2}</span>
+                  <span className="text-3xl font-extrabold text-blue-400">{stats?.aiTime > 0 ? stats.aiTime : '—'}</span>
                   <span className="text-sm text-blue-400/80 font-bold">วินาที</span>
                 </div>
               </div>
@@ -422,9 +422,9 @@ export default function Analytics({ setSidebarOpen }) {
               <div>
                 <p className="text-zinc-500 text-sm mb-1">เทียบกับแอดมินคน</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-xl font-bold text-zinc-300">{Math.floor((stats?.humanTime || 510) / 60)}</span>
+                  <span className="text-xl font-bold text-zinc-300">{Math.floor((stats?.humanTime ?? 0) / 60)}</span>
                   <span className="text-xs text-zinc-500">นาที</span>
-                  <span className="text-xl font-bold text-zinc-300 ml-1">{(stats?.humanTime || 510) % 60}</span>
+                  <span className="text-xl font-bold text-zinc-300 ml-1">{(stats?.humanTime ?? 0) % 60}</span>
                   <span className="text-xs text-zinc-500">วิ</span>
                 </div>
               </div>
