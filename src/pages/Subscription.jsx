@@ -118,6 +118,18 @@ export default function Subscription({ setSidebarOpen }) {
 
   const dismissToast = useCallback(() => setToast(null), []);
 
+  // Handle Stripe redirect back
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') === 'success') {
+      setToast({ type: 'success', message: '✅ ชำระเงินสำเร็จ! กำลังเปิดใช้งานแผนของคุณ...' });
+      window.history.replaceState({}, '', window.location.pathname);
+    } else if (params.get('payment') === 'cancel') {
+      setToast({ type: 'error', message: 'ยกเลิกการชำระเงิน' });
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
+
   useEffect(() => {
     async function loadUsage() {
       try {
@@ -144,7 +156,7 @@ export default function Subscription({ setSidebarOpen }) {
             // -1 means unlimited in DB; null means custom/contact in UI
             const apiPrice = (ap.price === 0 && p.price === null) ? null : (ap.price ?? p.price);
             const apiMsgLimit = ap.max_chats === -1 ? null : (ap.max_chats ?? p.msgLimit);
-            return ap ? { ...p, price: apiPrice, msgLimit: apiMsgLimit, name: ap.name || p.name, features: ap.features?.length ? ap.features : p.features } : p;
+            return ap ? { ...p, price: apiPrice, msgLimit: apiMsgLimit, name: ap.name || p.name, features: ap.features?.length ? ap.features : p.features, apiId: ap.id } : p;
           }));
         }
         if (id) {
@@ -577,65 +589,29 @@ export default function Subscription({ setSidebarOpen }) {
 }
 
 function UpgradeModal({ plan, onClose, shopId }) {
-  const { user } = useAuth();
   const isEnterprise = plan.id === 'enterprise';
-  const fileInputRef = useRef(null);
-
-  const [bankInfo, setBankInfo] = useState(null);
-  const [step, setStep] = useState('form'); // 'form' | 'success'
-  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [slipFile, setSlipFile] = useState(null);
-  const [slipPreview, setSlipPreview] = useState(null);
-  const [form, setForm] = useState({
-    payerName: user?.name || '',
-    transferDate: new Date().toISOString().slice(0, 10),
-  });
 
-  useEffect(() => {
-    paymentAPI.getBankInfo().then(setBankInfo).catch(() => {});
-  }, []);
-
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setSlipFile(file);
-    const reader = new FileReader();
-    reader.onload = (ev) => setSlipPreview(ev.target.result);
-    reader.readAsDataURL(file);
-  };
-
-  const handleSubmit = async () => {
-    if (!form.payerName.trim()) { setError('กรุณากรอกชื่อผู้โอน'); return; }
-    if (!form.transferDate) { setError('กรุณาเลือกวันที่โอน'); return; }
-    if (!slipFile) { setError('กรุณาอัปโหลดสลิปการโอน'); return; }
-
+  const handleCheckout = async () => {
+    if (!plan.apiId) { setError('ไม่พบข้อมูลแผน กรุณาลองใหม่'); return; }
+    setLoading(true);
     setError('');
-    setSubmitting(true);
     try {
-      const base64 = slipPreview.split(',')[1];
-      await paymentAPI.notify({
-        shopId,
-        payerName: form.payerName.trim(),
-        amount: plan.price,
-        transferDate: form.transferDate,
-        proofImage: { base64, fileName: slipFile.name, contentType: slipFile.type },
-        bankName: bankInfo?.bankName || '',
-        accountName: bankInfo?.accountName || '',
-        accountNumber: bankInfo?.accountNumber || '',
-      });
-      setStep('success');
+      const data = await billingAPI.checkout({ planId: plan.apiId, shopId });
+      if (data?.checkoutUrl) window.location.href = data.checkoutUrl;
+      else setError('ไม่สามารถสร้าง checkout ได้ กรุณาลองใหม่');
     } catch (err) {
-      setError(err?.response?.data?.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
+      setError(err?.response?.data?.error || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
     } finally {
-      setSubmitting(false);
+      setLoading(false);
     }
   };
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-      <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-md shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-white/[0.06]">
+      <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-sm shadow-2xl animate-scale-in">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
           <h3 className="text-lg font-bold text-white">
             {isEnterprise ? 'ติดต่อขอใช้งาน Enterprise' : `Upgrade เป็นแผน ${plan.name}`}
           </h3>
@@ -644,24 +620,8 @@ function UpgradeModal({ plan, onClose, shopId }) {
           </button>
         </div>
 
-        <div className="p-4 sm:p-6 space-y-4">
-          {step === 'success' ? (
-            /* ── Success state ── */
-            <div className="text-center py-6 space-y-4">
-              <div className="w-16 h-16 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto">
-                <CheckCircle2 className="w-8 h-8 text-emerald-400" />
-              </div>
-              <div>
-                <p className="text-lg font-bold text-white">ส่งสลิปเรียบร้อยแล้ว!</p>
-                <p className="text-sm text-zinc-400 mt-1">ทีมงานจะตรวจสอบและเปิดใช้งานแผน <strong className="text-white">{plan.name}</strong> ให้ภายใน 2 ชั่วโมง</p>
-                <p className="text-xs text-zinc-500 mt-2">วันจันทร์–ศุกร์ 9:00–18:00 น.</p>
-              </div>
-              <button onClick={onClose} className="btn-primary px-8 py-2.5 rounded-xl text-sm font-bold text-white">
-                ตกลง
-              </button>
-            </div>
-          ) : isEnterprise ? (
-            /* ── Enterprise contact ── */
+        <div className="p-6 space-y-4">
+          {isEnterprise ? (
             <>
               <p className="text-sm text-zinc-400">ติดต่อทีมงานเพื่อรับข้อเสนอพิเศษสำหรับองค์กร</p>
               <a
@@ -674,9 +634,8 @@ function UpgradeModal({ plan, onClose, shopId }) {
               </a>
             </>
           ) : (
-            /* ── Bank transfer form ── */
             <>
-              {/* Plan price */}
+              {/* Plan summary */}
               <div className={`p-4 rounded-2xl border ${plan.borderColor} ${plan.bgColor} text-center`}>
                 <p className={`text-3xl font-extrabold ${plan.color} mb-0.5`}>
                   ฿{plan.price?.toLocaleString()}<span className="text-base font-semibold text-zinc-400">/เดือน</span>
@@ -684,76 +643,22 @@ function UpgradeModal({ plan, onClose, shopId }) {
                 <p className="text-zinc-500 text-xs">แผน {plan.name} · {plan.msgLimit?.toLocaleString()} ข้อความ/เดือน</p>
               </div>
 
-              {/* Bank account */}
-              <div className="bg-[#0A0A0F] rounded-2xl p-4 border border-white/[0.06]">
-                <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">โอนเงินมาที่</p>
-                <div className="space-y-1.5">
-                  <p className="text-sm font-semibold text-white">{bankInfo?.bankName ?? 'กำลังโหลด...'}</p>
-                  <p className="text-xl font-mono font-bold text-orange-400 tracking-wider">{bankInfo?.accountNumber ?? '—'}</p>
-                  <p className="text-sm text-zinc-400">{bankInfo?.accountName ?? ''}</p>
-                </div>
-              </div>
-
-              {/* Form */}
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-xs font-semibold text-zinc-400 mb-1.5">ชื่อผู้โอน</label>
-                  <input
-                    className="input-premium"
-                    value={form.payerName}
-                    onChange={e => setForm(f => ({ ...f, payerName: e.target.value }))}
-                    placeholder="ชื่อ-นามสกุล"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-zinc-400 mb-1.5">วันที่โอน</label>
-                  <input
-                    type="date"
-                    className="input-premium"
-                    value={form.transferDate}
-                    max={new Date().toISOString().slice(0, 10)}
-                    onChange={e => setForm(f => ({ ...f, transferDate: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-zinc-400 mb-1.5">สลิปการโอน</label>
-                  <input type="file" accept="image/*" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
-                  {slipPreview ? (
-                    <div className="relative">
-                      <img src={slipPreview} alt="slip" className="w-full max-h-48 object-contain rounded-xl border border-white/[0.08]" />
-                      <button
-                        onClick={() => { setSlipFile(null); setSlipPreview(null); fileInputRef.current.value = ''; }}
-                        className="absolute top-2 right-2 p-1 bg-black/60 rounded-full text-zinc-400 hover:text-white"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => fileInputRef.current?.click()}
-                      className="w-full py-8 rounded-xl border border-dashed border-white/[0.15] hover:border-orange-500/40 hover:bg-orange-500/[0.03] transition-all text-center text-zinc-500 hover:text-zinc-300"
-                    >
-                      <Upload className="w-5 h-5 mx-auto mb-1.5" />
-                      <p className="text-xs font-medium">คลิกเพื่ออัปโหลดสลิป</p>
-                      <p className="text-[10px] text-zinc-600 mt-0.5">JPG, PNG, PDF</p>
-                    </button>
-                  )}
-                </div>
-              </div>
-
               {error && <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2.5">{error}</p>}
 
               <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="btn-primary w-full py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2 disabled:opacity-60"
+                onClick={handleCheckout}
+                disabled={loading}
+                className="w-full py-3.5 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2 bg-[#635BFF] hover:bg-[#5851e6] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                {submitting ? 'กำลังส่ง...' : 'ส่งสลิปและแจ้งชำระเงิน'}
+                {loading
+                  ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  : <svg viewBox="0 0 24 24" className="w-4 h-4" fill="white"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/></svg>
+                }
+                {loading ? 'กำลังเปิด...' : 'ชำระเงิน'}
               </button>
 
               <p className="text-center text-xs text-zinc-600">
-                ทีมงานจะ activate ภายใน 2 ชั่วโมง (จันทร์–ศุกร์ 9–18 น.)
+                🔒 ชำระเงินปลอดภัยด้วย Stripe · รองรับบัตรเครดิต/เดบิต
               </p>
             </>
           )}

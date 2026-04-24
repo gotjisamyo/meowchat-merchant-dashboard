@@ -91,7 +91,7 @@ export default function Analytics({ setSidebarOpen }) {
 
   // Fill missing days with 0s for chart continuity
   const chartData = daily.map((d) => ({
-    day: new Date(d.day).toLocaleDateString('th-TH', { month: 'short', day: 'numeric' }),
+    day: d.day && !isNaN(new Date(d.day)) ? new Date(d.day).toLocaleDateString('th-TH', { month: 'short', day: 'numeric' }) : '—',
     บทสนทนา: d.conversations,
     ผู้ใช้ไม่ซ้ำ: d.uniqueUsers,
     ขอคุยคน: d.escalations,

@@ -189,7 +189,8 @@ function NotificationsTab() {
       }
       try {
         const bots = await botAPI.getMyBots();
-        if (bots?.[0]?.id) setBotId(bots[0].id);
+        const lineBot = bots?.find(b => b.line_access_token) || bots?.[0];
+        if (lineBot?.id) setBotId(lineBot.id);
       } catch {
         // ignore
       }

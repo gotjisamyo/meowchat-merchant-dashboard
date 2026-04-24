@@ -81,7 +81,7 @@ export default function FAQ({ setSidebarOpen }) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-white font-medium leading-relaxed">{q.question}</p>
-                <p className="text-xs text-zinc-600 mt-1">ถามมาแล้ว {q.count} ครั้ง · ล่าสุด {new Date(q.date).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                <p className="text-xs text-zinc-600 mt-1">ถามมาแล้ว {q.count} ครั้ง · ล่าสุด {q.date && !isNaN(new Date(q.date)) ? new Date(q.date).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}</p>
               </div>
               {addedIds.has(q.id) ? (
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-400 font-semibold flex-shrink-0">
