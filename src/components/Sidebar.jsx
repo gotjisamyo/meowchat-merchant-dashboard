@@ -7,24 +7,51 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { handoffAPI, billingAPI, botAPI, ordersAPI, bookingsAPI } from '../services/api';
 
-const menuItems = [
-  { path: '/',             id: 'dashboard',     label: 'Dashboard',       icon: LayoutDashboard },
-  { path: '/bot',          id: 'bot',           label: 'ตั้งค่าบอท',        icon: Bot },
-  { path: '/knowledge',    id: 'knowledge',     label: 'Knowledge Base',   icon: BookOpen },
-  { path: '/catalog',      id: 'catalog',       label: 'รายการ',            icon: Package },
-  { path: '/orders',       id: 'orders',        label: 'ออเดอร์',           icon: ShoppingCart, badgeKey: 'orders' },
-  { path: '/bookings',     id: 'bookings',      label: 'นัดหมาย',           icon: Calendar,     badgeKey: 'bookings' },
-  { path: '/conversations',id: 'conversations', label: 'บทสนทนา',          icon: MessageSquare },
-  { path: '/crm',          id: 'crm',           label: 'CRM',              icon: Users },
-  { path: '/handoff',      id: 'handoff',       label: 'Handoff',          icon: PhoneCall, badgeKey: 'handoff' },
-  { path: '/analytics',    id: 'analytics',     label: 'Analytics',        icon: BarChart2 },
-  { path: '/broadcast',    id: 'broadcast',     label: 'Broadcast',        icon: Megaphone },
-  { path: '/automation',   id: 'automation',    label: 'Automation',        icon: Zap },
-  { path: '/subscription', id: 'subscription',  label: 'Subscription',     icon: CreditCard },
-  { path: '/referral',     id: 'referral',      label: 'แนะนำเพื่อน',       icon: Gift },
-  { path: '/faq',          id: 'faq',           label: 'คำถาม / FAQ',       icon: HelpCircle },
-  { path: '/settings',     id: 'settings',      label: 'ตั้งค่า / โปรไฟล์', icon: User },
+const menuGroups = [
+  {
+    label: 'หลัก',
+    items: [
+      { path: '/',          id: 'dashboard', label: 'Dashboard',     icon: LayoutDashboard },
+      { path: '/bot',       id: 'bot',       label: 'ตั้งค่าบอท',     icon: Bot },
+      { path: '/knowledge', id: 'knowledge', label: 'Knowledge Base', icon: BookOpen },
+    ],
+  },
+  {
+    label: 'การขาย',
+    items: [
+      { path: '/catalog',  id: 'catalog',  label: 'รายการสินค้า', icon: Package },
+      { path: '/orders',   id: 'orders',   label: 'ออเดอร์',      icon: ShoppingCart, badgeKey: 'orders' },
+      { path: '/bookings', id: 'bookings', label: 'นัดหมาย',      icon: Calendar,     badgeKey: 'bookings' },
+    ],
+  },
+  {
+    label: 'ลูกค้า',
+    items: [
+      { path: '/conversations', id: 'conversations', label: 'บทสนทนา', icon: MessageSquare },
+      { path: '/crm',           id: 'crm',           label: 'CRM',      icon: Users },
+      { path: '/handoff',       id: 'handoff',       label: 'Handoff',  icon: PhoneCall, badgeKey: 'handoff' },
+    ],
+  },
+  {
+    label: 'วิเคราะห์',
+    items: [
+      { path: '/analytics',  id: 'analytics',  label: 'Analytics',  icon: BarChart2 },
+      { path: '/broadcast',  id: 'broadcast',  label: 'Broadcast',  icon: Megaphone },
+      { path: '/automation', id: 'automation', label: 'Automation', icon: Zap },
+    ],
+  },
+  {
+    label: 'ตั้งค่า',
+    items: [
+      { path: '/subscription', id: 'subscription', label: 'Subscription',     icon: CreditCard },
+      { path: '/referral',     id: 'referral',     label: 'แนะนำเพื่อน',       icon: Gift },
+      { path: '/faq',          id: 'faq',          label: 'คำถาม / FAQ',       icon: HelpCircle },
+      { path: '/settings',     id: 'settings',     label: 'ตั้งค่า / โปรไฟล์', icon: User },
+    ],
+  },
 ];
+
+const menuItems = menuGroups.flatMap((g) => g.items);
 
 export default function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) {
   return (
@@ -151,61 +178,71 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-1">
-        {!isCollapsed && (
-          <p className="px-4 pb-3 text-[10px] font-bold text-zinc-600 uppercase tracking-[3px]">เมนู</p>
-        )}
+      <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-4">
+        {menuGroups.map((group, groupIdx) => (
+          <div key={group.label}>
+            {!isCollapsed && (
+              <p className={`px-4 pb-2 text-[10px] font-bold text-zinc-600 uppercase tracking-[3px] ${groupIdx > 0 ? 'pt-2' : ''}`}>
+                {group.label}
+              </p>
+            )}
+            {isCollapsed && groupIdx > 0 && (
+              <div className="mx-auto w-6 h-px bg-white/[0.06] mb-3" />
+            )}
+            <div className="space-y-1">
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = activeId === item.id;
+                const badge = (item.badgeKey === 'handoff' && handoffCount > 0 ? handoffCount : 0)
+                  || (item.badgeKey === 'orders' && ordersCount > 0 ? ordersCount : 0)
+                  || (item.badgeKey === 'bookings' && bookingsCount > 0 ? bookingsCount : 0)
+                  || null;
 
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = activeId === item.id;
-          const badge = (item.badgeKey === 'handoff' && handoffCount > 0 ? handoffCount : 0)
-            || (item.badgeKey === 'orders' && ordersCount > 0 ? ordersCount : 0)
-            || (item.badgeKey === 'bookings' && bookingsCount > 0 ? bookingsCount : 0)
-            || null;
-
-          return (
-            <button
-              key={item.id}
-              onClick={() => {
-                navigate(item.path);
-                onClose();
-              }}
-              title={isCollapsed ? item.label : undefined}
-              className={`
-                w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 group relative
-                ${isActive ? 'text-white' : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03]'}
-                ${isCollapsed ? 'justify-center px-0' : ''}
-              `}
-              style={isActive ? {
-                background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.12) 0%, rgba(255, 107, 53, 0.04) 100%)',
-                border: '1px solid rgba(255, 107, 53, 0.2)',
-              } : {}}
-            >
-              <div className="relative flex-shrink-0">
-                <Icon className={`w-5 h-5 transition-colors ${isActive ? 'text-orange-400' : 'group-hover:text-zinc-400'}`} />
-                {badge && isCollapsed && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[9px] font-bold text-white flex items-center justify-center">
-                    {badge > 9 ? '9+' : badge}
-                  </span>
-                )}
-              </div>
-              {!isCollapsed && (
-                <>
-                  <span className="font-semibold text-sm flex-1">{item.label}</span>
-                  {badge && (
-                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-red-500/20 text-red-400 border border-red-500/30">
-                      {badge}
-                    </span>
-                  )}
-                  {isActive && !badge && (
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-orange-500 rounded-full" />
-                  )}
-                </>
-              )}
-            </button>
-          );
-        })}
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      navigate(item.path);
+                      onClose();
+                    }}
+                    title={isCollapsed ? item.label : undefined}
+                    className={`
+                      w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 group relative
+                      ${isActive ? 'text-white' : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03]'}
+                      ${isCollapsed ? 'justify-center px-0' : ''}
+                    `}
+                    style={isActive ? {
+                      background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.12) 0%, rgba(255, 107, 53, 0.04) 100%)',
+                      border: '1px solid rgba(255, 107, 53, 0.2)',
+                    } : {}}
+                  >
+                    <div className="relative flex-shrink-0">
+                      <Icon className={`w-5 h-5 transition-colors ${isActive ? 'text-orange-400' : 'group-hover:text-zinc-400'}`} />
+                      {badge && isCollapsed && (
+                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[9px] font-bold text-white flex items-center justify-center">
+                          {badge > 9 ? '9+' : badge}
+                        </span>
+                      )}
+                    </div>
+                    {!isCollapsed && (
+                      <>
+                        <span className="font-semibold text-sm flex-1">{item.label}</span>
+                        {badge && (
+                          <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-red-500/20 text-red-400 border border-red-500/30">
+                            {badge}
+                          </span>
+                        )}
+                        {isActive && !badge && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-orange-500 rounded-full" />
+                        )}
+                      </>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
       {/* User Section */}
