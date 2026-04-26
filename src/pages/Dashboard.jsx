@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   MessageSquare, Users, TrendingUp, Wifi, WifiOff,
   ChevronRight, RefreshCw, Zap, AlertTriangle, Bot, Activity,
-  Clock, Sparkles, Crown, CheckCircle2, Circle, ShoppingCart, Package,
+  Clock, Sparkles, Crown, CheckCircle2, Circle, ShoppingCart, Package, Cat,
 } from 'lucide-react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -88,7 +88,7 @@ export default function Dashboard({ setSidebarOpen }) {
   return (
     <PageLayout
       title="Dashboard"
-      subtitle={`ยินดีต้อนรับกลับ, ${user?.name || 'Merchant'} 👋`}
+      subtitle={`สวัสดีครับ ${user?.name || 'Merchant'} 🐱 บอทพร้อมทำงานแล้ว`}
       setSidebarOpen={setSidebarOpen}
       actions={
         <button
@@ -148,7 +148,7 @@ export default function Dashboard({ setSidebarOpen }) {
           <div className="bg-[#12121A] rounded-3xl border border-orange-500/20 p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-base font-bold text-white">เริ่มต้นใช้งาน</h2>
+                <h2 className="text-lg font-bold text-white">เริ่มต้นใช้งาน</h2>
                 <p className="text-xs text-zinc-500 mt-0.5">ทำให้ครบเพื่อเริ่มรับลูกค้าอัตโนมัติ</p>
               </div>
               <span className="text-xs font-bold text-orange-400 bg-orange-500/10 border border-orange-500/20 px-3 py-1 rounded-full">
@@ -219,6 +219,23 @@ export default function Dashboard({ setSidebarOpen }) {
         />
       </div>
 
+      {/* MeowCat Tip — shown to new users */}
+      {!loading && totalReplies === 0 && (
+        <div className="flex items-start gap-3 px-4 py-3.5 rounded-2xl bg-orange-500/5 border border-orange-500/10">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center shadow-lg shadow-orange-500/20 flex-shrink-0">
+            <Cat className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-orange-400 mb-0.5">MeowCat แนะนำ 🐾</p>
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              เพิ่มสินค้า/บริการใน{' '}
+              <button onClick={() => navigate('/catalog')} className="text-orange-400 hover:text-orange-300 font-semibold transition-colors">รายการสินค้า</button>
+              {' '}แล้วบอทจะตอบราคา รับออเดอร์ให้อัตโนมัติ 24/7
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Orders Stats Row */}
       {orders.length > 0 && (
         <div
@@ -271,7 +288,7 @@ export default function Dashboard({ setSidebarOpen }) {
         <div className="lg:col-span-1 bg-[#12121A] rounded-3xl border border-white/[0.06] p-4 sm:p-6 flex flex-col gap-5">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-lg font-bold text-white">การใช้งานเดือนนี้</h2>
+              <h2 className="text-xl font-bold text-white">การใช้งานเดือนนี้</h2>
               <p className="text-zinc-500 text-sm mt-0.5">รีเซ็ตวันที่ {usage?.resetDate ?? '1 เมษายน 2026'}</p>
             </div>
             <span className="px-3 py-1 text-xs font-bold rounded-full bg-orange-500/15 text-orange-400 border border-orange-500/20">
@@ -315,7 +332,7 @@ export default function Dashboard({ setSidebarOpen }) {
 
         {/* Weekly Messages Chart */}
         <div className="lg:col-span-2 bg-[#12121A] rounded-3xl border border-white/[0.06] p-4 sm:p-6">
-          <h2 className="text-lg font-bold text-white mb-1">ข้อความรายสัปดาห์</h2>
+          <h2 className="text-xl font-bold text-white mb-1">ข้อความรายสัปดาห์</h2>
           <p className="text-zinc-500 text-sm mb-5">7 วันที่ผ่านมา</p>
           {!loading && !weeklyHasData ? (
             <div className="h-[200px] flex flex-col items-center justify-center gap-3 text-center">
@@ -355,7 +372,7 @@ export default function Dashboard({ setSidebarOpen }) {
 
       {/* KPI Section */}
       <div>
-        <h2 className="text-base font-bold text-white mb-3 flex items-center gap-2">
+        <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
           <Activity className="w-4 h-4 text-orange-400" />
           ตัวชี้วัดประสิทธิภาพ (KPI)
         </h2>
@@ -415,7 +432,7 @@ export default function Dashboard({ setSidebarOpen }) {
       <div className="bg-gradient-to-br from-orange-500/10 to-pink-500/5 rounded-3xl border border-orange-500/20 p-6">
         <div className="flex items-center gap-2 mb-5">
           <Sparkles className="w-5 h-5 text-orange-400" />
-          <h2 className="text-base font-bold text-white">
+          <h2 className="text-lg font-bold text-white">
             {!loading && totalReplies === 0 ? 'MeowChat จะช่วยคุณได้แค่ไหน?' : 'MeowChat ช่วยคุณไปแล้วเดือนนี้'}
           </h2>
         </div>
@@ -492,7 +509,7 @@ export default function Dashboard({ setSidebarOpen }) {
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-purple-400" />
-            <h2 className="text-base font-bold text-white">ลูกค้าถามอะไรบ่อย</h2>
+            <h2 className="text-lg font-bold text-white">ลูกค้าถามอะไรบ่อย</h2>
           </div>
           <div className="flex gap-1.5">
             {[7, 30].map(d => (
@@ -556,7 +573,7 @@ export default function Dashboard({ setSidebarOpen }) {
       {/* Bot Status Card */}
       <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-bold text-white">สถานะ LINE OA</h2>
+          <h2 className="text-xl font-bold text-white">สถานะ LINE OA</h2>
           <button
             onClick={() => navigate('/bot')}
             className="text-sm text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1 transition-colors"
@@ -593,7 +610,7 @@ export default function Dashboard({ setSidebarOpen }) {
       {/* Recent Conversations */}
       <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-bold text-white">บทสนทนาล่าสุด</h2>
+          <h2 className="text-xl font-bold text-white">บทสนทนาล่าสุด</h2>
           <button
             onClick={() => navigate('/conversations')}
             className="text-sm text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1 transition-colors"
