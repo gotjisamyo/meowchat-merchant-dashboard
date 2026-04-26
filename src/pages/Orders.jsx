@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, ChevronDown, ChevronUp, Loader, Package, Clock, CheckCircle2, XCircle, Truck, RefreshCw, ClipboardList, Calendar } from 'lucide-react';
 import { ordersAPI, botAPI } from '../services/api';
 import PageLayout from '../components/PageLayout';
@@ -54,6 +55,7 @@ function fmtDate(iso) {
 }
 
 export default function Orders({ setSidebarOpen }) {
+  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [shopId, setShopId] = useState(null);
@@ -225,7 +227,7 @@ export default function Orders({ setSidebarOpen }) {
           <Loader className="w-6 h-6 animate-spin text-orange-400" />
         </div>
       ) : filtered.length === 0 ? (
-        <EmptyState status={filterStatus} />
+        <EmptyState status={filterStatus} onNavigateCatalog={() => navigate('/catalog')} />
       ) : (
         <div className="space-y-3">
           {filtered.map(order => (
@@ -352,21 +354,30 @@ function StatusIcon({ to }) {
   return <Package className="w-3 h-3" />;
 }
 
-function EmptyState({ status }) {
+function EmptyState({ status, onNavigateCatalog }) {
   const isFiltered = status !== 'all';
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      <div className="w-16 h-16 rounded-2xl bg-orange-500/10 flex items-center justify-center mb-4">
+      <div className="w-16 h-16 rounded-2xl bg-orange-500/10 border border-orange-500/10 flex items-center justify-center mb-4">
         <ShoppingCart className="w-8 h-8 text-orange-400" />
       </div>
       <h3 className="text-base font-bold text-white mb-1">
         {isFiltered ? 'ไม่มี order ในสถานะนี้' : 'ยังไม่มี order'}
       </h3>
-      <p className="text-sm text-zinc-500 max-w-xs">
+      <p className="text-sm text-zinc-500 max-w-xs mb-5">
         {isFiltered
           ? 'ลองเปลี่ยน filter ด้านบน'
-          : 'เมื่อลูกค้าสั่งสินค้าหรือบริการผ่านบอท order จะปรากฏที่นี่'}
+          : 'เมื่อลูกค้าสั่งสินค้าหรือบริการผ่านบอท LINE order จะปรากฏที่นี่'}
       </p>
+      {!isFiltered && (
+        <button
+          onClick={onNavigateCatalog}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-500/15 border border-orange-500/20 text-orange-400 hover:bg-orange-500/25 text-sm font-bold transition-all"
+        >
+          <Package className="w-4 h-4" />
+          เพิ่มรายการสินค้า/บริการ
+        </button>
+      )}
     </div>
   );
 }

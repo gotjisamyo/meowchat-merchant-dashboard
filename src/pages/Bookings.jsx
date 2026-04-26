@@ -159,11 +159,7 @@ export default function Bookings({ setSidebarOpen }) {
           กำลังโหลด...
         </div>
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 gap-3">
-          <Calendar className="w-10 h-10 text-zinc-700" />
-          <p className="text-zinc-500 text-sm">ยังไม่มีนัดหมาย</p>
-          <p className="text-zinc-600 text-xs">เมื่อลูกค้านัดผ่านบอท LINE จะปรากฏที่นี่</p>
-        </div>
+        <EmptyState isFiltered={filterStatus !== 'all'} onClear={() => setFilterStatus('all')} />
       ) : (
         <div className="space-y-3">
           {filtered.map(b => {
@@ -238,5 +234,35 @@ export default function Bookings({ setSidebarOpen }) {
         </div>
       )}
     </PageLayout>
+  );
+}
+
+function EmptyState({ isFiltered, onClear }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      <div className="w-16 h-16 rounded-2xl bg-orange-500/10 border border-orange-500/10 flex items-center justify-center mb-4">
+        <Calendar className="w-8 h-8 text-orange-400" />
+      </div>
+      <h3 className="text-base font-bold text-white mb-1">
+        {isFiltered ? 'ไม่มีนัดหมายในสถานะนี้' : 'ยังไม่มีนัดหมาย'}
+      </h3>
+      <p className="text-sm text-zinc-500 max-w-xs mb-5">
+        {isFiltered
+          ? 'ลองเปลี่ยน filter ด้านบน'
+          : 'เมื่อลูกค้านัดหมายผ่านบอท LINE จะปรากฏที่นี่ — บอทรับนัดหมายให้อัตโนมัติ 24/7'}
+      </p>
+      {isFiltered ? (
+        <button
+          onClick={onClear}
+          className="text-sm text-orange-400 hover:text-orange-300 font-semibold transition-colors"
+        >
+          ดูทั้งหมด →
+        </button>
+      ) : (
+        <p className="text-xs text-zinc-600 px-2 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+          💡 ตั้งค่าบอทให้รับนัดหมายในหน้า <span className="text-zinc-400 font-semibold">ตั้งค่าบอท</span>
+        </p>
+      )}
+    </div>
   );
 }
