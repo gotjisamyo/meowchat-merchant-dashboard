@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -44,7 +44,7 @@
   --shadow-glow-orange: 0 0 40px rgba(255, 107, 53, 0.15);
 
   /* Font */
-  --font-sans: 'Inter', sans-serif;
+  --font-sans: 'Nunito', sans-serif;
 }
 
 /* ── Custom Properties ── */
@@ -67,7 +67,7 @@ html {
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
   font-size: 15px;
   line-height: 1.6;
   background: var(--gradient-bg);
@@ -180,7 +180,7 @@ body {
   padding: 12px 16px;
   font-size: 15px;
   color: var(--color-text-primary);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
   transition: all var(--transition-smooth);
   width: 100%;
 }
