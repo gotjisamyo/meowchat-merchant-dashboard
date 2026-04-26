@@ -64,12 +64,21 @@ export default function PageLayout({ title, subtitle, setSidebarOpen, children, 
 
       {/* Footer */}
       <footer className="content-area py-5 border-t border-white/[0.04] mt-auto">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-2 text-zinc-600 text-xs">
-          <p>© 2026 MeowChat by Mawsom Company Limited</p>
-          <div className="flex items-center gap-4">
-            <a href="https://meowchat.store" className="hover:text-white transition-colors" target="_blank" rel="noreferrer">เว็บไซต์</a>
-            <a href="#" className="hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a>
-            <a href="#" className="hover:text-white transition-colors">ช่วยเหลือ</a>
+        <div className="flex flex-col gap-3 text-zinc-600 text-xs">
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5">
+            <span>🔒 SSL Encrypted</span>
+            <span>🏪 57+ ร้านค้าไว้วางใจ</span>
+            <span>🔄 ยกเลิกได้ทุกเมื่อ</span>
+            <span>📋 PDPA Compliant</span>
+            <span>⚡ Uptime 99.9%</span>
+          </div>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-2">
+            <p>© 2026 MeowChat by Mawsom Company Limited</p>
+            <div className="flex items-center gap-4">
+              <a href="https://meowchat.store" className="hover:text-white transition-colors" target="_blank" rel="noreferrer">เว็บไซต์</a>
+              <a href="https://meowchat.store/privacy" className="hover:text-white transition-colors" target="_blank" rel="noreferrer">นโยบายความเป็นส่วนตัว</a>
+              <a href="https://lin.ee/meowchat" className="hover:text-white transition-colors" target="_blank" rel="noreferrer">ช่วยเหลือ</a>
+            </div>
           </div>
         </div>
       </footer>

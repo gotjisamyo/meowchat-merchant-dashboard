@@ -486,6 +486,14 @@ export default function Subscription({ setSidebarOpen }) {
         </div>
       </div>
 
+      {/* Trust Strip */}
+      <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 py-4 px-6 bg-[#0A0A0F] rounded-2xl border border-white/[0.04]">
+        <span className="text-xs text-zinc-500">🔒 ชำระเงินผ่าน Stripe — ปลอดภัย 100%</span>
+        <span className="text-xs text-zinc-500">🏪 57+ ร้านค้าไว้วางใจ MeowChat</span>
+        <span className="text-xs text-zinc-500">🔄 ยกเลิกได้ทุกเมื่อ ไม่มีสัญญา</span>
+        <span className="text-xs text-zinc-500">📋 ถูกต้องตาม PDPA 2562</span>
+      </div>
+
       {/* Billing History */}
       <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">

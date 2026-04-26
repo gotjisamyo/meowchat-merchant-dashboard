@@ -174,8 +174,17 @@ export default function Login() {
           </Link>
         </p>
 
+        {/* Trust Signals */}
+        <div className="mt-5 flex items-center justify-center gap-3 flex-wrap">
+          <span className="flex items-center gap-1.5 text-[11px] text-zinc-600">🔒 SSL Encrypted</span>
+          <span className="text-zinc-800">·</span>
+          <span className="flex items-center gap-1.5 text-[11px] text-zinc-600">🏪 57+ ร้านค้าไว้วางใจ</span>
+          <span className="text-zinc-800">·</span>
+          <span className="flex items-center gap-1.5 text-[11px] text-zinc-600">📋 PDPA Compliant</span>
+        </div>
+
         {/* Footer */}
-        <p className="text-center mt-4 text-zinc-600 text-xs">
+        <p className="text-center mt-3 text-zinc-700 text-xs">
           © 2026 MeowChat by Mawsom Company Limited
         </p>
       </div>
