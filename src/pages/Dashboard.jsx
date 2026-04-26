@@ -60,6 +60,8 @@ export default function Dashboard({ setSidebarOpen }) {
     fetchData();
   }, [insightsDays]);
 
+  const weeklyHasData = weekly.some(w => w.count > 0);
+
   const usagePercent = usage ? Math.round((usage.used / usage.limit) * 100) : 0;
   const usageColor = usagePercent >= 90 ? '#EF4444' : usagePercent >= 70 ? '#F59E0B' : '#FF6B35';
 
@@ -315,25 +317,39 @@ export default function Dashboard({ setSidebarOpen }) {
         <div className="lg:col-span-2 bg-[#12121A] rounded-3xl border border-white/[0.06] p-4 sm:p-6">
           <h2 className="text-lg font-bold text-white mb-1">ข้อความรายสัปดาห์</h2>
           <p className="text-zinc-500 text-sm mb-5">7 วันที่ผ่านมา</p>
-          <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={weekly} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id="msgGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#FF6B35" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#FF6B35" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-              <XAxis dataKey="day" stroke="#52525B" fontSize={11} tickLine={false} axisLine={false} />
-              <YAxis stroke="#52525B" fontSize={11} tickLine={false} axisLine={false} />
-              <Tooltip
-                contentStyle={{ backgroundColor: '#1A1A24', border: 'none', borderRadius: '12px', fontSize: '13px' }}
-                labelStyle={{ color: '#A1A1AA' }}
-                formatter={(v) => [`${v} ข้อความ`, '']}
-              />
-              <Area type="monotone" dataKey="count" stroke="#FF6B35" strokeWidth={2.5} fillOpacity={1} fill="url(#msgGrad)" />
-            </AreaChart>
-          </ResponsiveContainer>
+          {!loading && !weeklyHasData ? (
+            <div className="h-[200px] flex flex-col items-center justify-center gap-3 text-center">
+              <span className="text-5xl">📈</span>
+              <p className="text-zinc-300 text-sm font-bold">กราฟกำลังรอข้อมูลจากคุณ</p>
+              <p className="text-zinc-600 text-xs leading-relaxed">เมื่อลูกค้าส่งข้อความมาบน LINE OA<br/>กราฟจะแสดงสถิติรายวันที่นี่</p>
+              <button
+                onClick={() => navigate('/bot')}
+                className="mt-1 px-4 py-2 rounded-xl bg-orange-500/15 border border-orange-500/30 text-orange-400 text-xs font-bold hover:bg-orange-500/25 transition-colors"
+              >
+                เชื่อม LINE OA เพื่อเริ่ม →
+              </button>
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={200}>
+              <AreaChart data={weekly} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="msgGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#FF6B35" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#FF6B35" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
+                <XAxis dataKey="day" stroke="#52525B" fontSize={11} tickLine={false} axisLine={false} />
+                <YAxis stroke="#52525B" fontSize={11} tickLine={false} axisLine={false} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1A1A24', border: 'none', borderRadius: '12px', fontSize: '13px' }}
+                  labelStyle={{ color: '#A1A1AA' }}
+                  formatter={(v) => [`${v} ข้อความ`, '']}
+                />
+                <Area type="monotone" dataKey="count" stroke="#FF6B35" strokeWidth={2.5} fillOpacity={1} fill="url(#msgGrad)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
 
@@ -399,39 +415,75 @@ export default function Dashboard({ setSidebarOpen }) {
       <div className="bg-gradient-to-br from-orange-500/10 to-pink-500/5 rounded-3xl border border-orange-500/20 p-6">
         <div className="flex items-center gap-2 mb-5">
           <Sparkles className="w-5 h-5 text-orange-400" />
-          <h2 className="text-base font-bold text-white">MeowChat ช่วยคุณไปแล้วเดือนนี้</h2>
+          <h2 className="text-base font-bold text-white">
+            {!loading && totalReplies === 0 ? 'MeowChat จะช่วยคุณได้แค่ไหน?' : 'MeowChat ช่วยคุณไปแล้วเดือนนี้'}
+          </h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-black/20 rounded-2xl p-4 text-center">
-            <p className="text-4xl font-extrabold text-orange-400 mb-1">
-              {loading ? '...' : totalReplies.toLocaleString()}
+        {!loading && totalReplies === 0 ? (
+          <div className="flex flex-col items-center gap-4 py-2 text-center">
+            <p className="text-zinc-400 text-sm leading-relaxed">
+              เมื่อลูกค้าส่งข้อความมา บอทจะตอบแทนคุณอัตโนมัติ<br />
+              ลองดูว่าคุณจะประหยัดได้แค่ไหนถ้ามี <strong className="text-white">500 ข้อความ/เดือน</strong>
             </p>
-            <p className="text-xs text-zinc-400 font-semibold uppercase tracking-wider">ข้อความที่บอทตอบแทน</p>
-            <p className="text-xs text-zinc-600 mt-1">ไม่ต้องพิมพ์เอง</p>
+            <div className="grid grid-cols-3 gap-3 w-full">
+              <div className="bg-black/30 rounded-2xl p-4 text-center border border-white/[0.04]">
+                <p className="text-3xl font-extrabold text-orange-400/60 mb-1">500</p>
+                <p className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">ข้อความ/เดือน</p>
+                <p className="text-[10px] text-zinc-700 mt-1">ตัวอย่าง projection</p>
+              </div>
+              <div className="bg-black/30 rounded-2xl p-4 text-center border border-white/[0.04]">
+                <p className="text-3xl font-extrabold text-emerald-400/60 mb-1">25</p>
+                <p className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">ชม.ที่ประหยัด</p>
+                <p className="text-[10px] text-zinc-700 mt-1">≈ 3 นาที/ข้อความ</p>
+              </div>
+              <div className="bg-black/30 rounded-2xl p-4 text-center border border-white/[0.04]">
+                <p className="text-3xl font-extrabold text-blue-400/60 mb-1">฿3,750</p>
+                <p className="text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">มูลค่าที่ได้</p>
+                <p className="text-[10px] text-zinc-700 mt-1">vs จ้างพนักงาน</p>
+              </div>
+            </div>
+            <button
+              onClick={() => navigate('/bot')}
+              className="mt-1 px-5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white text-sm font-bold transition-colors shadow-lg shadow-orange-500/20"
+            >
+              เชื่อม LINE OA เพื่อเริ่มนับจริง →
+            </button>
           </div>
-          <div className="bg-black/20 rounded-2xl p-4 text-center">
-            <p className="text-4xl font-extrabold text-emerald-400 mb-1">
-              {loading ? '...' : `${timeSavedHours}`}
-            </p>
-            <p className="text-xs text-zinc-400 font-semibold uppercase tracking-wider">ชั่วโมงที่ประหยัดได้</p>
-            <p className="text-xs text-zinc-600 mt-1">≈ 3 นาที/ข้อความ</p>
-          </div>
-          <div className="bg-black/20 rounded-2xl p-4 text-center">
-            <p className="text-4xl font-extrabold text-blue-400 mb-1">
-              {loading ? '...' : `฿${moneySaved.toLocaleString()}`}
-            </p>
-            <p className="text-xs text-zinc-400 font-semibold uppercase tracking-wider">มูลค่าที่ประหยัด</p>
-            <p className="text-xs text-zinc-600 mt-1">vs จ้างพนักงานตอบ LINE</p>
-          </div>
-        </div>
-        {!loading && moneySaved > 490 && (
-          <div className="mt-4 flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-            <Sparkles className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-            <p className="text-xs text-emerald-400">
-              MeowChat สร้างมูลค่า <strong>฿{moneySaved.toLocaleString()}</strong> ให้คุณเดือนนี้ — คุ้มกว่าค่าสมัคร ฿490 ถึง{' '}
-              <strong>{Math.round(moneySaved / 490)}x</strong>
-            </p>
-          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-black/20 rounded-2xl p-4 text-center">
+                <p className="text-4xl font-extrabold text-orange-400 mb-1">
+                  {loading ? '...' : totalReplies.toLocaleString()}
+                </p>
+                <p className="text-xs text-zinc-400 font-semibold uppercase tracking-wider">ข้อความที่บอทตอบแทน</p>
+                <p className="text-xs text-zinc-600 mt-1">ไม่ต้องพิมพ์เอง</p>
+              </div>
+              <div className="bg-black/20 rounded-2xl p-4 text-center">
+                <p className="text-4xl font-extrabold text-emerald-400 mb-1">
+                  {loading ? '...' : `${timeSavedHours}`}
+                </p>
+                <p className="text-xs text-zinc-400 font-semibold uppercase tracking-wider">ชั่วโมงที่ประหยัดได้</p>
+                <p className="text-xs text-zinc-600 mt-1">≈ 3 นาที/ข้อความ</p>
+              </div>
+              <div className="bg-black/20 rounded-2xl p-4 text-center">
+                <p className="text-4xl font-extrabold text-blue-400 mb-1">
+                  {loading ? '...' : `฿${moneySaved.toLocaleString()}`}
+                </p>
+                <p className="text-xs text-zinc-400 font-semibold uppercase tracking-wider">มูลค่าที่ประหยัด</p>
+                <p className="text-xs text-zinc-600 mt-1">vs จ้างพนักงานตอบ LINE</p>
+              </div>
+            </div>
+            {!loading && moneySaved > 490 && (
+              <div className="mt-4 flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                <Sparkles className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <p className="text-xs text-emerald-400">
+                  MeowChat สร้างมูลค่า <strong>฿{moneySaved.toLocaleString()}</strong> ให้คุณเดือนนี้ — คุ้มกว่าค่าสมัคร ฿490 ถึง{' '}
+                  <strong>{Math.round(moneySaved / 490)}x</strong>
+                </p>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -491,7 +543,13 @@ export default function Dashboard({ setSidebarOpen }) {
             </button>
           </div>
         ) : (
-          <p className="text-zinc-600 text-sm text-center py-4">ยังไม่มีข้อมูล — รอให้ลูกค้าส่งข้อความมาก่อน</p>
+          <div className="py-6 flex flex-col items-center gap-2 text-center">
+            <span className="text-4xl">🔍</span>
+            <p className="text-zinc-400 text-sm font-semibold">ยังไม่มีข้อมูล</p>
+            <p className="text-zinc-600 text-xs leading-relaxed">
+              เมื่อลูกค้าเริ่มส่งข้อความ AI จะวิเคราะห์<br />ว่าลูกค้าถามเรื่องอะไรบ่อยที่สุด
+            </p>
+          </div>
         )}
       </div>
 
@@ -545,8 +603,20 @@ export default function Dashboard({ setSidebarOpen }) {
         </div>
 
         <div className="space-y-2">
-          {conversations.length === 0 && (
-            <p className="text-zinc-500 text-sm text-center py-4">ยังไม่มีบทสนทนา</p>
+          {conversations.length === 0 && !loading && (
+            <div className="py-8 flex flex-col items-center gap-3 text-center">
+              <span className="text-5xl">💬</span>
+              <p className="text-zinc-300 text-sm font-bold">ยังไม่มีบทสนทนา</p>
+              <p className="text-zinc-600 text-xs leading-relaxed">
+                เมื่อลูกค้าส่งข้อความมาบน LINE OA<br />บทสนทนาจะปรากฏที่นี่แบบ real-time
+              </p>
+              <button
+                onClick={() => navigate('/bot')}
+                className="mt-1 px-4 py-2 rounded-xl bg-orange-500/15 border border-orange-500/30 text-orange-400 text-xs font-bold hover:bg-orange-500/25 transition-colors"
+              >
+                เชื่อม LINE OA เพื่อรับข้อความแรก →
+              </button>
+            </div>
           )}
           {conversations.map((conv) => (
             <div key={conv.id} className="flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-white/[0.03] transition-colors cursor-pointer group">
