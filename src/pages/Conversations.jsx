@@ -184,7 +184,7 @@ export default function Conversations({ setSidebarOpen }) {
                       selected?.id === conv.id ? 'bg-green-500/[0.06]' : ''
                     }`}
                   >
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-pink-500/20 border border-white/[0.06] flex items-center justify-center text-sm font-bold text-gray-900 flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-500/20 border border-white/[0.06] flex items-center justify-center text-sm font-bold text-gray-900 flex-shrink-0">
                       {conv.avatar}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -237,7 +237,7 @@ function ChatDetail({ conv, onClose, loadingMsgs }) {
         >
           <X className="w-4 h-4" />
         </button>
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-pink-500/20 border border-white/[0.06] flex items-center justify-center text-sm font-bold text-gray-900 flex-shrink-0">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-500/20 border border-white/[0.06] flex items-center justify-center text-sm font-bold text-gray-900 flex-shrink-0">
           {conv.avatar}
         </div>
         <div className="flex-1 min-w-0">

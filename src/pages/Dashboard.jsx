@@ -222,7 +222,7 @@ export default function Dashboard({ setSidebarOpen }) {
       {/* MeowCat Tip — shown to new users */}
       {!loading && totalReplies === 0 && (
         <div className="flex items-start gap-3 px-4 py-3.5 rounded-2xl bg-green-500/5 border border-green-500/10">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-500 to-pink-500 flex items-center justify-center shadow-lg shadow-green-500/20 flex-shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-600 to-green-400 flex items-center justify-center shadow-lg shadow-green-500/20 flex-shrink-0">
             <Cat className="w-5 h-5 text-gray-900" />
           </div>
           <div>
@@ -429,7 +429,7 @@ export default function Dashboard({ setSidebarOpen }) {
       </div>
 
       {/* ROI Widget */}
-      <div className="bg-gradient-to-br from-green-500/10 to-pink-500/5 rounded-3xl border border-green-500/20 p-6">
+      <div className="bg-gradient-to-br from-green-500/10 to-green-400/5 rounded-3xl border border-green-500/20 p-6">
         <div className="flex items-center gap-2 mb-5">
           <Sparkles className="w-5 h-5 text-green-600" />
           <h2 className="text-lg font-bold text-gray-900">
@@ -637,7 +637,7 @@ export default function Dashboard({ setSidebarOpen }) {
           )}
           {conversations.map((conv) => (
             <div key={conv.id} className="flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-white/[0.03] transition-colors cursor-pointer group">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-500/20 to-pink-500/20 border border-white/[0.06] flex items-center justify-center text-sm font-bold text-gray-900 flex-shrink-0">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-500/20 to-green-500/20 border border-white/[0.06] flex items-center justify-center text-sm font-bold text-gray-900 flex-shrink-0">
                 {conv.avatar}
               </div>
               <div className="flex-1 min-w-0">

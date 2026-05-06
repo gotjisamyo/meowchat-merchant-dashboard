@@ -280,7 +280,7 @@ export default function Analytics({ setSidebarOpen }) {
 
           {!isAdvanced && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-gray-50/40">
-              <div className="bg-black/80 border border-white/10 rounded-2xl p-6 text-center shadow-xl backdrop-blur-md max-w-[280px]">
+              <div className="bg-black/80 border border-black/[0.08] rounded-2xl p-6 text-center shadow-xl backdrop-blur-md max-w-[280px]">
                 <Lock className="w-8 h-8 text-green-600 mx-auto mb-3" />
                 <h3 className="text-sm font-bold text-gray-900 mb-2">Analytics ครบครัน</h3>
                 <p className="text-xs text-gray-500 mb-4">อัปเกรดเป็นแพ็กเกจ Business เพื่อดู insight ลูกค้าระดับลึกแบบไม่จำกัด</p>
@@ -344,7 +344,7 @@ export default function Analytics({ setSidebarOpen }) {
 
           {!isAdvanced && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-gray-50/40">
-              <div className="bg-black/80 border border-white/10 rounded-2xl p-6 text-center shadow-xl backdrop-blur-md max-w-[280px]">
+              <div className="bg-black/80 border border-black/[0.08] rounded-2xl p-6 text-center shadow-xl backdrop-blur-md max-w-[280px]">
                 <Lock className="w-8 h-8 text-green-600 mx-auto mb-3" />
                 <h3 className="text-sm font-bold text-gray-900 mb-2">เจาะลึก 100% Intents</h3>
                 <p className="text-xs text-gray-500 mb-4">รู้ทันทีว่าลูกค้าคุณถามเรื่องอะไรมากที่สุด (ลดโหลดแอดมิน)</p>
@@ -404,7 +404,7 @@ export default function Analytics({ setSidebarOpen }) {
 
         {!isAdvanced && (
            <div className="absolute inset-0 z-10 flex items-center justify-center bg-gray-50/40">
-             <div className="bg-black/80 border border-white/10 rounded-2xl px-8 py-6 text-center shadow-xl backdrop-blur-md">
+             <div className="bg-black/80 border border-black/[0.08] rounded-2xl px-8 py-6 text-center shadow-xl backdrop-blur-md">
                <Lock className="w-8 h-8 text-green-600 mx-auto mb-3" />
                <h3 className="text-sm font-bold text-gray-900 mb-2">วางแผนตารางแอดมินได้อย่างแม่นยำ</h3>
                <p className="text-xs text-gray-500 mb-4 max-w-sm">เจาะลึก Heatmap ปริมาณแชทรายชั่วโมงเพื่อจัดคนสแตนด์บายได้ตรงเวลาที่คนเยอะที่สุด</p>
@@ -455,7 +455,7 @@ export default function Analytics({ setSidebarOpen }) {
           </div>
           {!isAdvanced && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-gray-50/40">
-              <div className="bg-black/80 border border-white/10 rounded-2xl p-5 text-center shadow-xl backdrop-blur-md w-11/12">
+              <div className="bg-black/80 border border-black/[0.08] rounded-2xl p-5 text-center shadow-xl backdrop-blur-md w-11/12">
                 <Lock className="w-6 h-6 text-green-600 mx-auto mb-2" />
                 <h3 className="text-sm font-bold text-gray-900 mb-2">เปรียบเทียบความเร็ว</h3>
                 <Link to="/subscription" className="btn-primary w-full py-2 rounded-xl text-xs font-bold text-gray-900 block text-center">อัปเกรดแพ็กเกจ Business</Link>
@@ -493,7 +493,7 @@ export default function Analytics({ setSidebarOpen }) {
           </div>
           {!isAdvanced && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-gray-50/40">
-              <div className="bg-black/80 border border-white/10 rounded-2xl p-5 text-center shadow-xl backdrop-blur-md w-11/12">
+              <div className="bg-black/80 border border-black/[0.08] rounded-2xl p-5 text-center shadow-xl backdrop-blur-md w-11/12">
                 <Lock className="w-6 h-6 text-green-600 mx-auto mb-2" />
                 <h3 className="text-sm font-bold text-gray-900 mb-2">วัดระดับความพอใจลูกค้า</h3>
                 <Link to="/subscription" className="btn-primary w-full py-2 rounded-xl text-xs font-bold text-gray-900 block text-center">อัปเกรดแพ็กเกจ Business</Link>
@@ -523,7 +523,7 @@ export default function Analytics({ setSidebarOpen }) {
           </div>
           {!isAdvanced && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-gray-50/40">
-              <div className="bg-black/80 border border-white/10 rounded-2xl p-5 text-center shadow-xl backdrop-blur-md w-11/12">
+              <div className="bg-black/80 border border-black/[0.08] rounded-2xl p-5 text-center shadow-xl backdrop-blur-md w-11/12">
                 <Lock className="w-6 h-6 text-green-600 mx-auto mb-2" />
                 <h3 className="text-sm font-bold text-gray-900 mb-2">เช็คลิงก์ขายดี ฮีโร่โปรดักส์</h3>
                 <Link to="/subscription" className="btn-primary w-full py-2 rounded-xl text-xs font-bold text-gray-900 block text-center">อัปเกรดแพ็กเกจ Business</Link>
@@ -566,7 +566,7 @@ export default function Analytics({ setSidebarOpen }) {
         </div>
         {!isAdvanced && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-gray-50/40">
-            <div className="bg-black/80 border border-white/10 rounded-2xl p-5 text-center shadow-xl backdrop-blur-md w-11/12 max-w-[320px]">
+            <div className="bg-black/80 border border-black/[0.08] rounded-2xl p-5 text-center shadow-xl backdrop-blur-md w-11/12 max-w-[320px]">
               <Lock className="w-6 h-6 text-green-600 mx-auto mb-2" />
               <h3 className="text-sm font-bold text-gray-900 mb-2">เปิดดูตัวอย่างบทสนทนา</h3>
               <Link to="/subscription" className="btn-primary w-full py-2 rounded-xl text-xs font-bold text-gray-900 block text-center">อัปเกรดแพ็กเกจ Business</Link>

@@ -364,7 +364,7 @@ export default function LineSetupGuide({ setSidebarOpen }) {
       actions={
         <button
           onClick={() => navigate('/bot')}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-sm text-gray-500 hover:text-gray-900 hover:border-white/20 transition-colors"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-black/[0.08] text-sm text-gray-500 hover:text-gray-900 hover:border-white/20 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           กลับ Bot Settings

@@ -114,7 +114,7 @@ export default function Referral({ setSidebarOpen }) {
         </h2>
 
         {/* Explanation banner */}
-        <div className="p-4 rounded-2xl bg-gradient-to-r from-green-500/10 to-pink-500/10 border border-green-500/20">
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-green-500/10 to-green-500/10 border border-green-500/20">
           <p className="text-sm font-bold text-gray-900 text-center">แชร์ QR นี้ให้เพื่อนสแกน</p>
           <p className="text-xs text-gray-500 text-center mt-1">
             เพื่อนจะได้รับส่วนลด <span className="text-green-600 font-bold">20%</span> เดือนแรก

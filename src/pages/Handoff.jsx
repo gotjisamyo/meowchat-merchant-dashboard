@@ -462,7 +462,7 @@ function HandoffCard({ handoff, onAccept, onClose, onToggleChat, chatOpen, isLoa
 
   return (
     <div className="flex items-start gap-4 px-5 py-4 hover:bg-white/[0.02] transition-colors">
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-pink-500/20 border border-white/[0.06] flex items-center justify-center text-sm font-bold text-gray-900 flex-shrink-0 mt-0.5">
+      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-500/20 border border-white/[0.06] flex items-center justify-center text-sm font-bold text-gray-900 flex-shrink-0 mt-0.5">
         {handoff.avatar || <User className="w-4 h-4" />}
       </div>
 

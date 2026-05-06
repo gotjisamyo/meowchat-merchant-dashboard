@@ -201,7 +201,7 @@ export default function CRM({ setSidebarOpen }) {
       actions={
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-pink-500 hover:from-green-400 hover:to-pink-400 text-gray-900 text-sm font-bold transition-all shadow-lg shadow-green-500/20"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-green-600 to-green-400 hover:from-green-500 hover:to-green-300 text-gray-900 text-sm font-bold transition-all shadow-lg shadow-green-500/20"
         >
           <Plus className="w-4 h-4" />
           เพิ่มรายชื่อ
@@ -608,7 +608,7 @@ export default function CRM({ setSidebarOpen }) {
                 <button
                   type="submit"
                   disabled={addLoading}
-                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-pink-500 hover:from-green-400 hover:to-pink-400 text-gray-900 text-sm font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-green-600 to-green-400 hover:from-green-500 hover:to-green-300 text-gray-900 text-sm font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {addLoading ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Plus className="w-4 h-4" />}
                   {addLoading ? 'กำลังบันทึก...' : 'เพิ่มรายชื่อ'}

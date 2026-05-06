@@ -110,7 +110,7 @@ export default function Profile({ setSidebarOpen }) {
         {/* Avatar Section */}
         <div className="lg:col-span-1">
           <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-4 sm:p-6 flex flex-col items-center gap-4 text-center">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-green-500 to-pink-500 flex items-center justify-center text-4xl font-bold text-gray-900 shadow-xl shadow-green-500/20">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-green-600 to-green-400 flex items-center justify-center text-4xl font-bold text-gray-900 shadow-xl shadow-green-500/20">
               {profile.name?.charAt(0).toUpperCase() || 'M'}
             </div>
             <div>

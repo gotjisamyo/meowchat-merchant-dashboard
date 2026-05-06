@@ -416,7 +416,7 @@ export default function Subscription({ setSidebarOpen }) {
                 }`}
               >
                 {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-green-500 to-pink-500 text-gray-900 text-[10px] font-bold rounded-full">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-green-600 to-green-400 text-gray-900 text-[10px] font-bold rounded-full">
                     ยอดนิยม
                   </div>
                 )}

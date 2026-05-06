@@ -250,7 +250,7 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
         {/* User Info */}
         {!isCollapsed && user && (
           <div className="flex items-center gap-3 px-3 py-2 rounded-xl">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-500 to-pink-500 flex items-center justify-center text-gray-900 font-semibold text-sm flex-shrink-0">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-600 to-green-400 flex items-center justify-center text-gray-900 font-semibold text-sm flex-shrink-0">
               {user.name?.charAt(0).toUpperCase() || 'M'}
             </div>
             <div className="flex-1 min-w-0">

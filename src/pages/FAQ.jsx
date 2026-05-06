@@ -47,7 +47,7 @@ export default function FAQ({ setSidebarOpen }) {
       subtitle="คำถามจากลูกค้าที่บอทต้องส่งต่อให้คน — เพิ่มคำตอบใน Knowledge Base เพื่อให้บอทตอบได้เอง"
       setSidebarOpen={setSidebarOpen}
       actions={
-        <button onClick={load} className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/10 text-xs text-gray-500 hover:text-gray-900 hover:border-white/20 transition-colors">
+        <button onClick={load} className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-black/[0.08] text-xs text-gray-500 hover:text-gray-900 hover:border-white/20 transition-colors">
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
           รีเฟรช
         </button>
