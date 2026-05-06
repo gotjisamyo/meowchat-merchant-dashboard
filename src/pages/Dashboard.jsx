@@ -359,8 +359,8 @@ export default function Dashboard({ setSidebarOpen }) {
                 <XAxis dataKey="day" stroke="#52525B" fontSize={11} tickLine={false} axisLine={false} />
                 <YAxis stroke="#52525B" fontSize={11} tickLine={false} axisLine={false} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#1A1A24', border: 'none', borderRadius: '12px', fontSize: '13px' }}
-                  labelStyle={{ color: '#A1A1AA' }}
+                  contentStyle={{ backgroundColor: '#FFFFFF', border: 'none', borderRadius: '12px', fontSize: '13px' }}
+                  labelStyle={{ color: '#6B7280' }}
                   formatter={(v) => [`${v} ข้อความ`, '']}
                 />
                 <Area type="monotone" dataKey="count" stroke="#059669" strokeWidth={2.5} fillOpacity={1} fill="url(#msgGrad)" />

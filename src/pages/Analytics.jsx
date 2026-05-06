@@ -473,7 +473,7 @@ export default function Analytics({ setSidebarOpen }) {
           <div className={`flex-1 flex flex-col justify-center transition-all ${!isAdvanced ? 'blur-md opacity-50 pointer-events-none' : ''}`}>
             <div className="h-4 w-full rounded-full overflow-hidden flex mb-6 shadow-inner ring-1 ring-white/5">
                <div style={{ width: `${(sentiment.happy / totalSentiment) * 100}%` }} className="h-full bg-emerald-500 transition-all" />
-               <div style={{ width: `${(sentiment.neutral / totalSentiment) * 100}%` }} className="h-full bg-amber-500 transition-all border-x border-[#12121A]" />
+               <div style={{ width: `${(sentiment.neutral / totalSentiment) * 100}%` }} className="h-full bg-amber-500 transition-all border-x border-gray-100" />
                <div style={{ width: `${(sentiment.angry / totalSentiment) * 100}%` }} className="h-full bg-rose-500 transition-all" />
             </div>
             <div className="space-y-3">

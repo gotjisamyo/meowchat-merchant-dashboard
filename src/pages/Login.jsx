@@ -17,7 +17,7 @@ export default function Login() {
   useEffect(() => {
     const fix = (el) => {
       if (!el) return;
-      el.style.backgroundColor = '#0A0A0F';
+      el.style.backgroundColor = '#F9FAFB';
       el.style.color = '#ffffff';
     };
     const t = setInterval(() => {
