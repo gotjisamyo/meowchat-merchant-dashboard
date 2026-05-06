@@ -79,6 +79,116 @@ function formatRelativeTime(isoStr) {
   }
 }
 
+function getStoredUserEmail() {
+  try {
+    return JSON.parse(localStorage.getItem('meowchat_user') || 'null')?.email?.toLowerCase() || '';
+  } catch {
+    return '';
+  }
+}
+
+function buildGodScopedAnalyticsMock(days = 30) {
+  const range = Math.max(7, Math.min(days, 30));
+  const today = new Date();
+  const conversationPattern = [3, 4, 5, 3, 6, 5, 7];
+  const uniqueUserPattern = [2, 3, 3, 2, 4, 3, 5];
+  const escalationPattern = [0, 1, 0, 0, 1, 0, 1];
+
+  const daily = Array.from({ length: range }, (_, index) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() - (range - 1 - index));
+    return {
+      day: d.toISOString().slice(0, 10),
+      conversations: conversationPattern[index % conversationPattern.length],
+      uniqueUsers: uniqueUserPattern[index % uniqueUserPattern.length],
+      escalations: escalationPattern[index % escalationPattern.length],
+    };
+  });
+
+  const heatPattern = [2, 1, 1, 0, 0, 1, 2, 4, 8, 13, 12, 10, 11, 9, 8, 10, 12, 14, 16, 18, 14, 9, 5, 3];
+  const heatmaps = Array.from({ length: 7 }, (_, day) => (
+    Array.from({ length: 24 }, (_, hour) => ({
+      day,
+      hour,
+      value: heatPattern[hour] + ((day + hour) % 4),
+    }))
+  )).flat();
+
+  const peakCell = heatmaps.reduce((best, cell) => (cell.value > best.value ? cell : best), heatmaps[0]);
+  const totalConversations = daily.reduce((sum, item) => sum + item.conversations, 0);
+  const totalEscalations = daily.reduce((sum, item) => sum + item.escalations, 0);
+
+  return {
+    stats: {
+      totalConversations,
+      totalMessages: totalConversations * 4,
+      uniqueUsers: daily.reduce((sum, item) => sum + item.uniqueUsers, 0),
+      escalations: totalEscalations,
+      aiResponseRate: 92,
+      timeSavedHours: 14,
+      csatScore: 94,
+      resolvedRate: 88,
+      aiTime: 7,
+      humanTime: 79,
+      conversionRate: 31,
+    },
+    daily,
+    topKeywords: [
+      { word: 'ราคา', count: 18 },
+      { word: 'ส่งด่วน', count: 14 },
+      { word: 'สต็อก', count: 11 },
+      { word: 'โปร', count: 9 },
+      { word: 'ผ่อน', count: 7 },
+      { word: 'เคลม', count: 5 },
+    ],
+    intents: [
+      { name: 'สอบถามสินค้า', value: 38 },
+      { name: 'เช็กโปรโมชัน', value: 22 },
+      { name: 'ติดตามออเดอร์', value: 18 },
+      { name: 'ขอเจ้าหน้าที่', value: 12 },
+      { name: 'บริการหลังการขาย', value: 10 },
+    ],
+    heatmaps,
+    topLinks: [
+      { url: 'https://meowchat.store/promo/april', clicks: 17, conversions: 5 },
+      { url: 'https://meowchat.store/catalog/premium', clicks: 13, conversions: 4 },
+      { url: 'https://meowchat.store/review', clicks: 9, conversions: 2 },
+    ],
+    sentiment: { happy: 16, neutral: 8, angry: 2 },
+    recentSamples: [
+      { customerName: 'Mint', text: 'สวัสดีค่ะ ขอเช็กราคาสินค้าตัว premium หน่อยค่ะ', intent: 'สอบถามสินค้า', mood: 'happy' },
+      { customerName: 'Boss', text: 'มีสต็อกพร้อมส่งไหมครับ อยากได้สีดำ', intent: 'เช็กสต็อก', mood: 'neutral' },
+      { customerName: 'May', text: 'ออเดอร์เมื่อวานยังไม่เข้าเลย ขอคุยกับเจ้าหน้าที่ค่ะ', intent: 'ขอเจ้าหน้าที่', mood: 'angry' },
+      { customerName: 'Nok', text: 'ตอนนี้มีโปรอะไรบ้างคะ', intent: 'เช็กโปรโมชัน', mood: 'happy' },
+    ],
+    peakSummary: {
+      bestDay: ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'][peakCell.day],
+      bestHour: `${String(peakCell.hour).padStart(2, '0')}:00`,
+      peakLoad: peakCell.value,
+      topIntent: 'สอบถามสินค้า',
+    },
+  };
+}
+
+function mergeGodScopedAnalytics(data, days) {
+  if (getStoredUserEmail() !== 'god@meowchat.store') return data;
+
+  const mock = buildGodScopedAnalyticsMock(days);
+  return {
+    stats: { ...mock.stats, ...(data?.stats || {}) },
+    daily: Array.isArray(data?.daily) && data.daily.length > 0 ? data.daily : mock.daily,
+    topKeywords: Array.isArray(data?.topKeywords) && data.topKeywords.length > 0 ? data.topKeywords : mock.topKeywords,
+    intents: Array.isArray(data?.intents) && data.intents.length > 0 ? data.intents : mock.intents,
+    heatmaps: Array.isArray(data?.heatmaps) && data.heatmaps.length > 0 ? data.heatmaps : mock.heatmaps,
+    topLinks: Array.isArray(data?.topLinks) && data.topLinks.length > 0 ? data.topLinks : mock.topLinks,
+    recentSamples: Array.isArray(data?.recentSamples) && data.recentSamples.length > 0 ? data.recentSamples : mock.recentSamples,
+    peakSummary: data?.peakSummary?.bestHour ? data.peakSummary : mock.peakSummary,
+    sentiment: data?.sentiment && (data.sentiment.happy || data.sentiment.neutral || data.sentiment.angry)
+      ? data.sentiment
+      : mock.sentiment,
+  };
+}
+
 // ── Mock data (fallback when API unavailable) ─────────────────────────────────
 
 const MOCK_BOT = {
@@ -543,22 +653,28 @@ export const analyticsAPI = {
       intents: [],
       heatmaps: [],
       topLinks: [],
+      recentSamples: [],
+      peakSummary: null,
       sentiment: { happy: 0, neutral: 0, angry: 0 },
     };
     try {
       const res = await api.get(`/api/bots/${botId}/analytics/overview?days=${days}`);
       const d = res.data || {};
-      return {
+      return mergeGodScopedAnalytics({
         stats: { ...fallback.stats, ...d.stats },
         daily: Array.isArray(d.daily) ? d.daily : [],
-        topKeywords: Array.isArray(d.topKeywords) ? d.topKeywords : [],
+        topKeywords: Array.isArray(d.topKeywords)
+          ? d.topKeywords.map((item) => ({ ...item, word: item.word || item.keyword || '—' }))
+          : [],
         intents: Array.isArray(d.intents) ? d.intents : [],
         heatmaps: Array.isArray(d.heatmaps) ? d.heatmaps : [],
         topLinks: Array.isArray(d.topLinks) ? d.topLinks : [],
+        recentSamples: Array.isArray(d.recentSamples) ? d.recentSamples : [],
+        peakSummary: d.peakSummary || null,
         sentiment: d.sentiment || fallback.sentiment,
-      };
+      }, days);
     } catch {
-      return fallback;
+      return mergeGodScopedAnalytics(fallback, days);
     }
   },
 };

@@ -30,7 +30,7 @@ function MerchantLayout({ children }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#0A0A0F]">
+    <div className="flex h-screen w-full overflow-hidden bg-white">
       <Sidebar
         isOpen={sidebarOpen}
         setIsOpen={setSidebarOpen}

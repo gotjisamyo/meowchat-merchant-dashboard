@@ -127,8 +127,8 @@ export default function Marketing({ setSidebarOpen }) {
       {/* Templates */}
       <div>
         <div className="flex items-center gap-2 mb-5">
-          <Zap className="w-5 h-5 text-orange-400" />
-          <h2 className="text-lg font-bold text-white">Templates พร้อมใช้</h2>
+          <Zap className="w-5 h-5 text-green-600" />
+          <h2 className="text-lg font-bold text-gray-900">Templates พร้อมใช้</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {AUTOMATION_TEMPLATES.map((tpl) => {
@@ -136,14 +136,14 @@ export default function Marketing({ setSidebarOpen }) {
             return (
               <div
                 key={tpl.id}
-                className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-5 hover:border-orange-500/20 transition-all flex flex-col"
+                className="bg-gray-50 rounded-3xl border border-white/[0.06] p-5 hover:border-green-500/20 transition-all flex flex-col"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <span className="text-3xl leading-none">{tpl.icon}</span>
                     <div>
-                      <h3 className="font-bold text-white text-base">{tpl.name}</h3>
-                      <span className="inline-block mt-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                      <h3 className="font-bold text-gray-900 text-base">{tpl.name}</h3>
+                      <span className="inline-block mt-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-green-500/10 text-green-600 border border-green-500/20">
                         {tpl.trigger}
                       </span>
                     </div>
@@ -156,15 +156,15 @@ export default function Marketing({ setSidebarOpen }) {
                   )}
                 </div>
 
-                <p className="text-zinc-400 text-sm mb-3 flex-1">{tpl.description}</p>
+                <p className="text-gray-500 text-sm mb-3 flex-1">{tpl.description}</p>
 
-                <div className="p-3 rounded-xl bg-black/30 border border-white/[0.04] mb-4">
-                  <p className="text-xs text-zinc-500 italic leading-relaxed">"{tpl.message}"</p>
+                <div className="p-3 rounded-xl bg-black/30 border border-black/[0.05] mb-4">
+                  <p className="text-xs text-gray-400 italic leading-relaxed">"{tpl.message}"</p>
                 </div>
 
                 <button
                   onClick={() => handleUseTemplate(tpl)}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl btn-primary text-white text-sm font-bold"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl btn-primary text-gray-900 text-sm font-bold"
                 >
                   <Play className="w-4 h-4" />
                   ใช้ template นี้
@@ -178,16 +178,16 @@ export default function Marketing({ setSidebarOpen }) {
       {/* Active Campaigns */}
       {campaigns.length > 0 && (
         <div>
-          <h2 className="text-lg font-bold text-white mb-4">Campaigns ที่ใช้งานอยู่</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Campaigns ที่ใช้งานอยู่</h2>
           <div className="space-y-3">
             {campaigns.map((c) => {
               const tpl = AUTOMATION_TEMPLATES.find((t) => t.id === (c.template_id || c.templateId));
               return (
-                <div key={c.id} className="flex items-center gap-4 p-4 rounded-2xl bg-[#12121A] border border-white/[0.06]">
+                <div key={c.id} className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 border border-white/[0.06]">
                   <span className="text-2xl">{tpl?.icon || '⚡'}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-white">{c.name}</p>
-                    <p className="text-xs text-zinc-500">{tpl?.trigger || ''}</p>
+                    <p className="font-semibold text-gray-900">{c.name}</p>
+                    <p className="text-xs text-gray-400">{tpl?.trigger || ''}</p>
                   </div>
                   <span className="text-[10px] font-bold px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                     ใช้งาน
@@ -202,15 +202,15 @@ export default function Marketing({ setSidebarOpen }) {
       {/* Modal */}
       {selectedTemplate && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-          <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-gray-50 rounded-3xl border border-black/[0.09] w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
                 <span className="text-3xl">{selectedTemplate.icon}</span>
-                <h3 className="text-lg font-bold text-white">{selectedTemplate.name}</h3>
+                <h3 className="text-lg font-bold text-gray-900">{selectedTemplate.name}</h3>
               </div>
               <button
                 onClick={() => setSelectedTemplate(null)}
-                className="p-2 hover:bg-white/[0.06] rounded-xl text-zinc-500 hover:text-white transition-colors"
+                className="p-2 hover:bg-white/[0.06] rounded-xl text-gray-400 hover:text-gray-900 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -248,7 +248,7 @@ export default function Marketing({ setSidebarOpen }) {
               </div>
 
               <div className="p-4 rounded-2xl bg-black/30 border border-white/[0.06]">
-                <p className="text-xs font-semibold text-zinc-400 mb-2">ข้อความที่จะส่ง</p>
+                <p className="text-xs font-semibold text-gray-500 mb-2">ข้อความที่จะส่ง</p>
                 <p className="text-sm text-zinc-300 italic leading-relaxed">"{selectedTemplate.message}"</p>
               </div>
             </div>
@@ -256,14 +256,14 @@ export default function Marketing({ setSidebarOpen }) {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setSelectedTemplate(null)}
-                className="flex-1 py-3 rounded-xl text-sm font-semibold btn-secondary border border-white/[0.08]"
+                className="flex-1 py-3 rounded-xl text-sm font-semibold btn-secondary border border-black/[0.09]"
               >
                 ยกเลิก
               </button>
               <button
                 onClick={handleConfirm}
                 disabled={saving || !campaignName.trim() || !selectedBotId}
-                className="flex-1 py-3 rounded-xl text-sm font-bold btn-primary text-white disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-3 rounded-xl text-sm font-bold btn-primary text-gray-900 disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {saving && (
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

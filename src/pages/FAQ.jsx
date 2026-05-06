@@ -47,21 +47,21 @@ export default function FAQ({ setSidebarOpen }) {
       subtitle="คำถามจากลูกค้าที่บอทต้องส่งต่อให้คน — เพิ่มคำตอบใน Knowledge Base เพื่อให้บอทตอบได้เอง"
       setSidebarOpen={setSidebarOpen}
       actions={
-        <button onClick={load} className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/10 text-xs text-zinc-400 hover:text-white hover:border-white/20 transition-colors">
+        <button onClick={load} className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/10 text-xs text-gray-500 hover:text-gray-900 hover:border-white/20 transition-colors">
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
           รีเฟรช
         </button>
       }
     >
       {loading ? (
-        <div className="text-center py-16 text-zinc-500">กำลังโหลด...</div>
+        <div className="text-center py-16 text-gray-400">กำลังโหลด...</div>
       ) : questions.length === 0 ? (
         <div className="text-center py-16 space-y-3">
           <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto">
             <CheckCircle2 className="w-8 h-8 text-emerald-400" />
           </div>
-          <p className="text-white font-bold">ยอดเยี่ยม! ไม่มีคำถามค้างอยู่</p>
-          <p className="text-zinc-500 text-sm">บอทตอบได้ทุกคำถาม หรือยังไม่มีลูกค้าส่งข้อความมา</p>
+          <p className="text-gray-900 font-bold">ยอดเยี่ยม! ไม่มีคำถามค้างอยู่</p>
+          <p className="text-gray-400 text-sm">บอทตอบได้ทุกคำถาม หรือยังไม่มีลูกค้าส่งข้อความมา</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -75,12 +75,12 @@ export default function FAQ({ setSidebarOpen }) {
 
           {/* Question list */}
           {questions.map((q) => (
-            <div key={q.id} className="bg-[#12121A] rounded-2xl border border-white/[0.06] p-4 flex items-start gap-4">
+            <div key={q.id} className="bg-gray-50 rounded-2xl border border-white/[0.06] p-4 flex items-start gap-4">
               <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
                 <MessageSquare className="w-4 h-4 text-amber-400" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-white font-medium leading-relaxed">{q.question}</p>
+                <p className="text-sm text-gray-900 font-medium leading-relaxed">{q.question}</p>
                 <p className="text-xs text-zinc-600 mt-1">ถามมาแล้ว {q.count} ครั้ง · ล่าสุด {q.date && !isNaN(new Date(q.date)) ? new Date(q.date).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}</p>
               </div>
               {addedIds.has(q.id) ? (
@@ -91,7 +91,7 @@ export default function FAQ({ setSidebarOpen }) {
               ) : (
                 <button
                   onClick={() => handleAddToKB(q)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-500/10 border border-orange-500/20 text-xs text-orange-400 font-semibold hover:bg-orange-500/20 transition-colors flex-shrink-0"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-green-500/10 border border-green-500/20 text-xs text-green-600 font-semibold hover:bg-green-500/20 transition-colors flex-shrink-0"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   เพิ่มใน KB
@@ -145,13 +145,13 @@ function AddToKBModal({ botId, question, count, onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
-      <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-md shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-50 rounded-3xl border border-black/[0.09] w-full max-w-md shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
           <div className="flex items-center gap-3">
-            <BookOpen className="w-5 h-5 text-orange-400" />
-            <h3 className="text-base font-bold text-white">เพิ่มเข้า Knowledge Base</h3>
+            <BookOpen className="w-5 h-5 text-green-600" />
+            <h3 className="text-base font-bold text-gray-900">เพิ่มเข้า Knowledge Base</h3>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-white/[0.06] rounded-xl text-zinc-500 hover:text-white transition-colors">
+          <button onClick={onClose} className="p-2 hover:bg-white/[0.06] rounded-xl text-gray-400 hover:text-gray-900 transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -165,7 +165,7 @@ function AddToKBModal({ botId, question, count, onClose, onSuccess }) {
 
           {/* Topic */}
           <div>
-            <label className="block text-xs font-semibold text-zinc-400 mb-1.5">หัวข้อ (ชื่อ KB entry)</label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">หัวข้อ (ชื่อ KB entry)</label>
             <input
               className="input-premium"
               value={topic}
@@ -176,7 +176,7 @@ function AddToKBModal({ botId, question, count, onClose, onSuccess }) {
 
           {/* Answer */}
           <div>
-            <label className="block text-xs font-semibold text-zinc-400 mb-1.5">คำตอบที่บอทควรตอบ</label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">คำตอบที่บอทควรตอบ</label>
             <textarea
               rows={4}
               className="input-premium resize-none"
@@ -189,11 +189,11 @@ function AddToKBModal({ botId, question, count, onClose, onSuccess }) {
           {error && <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2.5">{error}</p>}
 
           <div className="flex gap-3">
-            <button onClick={onClose} className="flex-1 py-3 rounded-xl text-sm font-semibold btn-secondary border border-white/[0.08]">ยกเลิก</button>
+            <button onClick={onClose} className="flex-1 py-3 rounded-xl text-sm font-semibold btn-secondary border border-black/[0.09]">ยกเลิก</button>
             <button
               onClick={handleSave}
               disabled={saving || !answer.trim()}
-              className="flex-1 py-3 rounded-xl text-sm font-bold btn-primary text-white disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 py-3 rounded-xl text-sm font-bold btn-primary text-gray-900 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <BookOpen className="w-4 h-4" />}
               {saving ? 'กำลังบันทึก...' : 'บันทึกใน Knowledge Base'}

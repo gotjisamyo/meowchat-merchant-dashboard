@@ -65,31 +65,31 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0F] flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4 relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-1/2 -left-1/4 w-3/4 h-3/4 bg-gradient-to-br from-orange-500/8 via-transparent to-transparent rounded-full blur-3xl" />
+        <div className="absolute -top-1/2 -left-1/4 w-3/4 h-3/4 bg-gradient-to-br from-green-500/8 via-transparent to-transparent rounded-full blur-3xl" />
         <div className="absolute -bottom-1/2 -right-1/4 w-3/4 h-3/4 bg-gradient-to-tl from-pink-500/8 via-transparent to-transparent rounded-full blur-3xl" />
       </div>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:60px_60px] pointer-events-none" />
 
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-400 mb-4 shadow-xl shadow-orange-500/25">
-            <Cat className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-green-400 mb-4 shadow-xl shadow-green-500/25">
+            <Cat className="w-8 h-8 text-gray-900" />
           </div>
-          <h1 className="text-2xl font-extrabold text-white mb-1">เริ่มต้นฟรี 14 วัน</h1>
-          <p className="text-zinc-500 text-sm">สมัครใช้งาน MeowChat — ไม่ต้องใส่บัตรเครดิต</p>
+          <h1 className="text-2xl font-extrabold text-gray-900 mb-1">เริ่มต้นฟรี 14 วัน</h1>
+          <p className="text-gray-400 text-sm">สมัครใช้งาน MeowChat — ไม่ต้องใส่บัตรเครดิต</p>
         </div>
 
-        <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-7 shadow-2xl">
+        <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-7 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name */}
             <div>
               <label className="block text-sm font-semibold text-zinc-300 mb-2">ชื่อของคุณ</label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 pointer-events-none" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                 <input name="name" type="text" value={form.name} onChange={handleChange}
-                  className="w-full pl-11 pr-4 py-3 bg-[#0A0A0F] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500/40 transition-all text-sm"
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-black/[0.09] rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
                   placeholder="ชื่อ-นามสกุล" autoComplete="name" />
               </div>
             </div>
@@ -98,9 +98,9 @@ export default function Register() {
             <div>
               <label className="block text-sm font-semibold text-zinc-300 mb-2">ชื่อร้านค้า / ธุรกิจ</label>
               <div className="relative">
-                <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 pointer-events-none" />
+                <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                 <input name="shopName" type="text" value={form.shopName} onChange={handleChange}
-                  className="w-full pl-11 pr-4 py-3 bg-[#0A0A0F] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500/40 transition-all text-sm"
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-black/[0.09] rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
                   placeholder="ร้านอาหาร / ร้านเสื้อผ้า / ฯลฯ" />
               </div>
             </div>
@@ -109,9 +109,9 @@ export default function Register() {
             <div>
               <label className="block text-sm font-semibold text-zinc-300 mb-2">อีเมล</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 pointer-events-none" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                 <input name="email" ref={emailRef} type="email" value={form.email} onChange={handleChange}
-                  className="w-full pl-11 pr-4 py-3 bg-[#0A0A0F] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500/40 transition-all text-sm"
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-black/[0.09] rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
                   placeholder="your@email.com" autoComplete="email" />
               </div>
             </div>
@@ -120,12 +120,12 @@ export default function Register() {
             <div>
               <label className="block text-sm font-semibold text-zinc-300 mb-2">รหัสผ่าน</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 pointer-events-none" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                 <input name="password" ref={passRef} type={showPassword ? 'text' : 'password'} value={form.password} onChange={handleChange}
-                  className="w-full pl-11 pr-12 py-3 bg-[#0A0A0F] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500/40 transition-all text-sm"
+                  className="w-full pl-11 pr-12 py-3 bg-white border border-black/[0.09] rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
                   placeholder="อย่างน้อย 6 ตัวอักษร" autoComplete="new-password" />
                 <button type="button" onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors">
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-zinc-300 transition-colors">
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
@@ -135,9 +135,9 @@ export default function Register() {
             <div>
               <label className="block text-sm font-semibold text-zinc-300 mb-2">ยืนยันรหัสผ่าน</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 pointer-events-none" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                 <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={form.confirmPassword} onChange={handleChange}
-                  className="w-full pl-11 pr-4 py-3 bg-[#0A0A0F] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500/40 transition-all text-sm"
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-black/[0.09] rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
                   placeholder="••••••••" autoComplete="new-password" />
               </div>
             </div>
@@ -149,14 +149,14 @@ export default function Register() {
             )}
 
             <button type="submit" disabled={isLoading}
-              className="w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-400 hover:to-pink-400 text-white font-bold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 text-sm mt-2">
+              className="w-full py-3.5 px-4 bg-gradient-to-r from-green-500 to-pink-500 hover:from-green-400 hover:to-pink-400 text-gray-900 font-bold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-green-500/20 text-sm mt-2">
               {isLoading ? <><Loader2 className="w-4 h-4 animate-spin" />กำลังสมัคร...</> : '🐾 สมัครฟรี 14 วัน'}
             </button>
           </form>
 
-          <p className="text-center mt-4 text-zinc-500 text-sm">
+          <p className="text-center mt-4 text-gray-400 text-sm">
             มีบัญชีแล้ว?{' '}
-            <Link to="/login" className="text-orange-400 hover:text-orange-300 font-semibold transition-colors">
+            <Link to="/login" className="text-green-600 hover:text-green-500 font-semibold transition-colors">
               เข้าสู่ระบบ
             </Link>
           </p>

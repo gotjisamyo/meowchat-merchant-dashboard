@@ -14,22 +14,22 @@ export default function PageLayout({ title, subtitle, setSidebarOpen, children, 
   return (
     <div className="flex flex-col min-h-screen w-full min-w-0 animate-fade-in">
       {/* Mobile Header */}
-      <header className="h-14 flex items-center justify-between px-4 bg-[#0A0A0F]/95 backdrop-blur-xl border-b border-white/[0.04] sticky top-0 z-30 lg:hidden">
+      <header className="h-14 flex items-center justify-between px-4 bg-white/95 backdrop-blur-xl border-b border-black/[0.05] sticky top-0 z-30 lg:hidden">
         <button
           onClick={() => setSidebarOpen(true)}
-          className="p-2 hover:bg-white/[0.06] rounded-xl text-zinc-400 transition-colors"
+          className="p-2 hover:bg-white/[0.06] rounded-xl text-gray-500 transition-colors"
         >
           <Menu className="w-5 h-5" />
         </button>
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center">
-            <Cat className="w-4 h-4 text-white" />
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-green-500 to-green-400 flex items-center justify-center">
+            <Cat className="w-4 h-4 text-gray-900" />
           </div>
-          <span className="font-bold text-white text-sm">MeowChat</span>
+          <span className="font-bold text-gray-900 text-sm">MeowChat</span>
         </div>
         <button
           onClick={handleLogout}
-          className="relative p-2 hover:bg-red-500/10 rounded-xl text-zinc-400 hover:text-red-400 transition-colors"
+          className="relative p-2 hover:bg-red-500/10 rounded-xl text-gray-500 hover:text-red-400 transition-colors"
           title="ออกจากระบบ"
         >
           <LogOut className="w-5 h-5" />
@@ -37,16 +37,16 @@ export default function PageLayout({ title, subtitle, setSidebarOpen, children, 
       </header>
 
       {/* Desktop Header */}
-      <header className="hidden lg:flex items-center justify-between gap-4 px-6 lg:px-8 py-5 flex-shrink-0 border-b border-white/[0.04]">
+      <header className="hidden lg:flex items-center justify-between gap-4 px-6 lg:px-8 py-5 flex-shrink-0 border-b border-black/[0.05]">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">{title}</h1>
-          {subtitle && <p className="text-zinc-500 mt-0.5 text-sm">{subtitle}</p>}
+          <h1 className="text-2xl lg:text-3xl font-extrabold text-gray-900 tracking-tight">{title}</h1>
+          {subtitle && <p className="text-gray-400 mt-0.5 text-sm">{subtitle}</p>}
         </div>
         <div className="flex items-center gap-2">
           {actions}
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors text-sm font-medium"
+            className="flex items-center gap-2 px-3 py-2 rounded-xl text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-colors text-sm font-medium"
             title="ออกจากระบบ"
           >
             <LogOut className="w-4 h-4" />
@@ -63,7 +63,7 @@ export default function PageLayout({ title, subtitle, setSidebarOpen, children, 
       </div>
 
       {/* Footer */}
-      <footer className="content-area py-5 border-t border-white/[0.04] mt-auto">
+      <footer className="content-area py-5 border-t border-black/[0.05] mt-auto">
         <div className="flex flex-col gap-3 text-zinc-600 text-xs">
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5">
             <span>🔒 SSL Encrypted</span>
@@ -75,9 +75,9 @@ export default function PageLayout({ title, subtitle, setSidebarOpen, children, 
           <div className="flex flex-col md:flex-row items-center justify-between gap-2">
             <p>© 2026 MeowChat by Mawsom Company Limited</p>
             <div className="flex items-center gap-4">
-              <a href="https://meowchat.store" className="hover:text-white transition-colors" target="_blank" rel="noreferrer">เว็บไซต์</a>
-              <a href="https://meowchat.store/privacy" className="hover:text-white transition-colors" target="_blank" rel="noreferrer">นโยบายความเป็นส่วนตัว</a>
-              <a href="https://lin.ee/meowchat" className="hover:text-white transition-colors" target="_blank" rel="noreferrer">ช่วยเหลือ</a>
+              <a href="https://meowchat.store" className="hover:text-gray-900 transition-colors" target="_blank" rel="noreferrer">เว็บไซต์</a>
+              <a href="https://meowchat.store/privacy" className="hover:text-gray-900 transition-colors" target="_blank" rel="noreferrer">นโยบายความเป็นส่วนตัว</a>
+              <a href="https://lin.ee/meowchat" className="hover:text-gray-900 transition-colors" target="_blank" rel="noreferrer">ช่วยเหลือ</a>
             </div>
           </div>
         </div>

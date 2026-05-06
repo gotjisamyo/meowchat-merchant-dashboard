@@ -76,7 +76,7 @@ function getTypeInfo(category) {
 function statusLabel(status) {
   if (status === 'active') return { text: 'พร้อม', cls: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' };
   if (status === 'inactive') return { text: 'ไม่พร้อม', cls: 'bg-red-500/15 text-red-400 border-red-500/20' };
-  return { text: 'ซ่อน', cls: 'bg-zinc-500/15 text-zinc-400 border-zinc-500/20' };
+  return { text: 'ซ่อน', cls: 'bg-zinc-500/15 text-gray-500 border-zinc-500/20' };
 }
 
 export default function Catalog({ setSidebarOpen }) {
@@ -212,7 +212,7 @@ export default function Catalog({ setSidebarOpen }) {
       headerRight={
         <button
           onClick={() => setModal('add')}
-          className="btn-primary px-4 py-2.5 rounded-xl text-sm font-bold text-white flex items-center gap-2"
+          className="btn-primary px-4 py-2.5 rounded-xl text-sm font-bold text-gray-900 flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           <span className="hidden sm:inline">เพิ่มรายการ</span>
@@ -248,9 +248,9 @@ export default function Catalog({ setSidebarOpen }) {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
-            className="w-full bg-[#12121A] border border-white/[0.06] rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-orange-500/40"
+            className="w-full bg-gray-50 border border-white/[0.06] rounded-xl pl-9 pr-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-green-500/40"
             placeholder="ค้นหารายการ..."
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -263,8 +263,8 @@ export default function Catalog({ setSidebarOpen }) {
               onClick={() => setFilterType(t)}
               className={`flex-shrink-0 whitespace-nowrap px-3 py-2 rounded-xl text-xs font-bold transition-all border ${
                 filterType === t
-                  ? 'bg-orange-500/15 border-orange-500/30 text-orange-300'
-                  : 'bg-white/[0.03] border-white/[0.06] text-zinc-500 hover:border-white/20'
+                  ? 'bg-green-500/15 border-green-500/30 text-green-500'
+                  : 'bg-white/[0.03] border-white/[0.06] text-gray-400 hover:border-white/20'
               }`}
             >
               {t}
@@ -273,7 +273,7 @@ export default function Catalog({ setSidebarOpen }) {
           <select
             value={filterStatus}
             onChange={e => setFilterStatus(e.target.value)}
-            className="bg-[#12121A] border border-white/[0.06] rounded-xl px-3 py-2 text-xs text-zinc-400 focus:outline-none focus:border-orange-500/40"
+            className="bg-gray-50 border border-white/[0.06] rounded-xl px-3 py-2 text-xs text-gray-500 focus:outline-none focus:border-green-500/40"
           >
             <option value="ทั้งหมด">ทุกสถานะ</option>
             <option value="active">พร้อม</option>
@@ -285,7 +285,7 @@ export default function Catalog({ setSidebarOpen }) {
       {/* Content */}
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader className="w-6 h-6 animate-spin text-orange-400" />
+          <Loader className="w-6 h-6 animate-spin text-green-600" />
         </div>
       ) : filtered.length === 0 ? (
         <EmptyState hasItems={items.length > 0} onAdd={() => setModal('add')} />
@@ -331,18 +331,18 @@ function ItemCard({ item, inKB, onEdit, onDelete, onToggle }) {
   const status = statusLabel(item.status);
 
   return (
-    <div className={`bg-[#12121A] rounded-2xl border p-4 flex flex-col gap-3 transition-all ${
-      item.status === 'inactive' ? 'border-white/[0.04] opacity-60' : 'border-white/[0.06] hover:border-white/[0.10]'
+    <div className={`bg-gray-50 rounded-2xl border p-4 flex flex-col gap-3 transition-all ${
+      item.status === 'inactive' ? 'border-black/[0.05] opacity-60' : 'border-white/[0.06] hover:border-white/[0.10]'
     }`}>
       {/* Top row */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-xl bg-orange-500/10 flex items-center justify-center flex-shrink-0">
-            <TypeIcon className="w-4 h-4 text-orange-400" />
+          <div className="w-8 h-8 rounded-xl bg-green-500/10 flex items-center justify-center flex-shrink-0">
+            <TypeIcon className="w-4 h-4 text-green-600" />
           </div>
           <div className="min-w-0">
-            <p className="font-bold text-white text-sm truncate">{item.name}</p>
-            <p className="text-xs text-zinc-500">{item.category}</p>
+            <p className="font-bold text-gray-900 text-sm truncate">{item.name}</p>
+            <p className="text-xs text-gray-400">{item.category}</p>
           </div>
         </div>
         <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -359,12 +359,12 @@ function ItemCard({ item, inKB, onEdit, onDelete, onToggle }) {
 
       {/* Description */}
       {item.description && (
-        <p className="text-xs text-zinc-500 leading-relaxed line-clamp-2">{item.description}</p>
+        <p className="text-xs text-gray-400 leading-relaxed line-clamp-2">{item.description}</p>
       )}
 
       {/* Price + Stock */}
       <div className="flex items-center gap-3 text-sm">
-        <span className="font-bold text-orange-300">
+        <span className="font-bold text-green-500">
           {item.price > 0 ? `฿${Number(item.price).toLocaleString()}` : 'ฟรี'}
         </span>
         {typeInfo.hasStock && item.stock !== null && item.stock !== undefined && (
@@ -373,7 +373,7 @@ function ItemCard({ item, inKB, onEdit, onDelete, onToggle }) {
               ? 'bg-red-500/10 text-red-400'
               : item.stock <= 5
               ? 'bg-amber-500/10 text-amber-400'
-              : 'bg-white/[0.06] text-zinc-400'
+              : 'bg-white/[0.06] text-gray-500'
           }`}>
             {item.stock === 0 ? 'หมด' : `เหลือ ${item.stock}`}
           </span>
@@ -381,10 +381,10 @@ function ItemCard({ item, inKB, onEdit, onDelete, onToggle }) {
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-2 pt-1 border-t border-white/[0.04]">
+      <div className="flex items-center gap-2 pt-1 border-t border-black/[0.05]">
         <button
           onClick={onToggle}
-          className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-white transition-colors"
+          className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-900 transition-colors"
           title={item.status === 'active' ? 'ปิดใช้งาน' : 'เปิดใช้งาน'}
         >
           {item.status === 'active'
@@ -393,10 +393,10 @@ function ItemCard({ item, inKB, onEdit, onDelete, onToggle }) {
           <span>{item.status === 'active' ? 'พร้อม' : 'ปิด'}</span>
         </button>
         <div className="flex-1" />
-        <button onClick={onEdit} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-zinc-500 hover:text-white transition-colors">
+        <button onClick={onEdit} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-gray-400 hover:text-gray-900 transition-colors">
           <Edit2 className="w-3.5 h-3.5" />
         </button>
-        <button onClick={onDelete} className="p-1.5 rounded-lg hover:bg-red-500/10 text-zinc-500 hover:text-red-400 transition-colors">
+        <button onClick={onDelete} className="p-1.5 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition-colors">
           <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
@@ -463,11 +463,11 @@ function ItemModal({ item, onSave, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
-      <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] w-full max-w-lg max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
-          <h2 className="text-base font-bold text-white">{item ? 'แก้ไขรายการ' : 'เพิ่มรายการใหม่'}</h2>
-          <button onClick={onClose} className="p-2 rounded-xl hover:bg-white/[0.06] text-zinc-500 hover:text-white transition-colors">
+          <h2 className="text-base font-bold text-gray-900">{item ? 'แก้ไขรายการ' : 'เพิ่มรายการใหม่'}</h2>
+          <button onClick={onClose} className="p-2 rounded-xl hover:bg-white/[0.06] text-gray-400 hover:text-gray-900 transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -476,7 +476,7 @@ function ItemModal({ item, onSave, onClose }) {
         <div className="p-6 space-y-4">
           {/* ประเภท */}
           <div>
-            <label className="block text-xs font-semibold text-zinc-400 mb-2">ประเภท</label>
+            <label className="block text-xs font-semibold text-gray-500 mb-2">ประเภท</label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {ITEM_TYPES.map(t => {
                 const Icon = t.icon;
@@ -486,8 +486,8 @@ function ItemModal({ item, onSave, onClose }) {
                     onClick={() => update('category', t.value)}
                     className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold text-left transition-all border ${
                       form.category === t.value
-                        ? 'bg-orange-500/15 border-orange-500/30 text-orange-300'
-                        : 'bg-white/[0.03] border-white/[0.06] text-zinc-400 hover:border-white/20'
+                        ? 'bg-green-500/15 border-green-500/30 text-green-500'
+                        : 'bg-white/[0.03] border-white/[0.06] text-gray-500 hover:border-white/20'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5 flex-shrink-0" />
@@ -500,7 +500,7 @@ function ItemModal({ item, onSave, onClose }) {
 
           {/* ชื่อ */}
           <div>
-            <label className="block text-xs font-semibold text-zinc-400 mb-1.5">ชื่อ *</label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">ชื่อ *</label>
             <input
               className="input-premium w-full"
               placeholder={form.category === 'เมนู' ? 'เช่น ข้าวผัดกะเพรา' : form.category === 'บริการ' ? 'เช่น นวดไทย 60 นาที' : 'ชื่อรายการ'}
@@ -512,7 +512,7 @@ function ItemModal({ item, onSave, onClose }) {
           {/* ราคา + สต็อก */}
           <div className={`grid gap-3 ${typeInfo.hasStock ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 mb-1.5">ราคา (฿)</label>
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5">ราคา (฿)</label>
               <input
                 className="input-premium w-full"
                 type="number"
@@ -524,7 +524,7 @@ function ItemModal({ item, onSave, onClose }) {
             </div>
             {typeInfo.hasStock && (
               <div>
-                <label className="block text-xs font-semibold text-zinc-400 mb-1.5">จำนวนสต็อก</label>
+                <label className="block text-xs font-semibold text-gray-500 mb-1.5">จำนวนสต็อก</label>
                 <input
                   className="input-premium w-full"
                   type="number"
@@ -539,7 +539,7 @@ function ItemModal({ item, onSave, onClose }) {
 
           {/* คำอธิบาย */}
           <div>
-            <label className="block text-xs font-semibold text-zinc-400 mb-1.5">คำอธิบาย <span className="text-zinc-600">(บอทใช้ตอบลูกค้า)</span></label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">คำอธิบาย <span className="text-zinc-600">(บอทใช้ตอบลูกค้า)</span></label>
             <textarea
               className="input-premium w-full resize-none h-24 text-sm"
               placeholder="อธิบายรายการนี้ บอทจะนำข้อมูลนี้ไปตอบลูกค้าอัตโนมัติ"
@@ -550,7 +550,7 @@ function ItemModal({ item, onSave, onClose }) {
 
           {/* รูปภาพ */}
           <div>
-            <label className="block text-xs font-semibold text-zinc-400 mb-1.5">รูปภาพ <span className="text-zinc-600">(ไม่บังคับ)</span></label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">รูปภาพ <span className="text-zinc-600">(ไม่บังคับ)</span></label>
             {form.imageUrl && (
               <div className="relative mb-2 rounded-xl overflow-hidden border border-white/[0.06] bg-black/20">
                 <img src={form.imageUrl} alt="preview" className="w-full h-32 object-cover" onError={e => e.target.style.display='none'} />
@@ -559,7 +559,7 @@ function ItemModal({ item, onSave, onClose }) {
                   onClick={() => update('imageUrl', '')}
                   className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/60 flex items-center justify-center hover:bg-black/80"
                 >
-                  <X className="w-3 h-3 text-white" />
+                  <X className="w-3 h-3 text-gray-900" />
                 </button>
               </div>
             )}
@@ -595,7 +595,7 @@ function ItemModal({ item, onSave, onClose }) {
 
           {/* สถานะ */}
           <div>
-            <label className="block text-xs font-semibold text-zinc-400 mb-1.5">สถานะ</label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">สถานะ</label>
             <div className="flex gap-2">
               {[{ v: 'active', l: 'พร้อม' }, { v: 'inactive', l: 'ไม่พร้อม' }].map(s => (
                 <button
@@ -606,7 +606,7 @@ function ItemModal({ item, onSave, onClose }) {
                       ? s.v === 'active'
                         ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
                         : 'bg-red-500/15 border-red-500/30 text-red-400'
-                      : 'bg-white/[0.03] border-white/[0.06] text-zinc-500 hover:border-white/20'
+                      : 'bg-white/[0.03] border-white/[0.06] text-gray-400 hover:border-white/20'
                   }`}
                 >
                   {s.l}
@@ -631,7 +631,7 @@ function ItemModal({ item, onSave, onClose }) {
           <button
             onClick={submit}
             disabled={!valid || saving}
-            className="btn-primary flex-[2] py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2 disabled:opacity-40"
+            className="btn-primary flex-[2] py-3 rounded-xl text-sm font-bold text-gray-900 flex items-center justify-center gap-2 disabled:opacity-40"
           >
             {saving && <Loader className="w-4 h-4 animate-spin" />}
             {saving ? 'กำลังบันทึก...' : item ? 'บันทึกการเปลี่ยนแปลง' : 'เพิ่มรายการ'}
@@ -645,13 +645,13 @@ function ItemModal({ item, onSave, onClose }) {
 function EmptyState({ hasItems, onAdd }) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      <div className="w-16 h-16 rounded-2xl bg-orange-500/10 flex items-center justify-center mb-4">
-        <Package className="w-8 h-8 text-orange-400" />
+      <div className="w-16 h-16 rounded-2xl bg-green-500/10 flex items-center justify-center mb-4">
+        <Package className="w-8 h-8 text-green-600" />
       </div>
-      <h3 className="text-base font-bold text-white mb-1">
+      <h3 className="text-base font-bold text-gray-900 mb-1">
         {hasItems ? 'ไม่พบรายการที่ตรงกัน' : 'ยังไม่มีรายการ'}
       </h3>
-      <p className="text-sm text-zinc-500 mb-6 max-w-xs">
+      <p className="text-sm text-gray-400 mb-6 max-w-xs">
         {hasItems
           ? 'ลองเปลี่ยน filter หรือลบคำค้นหา'
           : 'เพิ่มสินค้า บริการ หรือเมนูที่ธุรกิจของคุณนำเสนอ บอทจะนำข้อมูลนี้ไปตอบลูกค้าอัตโนมัติ'}
@@ -659,7 +659,7 @@ function EmptyState({ hasItems, onAdd }) {
       {!hasItems && (
         <button
           onClick={onAdd}
-          className="btn-primary px-6 py-3 rounded-xl text-sm font-bold text-white flex items-center gap-2"
+          className="btn-primary px-6 py-3 rounded-xl text-sm font-bold text-gray-900 flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           เพิ่มรายการแรก

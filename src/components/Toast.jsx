@@ -28,7 +28,7 @@ export default function Toast({ message, type = 'success', onClose }) {
       </span>
       <button
         onClick={onClose}
-        className="ml-2 text-zinc-500 hover:text-white transition-colors"
+        className="ml-2 text-gray-400 hover:text-gray-900 transition-colors"
       >
         <X className="w-4 h-4" />
       </button>

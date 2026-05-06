@@ -110,17 +110,17 @@ export default function Bookings({ setSidebarOpen }) {
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'ทั้งหมด',   value: stats.total,     icon: Calendar, cls: 'text-white' },
-          { label: 'วันนี้',     value: stats.today,     icon: Clock,    cls: 'text-orange-400' },
+          { label: 'ทั้งหมด',   value: stats.total,     icon: Calendar, cls: 'text-gray-900' },
+          { label: 'วันนี้',     value: stats.today,     icon: Clock,    cls: 'text-green-600' },
           { label: 'รอยืนยัน',  value: stats.pending,   icon: User,     cls: 'text-amber-400' },
           { label: 'ยืนยันแล้ว', value: stats.confirmed, icon: CheckCircle2, cls: 'text-emerald-400' },
         ].map(s => {
           const Icon = s.icon;
           return (
-            <div key={s.label} className="bg-[#12121A] rounded-2xl border border-white/[0.06] p-4">
+            <div key={s.label} className="bg-gray-50 rounded-2xl border border-white/[0.06] p-4">
               <div className="flex items-center gap-2 mb-1">
-                <Icon className="w-4 h-4 text-zinc-500" />
-                <span className="text-xs text-zinc-500">{s.label}</span>
+                <Icon className="w-4 h-4 text-gray-400" />
+                <span className="text-xs text-gray-400">{s.label}</span>
               </div>
               <p className={`text-xl font-extrabold ${s.cls}`}>{s.value}</p>
             </div>
@@ -137,9 +137,9 @@ export default function Bookings({ setSidebarOpen }) {
             className={`flex-shrink-0 whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
               filterStatus === s.value
                 ? s.value === 'all'
-                  ? 'bg-orange-500/15 border-orange-500/30 text-orange-300'
+                  ? 'bg-green-500/15 border-green-500/30 text-green-500'
                   : s.cls
-                : 'bg-white/[0.03] border-white/[0.06] text-zinc-500 hover:border-white/20'
+                : 'bg-white/[0.03] border-white/[0.06] text-gray-400 hover:border-white/20'
             }`}
           >
             {s.label}
@@ -154,7 +154,7 @@ export default function Bookings({ setSidebarOpen }) {
 
       {/* Booking list */}
       {loading ? (
-        <div className="flex items-center justify-center py-20 gap-2 text-zinc-500 text-sm">
+        <div className="flex items-center justify-center py-20 gap-2 text-gray-400 text-sm">
           <Loader className="w-4 h-4 animate-spin" />
           กำลังโหลด...
         </div>
@@ -166,7 +166,7 @@ export default function Bookings({ setSidebarOpen }) {
             const st = statusInfo(b.status);
             const isUpdating = updatingId === b.id;
             return (
-              <div key={b.id} className="bg-[#12121A] rounded-2xl border border-white/[0.06] p-4 sm:p-5">
+              <div key={b.id} className="bg-gray-50 rounded-2xl border border-white/[0.06] p-4 sm:p-5">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                   {/* Info */}
                   <div className="flex-1 min-w-0">
@@ -176,21 +176,21 @@ export default function Bookings({ setSidebarOpen }) {
                       </span>
                       <span className="text-xs text-zinc-600">{formatDatetime(b.created_at)}</span>
                     </div>
-                    <p className="text-white font-semibold text-sm truncate">{b.service}</p>
+                    <p className="text-gray-900 font-semibold text-sm truncate">{b.service}</p>
                     {b.booking_datetime && (
-                      <div className="flex items-center gap-1.5 mt-1 text-xs text-orange-400">
+                      <div className="flex items-center gap-1.5 mt-1 text-xs text-green-600">
                         <Clock className="w-3.5 h-3.5 flex-shrink-0" />
                         {formatDatetime(b.booking_datetime)}
                       </div>
                     )}
                     {b.customer_name && (
-                      <div className="flex items-center gap-1.5 mt-1 text-xs text-zinc-500">
+                      <div className="flex items-center gap-1.5 mt-1 text-xs text-gray-400">
                         <User className="w-3.5 h-3.5 flex-shrink-0" />
                         {b.customer_name}
                       </div>
                     )}
                     {b.note && (
-                      <p className="mt-2 text-xs text-zinc-500 bg-white/[0.03] rounded-lg px-3 py-2">
+                      <p className="mt-2 text-xs text-gray-400 bg-white/[0.03] rounded-lg px-3 py-2">
                         {b.note}
                       </p>
                     )}
@@ -240,13 +240,13 @@ export default function Bookings({ setSidebarOpen }) {
 function EmptyState({ isFiltered, onClear }) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      <div className="w-16 h-16 rounded-2xl bg-orange-500/10 border border-orange-500/10 flex items-center justify-center mb-4">
-        <Calendar className="w-8 h-8 text-orange-400" />
+      <div className="w-16 h-16 rounded-2xl bg-green-500/10 border border-green-500/10 flex items-center justify-center mb-4">
+        <Calendar className="w-8 h-8 text-green-600" />
       </div>
-      <h3 className="text-base font-bold text-white mb-1">
+      <h3 className="text-base font-bold text-gray-900 mb-1">
         {isFiltered ? 'ไม่มีนัดหมายในสถานะนี้' : 'ยังไม่มีนัดหมาย'}
       </h3>
-      <p className="text-sm text-zinc-500 max-w-xs mb-5">
+      <p className="text-sm text-gray-400 max-w-xs mb-5">
         {isFiltered
           ? 'ลองเปลี่ยน filter ด้านบน'
           : 'เมื่อลูกค้านัดหมายผ่านบอท LINE จะปรากฏที่นี่ — บอทรับนัดหมายให้อัตโนมัติ 24/7'}
@@ -254,13 +254,13 @@ function EmptyState({ isFiltered, onClear }) {
       {isFiltered ? (
         <button
           onClick={onClear}
-          className="text-sm text-orange-400 hover:text-orange-300 font-semibold transition-colors"
+          className="text-sm text-green-600 hover:text-green-500 font-semibold transition-colors"
         >
           ดูทั้งหมด →
         </button>
       ) : (
         <p className="text-xs text-zinc-600 px-2 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
-          💡 ตั้งค่าบอทให้รับนัดหมายในหน้า <span className="text-zinc-400 font-semibold">ตั้งค่าบอท</span>
+          💡 ตั้งค่าบอทให้รับนัดหมายในหน้า <span className="text-gray-500 font-semibold">ตั้งค่าบอท</span>
         </p>
       )}
     </div>

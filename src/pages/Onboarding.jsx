@@ -100,13 +100,13 @@ export default function Onboarding() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0F] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
       <div className="w-full max-w-xl">
         {/* Logo */}
         <div className="text-center mb-8">
           <span className="text-4xl">🐱</span>
-          <h1 className="text-xl font-extrabold text-white mt-2">ตั้งค่าบอทของคุณ</h1>
-          <p className="text-zinc-500 text-sm mt-1">ใช้เวลาแค่ 2 นาที พร้อมใช้งานได้เลย</p>
+          <h1 className="text-xl font-extrabold text-gray-900 mt-2">ตั้งค่าบอทของคุณ</h1>
+          <p className="text-gray-400 text-sm mt-1">ใช้เวลาแค่ 2 นาที พร้อมใช้งานได้เลย</p>
         </div>
 
         {/* Step indicator */}
@@ -115,21 +115,21 @@ export default function Onboarding() {
             <div key={s.id} className="flex items-center gap-2">
               <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
                 step === s.id
-                  ? 'bg-orange-500 text-white'
+                  ? 'bg-green-500 text-gray-900'
                   : step > s.id
                   ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                  : 'bg-white/[0.06] text-zinc-500'
+                  : 'bg-white/[0.06] text-gray-400'
               }`}>
                 {step > s.id ? <CheckCircle className="w-3.5 h-3.5" /> : s.icon}
                 <span className="hidden sm:inline">{s.title}</span>
               </div>
-              {i < STEPS.length - 1 && <div className="w-6 h-px bg-white/10" />}
+              {i < STEPS.length - 1 && <div className="w-6 h-px bg-black/5" />}
             </div>
           ))}
         </div>
 
         {/* Card */}
-        <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-4 sm:p-8">
+        <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-4 sm:p-8">
           {step === 1 && (
             <StepBotInfo info={botInfo} setInfo={setBotInfo} onNext={() => setStep(2)} onSkip={() => navigate('/')} />
           )}
@@ -157,8 +157,8 @@ function StepBotInfo({ info, setInfo, onNext, onSkip }) {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-lg font-bold text-white mb-1">บอทของคุณเป็นใคร?</h2>
-        <p className="text-zinc-500 text-sm">ชื่อและบุคลิกของบอทที่ลูกค้าจะเห็น</p>
+        <h2 className="text-lg font-bold text-gray-900 mb-1">บอทของคุณเป็นใคร?</h2>
+        <p className="text-gray-400 text-sm">ชื่อและบุคลิกของบอทที่ลูกค้าจะเห็น</p>
       </div>
 
       <div className="space-y-4">
@@ -186,8 +186,8 @@ function StepBotInfo({ info, setInfo, onNext, onSkip }) {
                 onClick={() => update('personality', p.value)}
                 className={`px-3 py-2.5 rounded-xl text-sm font-semibold text-left transition-all border ${
                   info.personality === p.value
-                    ? 'bg-orange-500/15 border-orange-500/40 text-orange-300'
-                    : 'bg-white/[0.03] border-white/[0.06] text-zinc-400 hover:border-white/20'
+                    ? 'bg-green-500/15 border-green-500/40 text-green-500'
+                    : 'bg-white/[0.03] border-white/[0.06] text-gray-500 hover:border-white/20'
                 }`}
               >
                 {p.label}
@@ -208,13 +208,13 @@ function StepBotInfo({ info, setInfo, onNext, onSkip }) {
       <div className="flex gap-3">
         <button
           onClick={onSkip}
-          className="btn-secondary flex-1 py-3.5 rounded-xl text-sm font-semibold text-zinc-400 flex items-center justify-center"
+          className="btn-secondary flex-1 py-3.5 rounded-xl text-sm font-semibold text-gray-500 flex items-center justify-center"
         >
           ข้ามก่อน
         </button>
         <button
           onClick={handleNext}
-          className="btn-primary flex-[2] py-3.5 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2"
+          className="btn-primary flex-[2] py-3.5 rounded-xl text-sm font-bold text-gray-900 flex items-center justify-center gap-2"
         >
           ถัดไป — Knowledge Base
           <ChevronRight className="w-4 h-4" />
@@ -231,23 +231,23 @@ function StepKB({ kb, setKb, onBack, onFinish, onSkip, saving, saveError }) {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-lg font-bold text-white mb-1">ข้อมูลธุรกิจ (Knowledge Base)</h2>
-        <p className="text-zinc-500 text-sm">บอทจะใช้ข้อมูลนี้ตอบลูกค้า แก้ไขให้ตรงกับร้านของคุณ</p>
+        <h2 className="text-lg font-bold text-gray-900 mb-1">ข้อมูลธุรกิจ (Knowledge Base)</h2>
+        <p className="text-gray-400 text-sm">บอทจะใช้ข้อมูลนี้ตอบลูกค้า แก้ไขให้ตรงกับร้านของคุณ</p>
       </div>
 
       <div className="space-y-3">
         {kb.map((entry, i) => (
           <div key={i} className={`rounded-2xl border p-4 transition-all ${
-            entry.enabled ? 'border-orange-500/20 bg-orange-500/[0.04]' : 'border-white/[0.06] bg-white/[0.02] opacity-50'
+            entry.enabled ? 'border-green-500/20 bg-green-500/[0.04]' : 'border-white/[0.06] bg-white/[0.02] opacity-50'
           }`}>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-bold text-white">{entry.topic}</span>
+              <span className="text-sm font-bold text-gray-900">{entry.topic}</span>
               <button
                 onClick={() => toggleKb(i)}
                 className={`px-2 py-0.5 text-[11px] font-bold rounded-full transition-all ${
                   entry.enabled
                     ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                    : 'bg-white/[0.06] text-zinc-500'
+                    : 'bg-white/[0.06] text-gray-400'
                 }`}
               >
                 {entry.enabled ? 'เปิด' : 'ปิด'}
@@ -282,14 +282,14 @@ function StepKB({ kb, setKb, onBack, onFinish, onSkip, saving, saveError }) {
         </button>
         <button
           onClick={onSkip}
-          className="btn-secondary flex-1 py-3.5 rounded-xl text-sm font-semibold text-zinc-400 flex items-center justify-center"
+          className="btn-secondary flex-1 py-3.5 rounded-xl text-sm font-semibold text-gray-500 flex items-center justify-center"
         >
           ข้ามก่อน
         </button>
         <button
           onClick={onFinish}
           disabled={saving}
-          className="btn-primary flex-[2] py-3.5 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2"
+          className="btn-primary flex-[2] py-3.5 rounded-xl text-sm font-bold text-gray-900 flex items-center justify-center gap-2"
         >
           {saving ? <Loader className="w-4 h-4 animate-spin" /> : <ChevronRight className="w-4 h-4" />}
           {saving ? 'กำลังบันทึก...' : 'ถัดไป — เชื่อม LINE OA'}
@@ -313,47 +313,47 @@ function StepDone({ botId, onGo }) {
     <div className="space-y-5">
       <div>
         <div className="flex items-center gap-2 mb-1">
-          <Link2 className="w-5 h-5 text-orange-400" />
-          <h2 className="text-lg font-bold text-white">เชื่อม LINE OA กับบอท</h2>
+          <Link2 className="w-5 h-5 text-green-600" />
+          <h2 className="text-lg font-bold text-gray-900">เชื่อม LINE OA กับบอท</h2>
         </div>
-        <p className="text-zinc-500 text-sm">คัดลอก Webhook URL แล้วนำไปใส่ใน LINE OA Manager เพื่อให้บอทรับข้อความได้</p>
+        <p className="text-gray-400 text-sm">คัดลอก Webhook URL แล้วนำไปใส่ใน LINE OA Manager เพื่อให้บอทรับข้อความได้</p>
       </div>
 
-      <div className="bg-[#0A0A0F] rounded-2xl p-4 border border-orange-500/20 text-left space-y-2">
-        <p className="text-xs text-zinc-500 font-semibold">Webhook URL</p>
-        <code className="text-xs text-orange-300 break-all block leading-relaxed">{webhookUrl}</code>
+      <div className="bg-white rounded-2xl p-4 border border-green-500/20 text-left space-y-2">
+        <p className="text-xs text-gray-400 font-semibold">Webhook URL</p>
+        <code className="text-xs text-green-500 break-all block leading-relaxed">{webhookUrl}</code>
         <button
           onClick={handleCopy}
           className={`mt-1 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
             copied
               ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-              : 'bg-white/[0.06] text-zinc-300 hover:bg-white/[0.10]'
+              : 'bg-white/[0.06] text-zinc-300 hover:bg-black/[0.06]'
           }`}
         >
           {copied ? '✓ คัดลอกแล้ว' : 'คัดลอก URL'}
         </button>
       </div>
 
-      <div className="bg-[#0A0A0F] rounded-2xl p-4 border border-white/[0.06] text-left">
-        <p className="text-xs text-zinc-500 font-semibold mb-3">วิธีเชื่อมต่อ LINE OA</p>
-        <ol className="space-y-2 text-xs text-zinc-400">
-          <li className="flex gap-2"><span className="text-orange-400 font-bold w-4 flex-shrink-0">1.</span>เข้า LINE Official Account Manager → Settings</li>
-          <li className="flex gap-2"><span className="text-orange-400 font-bold w-4 flex-shrink-0">2.</span>เลือก Messaging API → เปิดใช้งาน</li>
-          <li className="flex gap-2"><span className="text-orange-400 font-bold w-4 flex-shrink-0">3.</span>วาง Webhook URL ด้านบน → กด Verify</li>
-          <li className="flex gap-2"><span className="text-orange-400 font-bold w-4 flex-shrink-0">4.</span>เปิด "Use webhook" → Update</li>
+      <div className="bg-white rounded-2xl p-4 border border-white/[0.06] text-left">
+        <p className="text-xs text-gray-400 font-semibold mb-3">วิธีเชื่อมต่อ LINE OA</p>
+        <ol className="space-y-2 text-xs text-gray-500">
+          <li className="flex gap-2"><span className="text-green-600 font-bold w-4 flex-shrink-0">1.</span>เข้า LINE Official Account Manager → Settings</li>
+          <li className="flex gap-2"><span className="text-green-600 font-bold w-4 flex-shrink-0">2.</span>เลือก Messaging API → เปิดใช้งาน</li>
+          <li className="flex gap-2"><span className="text-green-600 font-bold w-4 flex-shrink-0">3.</span>วาง Webhook URL ด้านบน → กด Verify</li>
+          <li className="flex gap-2"><span className="text-green-600 font-bold w-4 flex-shrink-0">4.</span>เปิด "Use webhook" → Update</li>
         </ol>
       </div>
 
       <div className="flex gap-3 pt-1">
         <button
           onClick={onGo}
-          className="btn-secondary flex-1 py-3 rounded-xl text-sm font-semibold text-zinc-400 flex items-center justify-center gap-2"
+          className="btn-secondary flex-1 py-3 rounded-xl text-sm font-semibold text-gray-500 flex items-center justify-center gap-2"
         >
           ข้ามก่อน
         </button>
         <button
           onClick={onGo}
-          className="btn-primary flex-[2] py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2"
+          className="btn-primary flex-[2] py-3 rounded-xl text-sm font-bold text-gray-900 flex items-center justify-center gap-2"
         >
           เชื่อมแล้ว → เข้าสู่ Dashboard
           <ChevronRight className="w-4 h-4" />
@@ -366,7 +366,7 @@ function StepDone({ botId, onGo }) {
 function Field({ label, children }) {
   return (
     <div>
-      <label className="block text-xs font-semibold text-zinc-400 mb-1.5">{label}</label>
+      <label className="block text-xs font-semibold text-gray-500 mb-1.5">{label}</label>
       {children}
     </div>
   );

@@ -32,7 +32,7 @@ const STATUSES = [
   { value: 'shipped',    label: 'จัดส่งแล้ว',         cls: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/20' },
   { value: 'completed',  label: 'สำเร็จ',             cls: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' },
   { value: 'cancelled',  label: 'ยกเลิก',             cls: 'bg-red-500/15 text-red-400 border-red-500/20' },
-  { value: 'refunded',   label: 'คืนเงิน',            cls: 'bg-zinc-500/15 text-zinc-400 border-zinc-500/20' },
+  { value: 'refunded',   label: 'คืนเงิน',            cls: 'bg-zinc-500/15 text-gray-500 border-zinc-500/20' },
 ];
 
 const NEXT_ACTIONS = {
@@ -161,17 +161,17 @@ export default function Orders({ setSidebarOpen }) {
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'ทั้งหมด',       value: stats.total,                icon: ClipboardList, cls: 'text-white' },
-          { label: 'วันนี้',         value: stats.todayCount,           icon: Clock,         cls: 'text-orange-400' },
+          { label: 'ทั้งหมด',       value: stats.total,                icon: ClipboardList, cls: 'text-gray-900' },
+          { label: 'วันนี้',         value: stats.todayCount,           icon: Clock,         cls: 'text-green-600' },
           { label: 'รอยืนยัน',      value: stats.pending,              icon: Package,       cls: 'text-amber-400' },
           { label: `รายได้ (${DATE_RANGES.find(d => d.value === dateRange)?.label})`, value: `฿${stats.revenue.toLocaleString()}`, icon: ShoppingCart, cls: 'text-emerald-400' },
         ].map(s => {
           const Icon = s.icon;
           return (
-            <div key={s.label} className="bg-[#12121A] rounded-2xl border border-white/[0.06] p-4">
+            <div key={s.label} className="bg-gray-50 rounded-2xl border border-white/[0.06] p-4">
               <div className="flex items-center gap-2 mb-1">
-                <Icon className="w-4 h-4 text-zinc-500" />
-                <span className="text-xs text-zinc-500">{s.label}</span>
+                <Icon className="w-4 h-4 text-gray-400" />
+                <span className="text-xs text-gray-400">{s.label}</span>
               </div>
               <p className={`text-xl font-extrabold ${s.cls}`}>{s.value}</p>
             </div>
@@ -181,15 +181,15 @@ export default function Orders({ setSidebarOpen }) {
 
       {/* Date range filter */}
       <div className="flex items-center gap-2 flex-wrap">
-        <Calendar className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+        <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
         {DATE_RANGES.map(r => (
           <button
             key={r.value}
             onClick={() => setDateRange(r.value)}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex-shrink-0 ${
               dateRange === r.value
-                ? 'bg-orange-500/15 border-orange-500/30 text-orange-300'
-                : 'bg-white/[0.03] border-white/[0.06] text-zinc-500 hover:border-white/20'
+                ? 'bg-green-500/15 border-green-500/30 text-green-500'
+                : 'bg-white/[0.03] border-white/[0.06] text-gray-400 hover:border-white/20'
             }`}
           >
             {r.label}
@@ -206,9 +206,9 @@ export default function Orders({ setSidebarOpen }) {
             className={`flex-shrink-0 whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
               filterStatus === s.value
                 ? s.value === 'all'
-                  ? 'bg-orange-500/15 border-orange-500/30 text-orange-300'
+                  ? 'bg-green-500/15 border-green-500/30 text-green-500'
                   : `border ${s.cls}`
-                : 'bg-white/[0.03] border-white/[0.06] text-zinc-500 hover:border-white/20'
+                : 'bg-white/[0.03] border-white/[0.06] text-gray-400 hover:border-white/20'
             }`}
           >
             {s.label}
@@ -224,7 +224,7 @@ export default function Orders({ setSidebarOpen }) {
       {/* Order list */}
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader className="w-6 h-6 animate-spin text-orange-400" />
+          <Loader className="w-6 h-6 animate-spin text-green-600" />
         </div>
       ) : filtered.length === 0 ? (
         <EmptyState status={filterStatus} onNavigateCatalog={() => navigate('/catalog')} />
@@ -252,7 +252,7 @@ function OrderCard({ order, expanded, onToggle, onUpdateStatus, updating }) {
   const actions = NEXT_ACTIONS[order.status] || [];
 
   return (
-    <div className="bg-[#12121A] rounded-2xl border border-white/[0.06] overflow-hidden">
+    <div className="bg-gray-50 rounded-2xl border border-white/[0.06] overflow-hidden">
       {/* Header row */}
       <button
         className="w-full flex items-center gap-3 p-4 text-left hover:bg-white/[0.02] transition-colors"
@@ -260,21 +260,21 @@ function OrderCard({ order, expanded, onToggle, onUpdateStatus, updating }) {
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-bold text-white text-sm">{order.order_number}</span>
+            <span className="font-bold text-gray-900 text-sm">{order.order_number}</span>
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${status.cls}`}>
               {status.label}
             </span>
           </div>
-          <p className="text-xs text-zinc-500 mt-0.5">
+          <p className="text-xs text-gray-400 mt-0.5">
             {items.length} รายการ · {fmtDate(order.created_at)}
             {order.note ? ` · 📝 ${order.note}` : ''}
           </p>
         </div>
         <div className="flex items-center gap-3 flex-shrink-0">
-          <span className="font-bold text-orange-300 text-sm">
+          <span className="font-bold text-green-500 text-sm">
             ฿{Number(order.total_amount || 0).toLocaleString()}
           </span>
-          {expanded ? <ChevronUp className="w-4 h-4 text-zinc-500" /> : <ChevronDown className="w-4 h-4 text-zinc-500" />}
+          {expanded ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
         </div>
       </button>
 
@@ -283,25 +283,25 @@ function OrderCard({ order, expanded, onToggle, onUpdateStatus, updating }) {
         <div className="border-t border-white/[0.06] p-4 space-y-4">
           {/* Items */}
           <div>
-            <p className="text-xs font-semibold text-zinc-500 mb-2">รายการสินค้า/บริการ</p>
+            <p className="text-xs font-semibold text-gray-400 mb-2">รายการสินค้า/บริการ</p>
             <div className="space-y-2">
               {items.length === 0 ? (
                 <p className="text-xs text-zinc-600">ไม่มีข้อมูลรายการ</p>
               ) : items.map((item, i) => (
                 <div key={i} className="flex items-center justify-between text-sm">
                   <span className="text-zinc-300">{item.productName || item.name || 'สินค้า'}</span>
-                  <div className="flex items-center gap-3 text-zinc-500">
+                  <div className="flex items-center gap-3 text-gray-400">
                     <span>×{item.quantity}</span>
-                    <span className="text-orange-300 font-semibold">
+                    <span className="text-green-500 font-semibold">
                       ฿{(Number(item.price || 0) * item.quantity).toLocaleString()}
                     </span>
                   </div>
                 </div>
               ))}
             </div>
-            <div className="flex justify-between mt-3 pt-3 border-t border-white/[0.04]">
-              <span className="text-xs text-zinc-500">รวม</span>
-              <span className="font-bold text-white">฿{Number(order.total_amount || 0).toLocaleString()}</span>
+            <div className="flex justify-between mt-3 pt-3 border-t border-black/[0.05]">
+              <span className="text-xs text-gray-400">รวม</span>
+              <span className="font-bold text-gray-900">฿{Number(order.total_amount || 0).toLocaleString()}</span>
             </div>
           </div>
 
@@ -324,7 +324,7 @@ function OrderCard({ order, expanded, onToggle, onUpdateStatus, updating }) {
                   className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all disabled:opacity-40 ${
                     action.to === 'cancelled' || action.to === 'refunded'
                       ? 'bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20'
-                      : 'btn-primary text-white'
+                      : 'btn-primary text-gray-900'
                   }`}
                 >
                   {updating ? <Loader className="w-3 h-3 animate-spin" /> : <StatusIcon to={action.to} />}
@@ -358,13 +358,13 @@ function EmptyState({ status, onNavigateCatalog }) {
   const isFiltered = status !== 'all';
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      <div className="w-16 h-16 rounded-2xl bg-orange-500/10 border border-orange-500/10 flex items-center justify-center mb-4">
-        <ShoppingCart className="w-8 h-8 text-orange-400" />
+      <div className="w-16 h-16 rounded-2xl bg-green-500/10 border border-green-500/10 flex items-center justify-center mb-4">
+        <ShoppingCart className="w-8 h-8 text-green-600" />
       </div>
-      <h3 className="text-base font-bold text-white mb-1">
+      <h3 className="text-base font-bold text-gray-900 mb-1">
         {isFiltered ? 'ไม่มี order ในสถานะนี้' : 'ยังไม่มี order'}
       </h3>
-      <p className="text-sm text-zinc-500 max-w-xs mb-5">
+      <p className="text-sm text-gray-400 max-w-xs mb-5">
         {isFiltered
           ? 'ลองเปลี่ยน filter ด้านบน'
           : 'เมื่อลูกค้าสั่งสินค้าหรือบริการผ่านบอท LINE order จะปรากฏที่นี่'}
@@ -372,7 +372,7 @@ function EmptyState({ status, onNavigateCatalog }) {
       {!isFiltered && (
         <button
           onClick={onNavigateCatalog}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-500/15 border border-orange-500/20 text-orange-400 hover:bg-orange-500/25 text-sm font-bold transition-all"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-green-500/15 border border-green-500/20 text-green-600 hover:bg-green-500/25 text-sm font-bold transition-all"
         >
           <Package className="w-4 h-4" />
           เพิ่มรายการสินค้า/บริการ

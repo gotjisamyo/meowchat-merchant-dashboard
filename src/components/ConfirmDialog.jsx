@@ -10,20 +10,20 @@ export default function ConfirmDialog({ isOpen, title, message, onConfirm, onCan
       onClick={onCancel}
     >
       <div
-        className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-sm shadow-2xl animate-scale-in"
+        className="bg-gray-50 rounded-3xl border border-black/[0.09] w-full max-w-sm shadow-2xl animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
-          <h3 className="text-base font-bold text-white">{title}</h3>
+          <h3 className="text-base font-bold text-gray-900">{title}</h3>
           <button
             onClick={onCancel}
-            className="p-1.5 hover:bg-white/[0.06] rounded-xl text-zinc-500 hover:text-white transition-colors"
+            className="p-1.5 hover:bg-white/[0.06] rounded-xl text-gray-400 hover:text-gray-900 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
         <div className="px-6 py-5">
-          <p className="text-sm text-zinc-400">{message}</p>
+          <p className="text-sm text-gray-500">{message}</p>
         </div>
         <div className="flex gap-3 px-6 pb-6">
           <button
@@ -34,7 +34,7 @@ export default function ConfirmDialog({ isOpen, title, message, onConfirm, onCan
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-red-500 hover:bg-red-600 transition-colors"
+            className="flex-1 py-2.5 rounded-xl text-sm font-bold text-gray-900 bg-red-500 hover:bg-red-600 transition-colors"
           >
             ลบ
           </button>

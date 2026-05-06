@@ -69,7 +69,7 @@ export default function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed
         ${isCollapsed ? 'w-[88px]' : 'w-[280px]'}
         fixed lg:relative left-0 top-0
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        bg-[#0A0A0F] border-r border-white/[0.04]
+        bg-white border-r border-black/[0.05]
       `}>
         <SidebarContent
           menuItems={menuItems}
@@ -146,17 +146,17 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
     <>
       {/* Logo */}
       <div className={`
-        h-20 flex items-center justify-between px-5 border-b border-white/[0.04] flex-shrink-0
+        h-20 flex items-center justify-between px-5 border-b border-black/[0.05] flex-shrink-0
         ${isCollapsed ? 'px-4 justify-center' : ''}
       `}>
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center shadow-lg shadow-orange-500/25 flex-shrink-0">
-            <Cat className="w-6 h-6 text-white" />
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-green-500 to-green-400 flex items-center justify-center shadow-lg shadow-green-500/25 flex-shrink-0">
+            <Cat className="w-6 h-6 text-gray-900" />
           </div>
           {!isCollapsed && (
             <div>
-              <span className="font-bold text-lg text-white tracking-tight">MeowChat</span>
-              <p className="text-[10px] font-semibold text-orange-400 tracking-widest uppercase mt-0">Merchant</p>
+              <span className="font-bold text-lg text-gray-900 tracking-tight">MeowChat</span>
+              <p className="text-[10px] font-semibold text-green-600 tracking-widest uppercase mt-0">Merchant</p>
             </div>
           )}
         </div>
@@ -164,13 +164,13 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
         <div className="flex items-center gap-1">
           <button
             onClick={toggleCollapse}
-            className="hidden lg:flex p-2 hover:bg-white/[0.06] rounded-xl transition-colors text-zinc-500 hover:text-white"
+            className="hidden lg:flex p-2 hover:bg-white/[0.06] rounded-xl transition-colors text-gray-400 hover:text-gray-900"
           >
             {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
           <button
             onClick={onClose}
-            className="lg:hidden p-2 hover:bg-white/[0.06] rounded-xl transition-colors text-zinc-500 hover:text-white"
+            className="lg:hidden p-2 hover:bg-white/[0.06] rounded-xl transition-colors text-gray-400 hover:text-gray-900"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -208,18 +208,18 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
                     title={isCollapsed ? item.label : undefined}
                     className={`
                       w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 group relative
-                      ${isActive ? 'text-white' : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03]'}
+                      ${isActive ? 'text-gray-900' : 'text-gray-400 hover:text-zinc-300 hover:bg-white/[0.03]'}
                       ${isCollapsed ? 'justify-center px-0' : ''}
                     `}
                     style={isActive ? {
-                      background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.12) 0%, rgba(255, 107, 53, 0.04) 100%)',
-                      border: '1px solid rgba(255, 107, 53, 0.2)',
+                      background: 'linear-gradient(135deg, rgba(5, 150, 105, 0.12) 0%, rgba(5, 150, 105, 0.04) 100%)',
+                      border: '1px solid rgba(5, 150, 105, 0.2)',
                     } : {}}
                   >
                     <div className="relative flex-shrink-0">
-                      <Icon className={`w-5 h-5 transition-colors ${isActive ? 'text-orange-400' : 'group-hover:text-zinc-400'}`} />
+                      <Icon className={`w-5 h-5 transition-colors ${isActive ? 'text-green-600' : 'group-hover:text-gray-500'}`} />
                       {badge && isCollapsed && (
-                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[9px] font-bold text-white flex items-center justify-center">
+                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[9px] font-bold text-gray-900 flex items-center justify-center">
                           {badge > 9 ? '9+' : badge}
                         </span>
                       )}
@@ -233,7 +233,7 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
                           </span>
                         )}
                         {isActive && !badge && (
-                          <div className="absolute right-3 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-orange-500 rounded-full" />
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-green-500 rounded-full" />
                         )}
                       </>
                     )}
@@ -246,23 +246,23 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
       </nav>
 
       {/* User Section */}
-      <div className="p-4 border-t border-white/[0.04] flex-shrink-0 space-y-3">
+      <div className="p-4 border-t border-black/[0.05] flex-shrink-0 space-y-3">
         {/* User Info */}
         {!isCollapsed && user && (
           <div className="flex items-center gap-3 px-3 py-2 rounded-xl">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-500 to-pink-500 flex items-center justify-center text-gray-900 font-semibold text-sm flex-shrink-0">
               {user.name?.charAt(0).toUpperCase() || 'M'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate">{user.name || 'Merchant'}</p>
-              <p className="text-xs text-zinc-500 truncate">{user.email || ''}</p>
+              <p className="text-sm font-semibold text-gray-900 truncate">{user.name || 'Merchant'}</p>
+              <p className="text-xs text-gray-400 truncate">{user.email || ''}</p>
               {usagePlan && (
                 <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide
-                  ${usagePlan === 'pro' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                  ${usagePlan === 'pro' ? 'bg-green-500/20 text-green-600 border border-green-500/30'
                   : usagePlan === 'starter' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                   : usagePlan === 'business' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
                   : usagePlan === 'enterprise' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
-                  : 'bg-zinc-500/20 text-zinc-400 border border-zinc-500/30'}`}
+                  : 'bg-zinc-500/20 text-gray-500 border border-zinc-500/30'}`}
                 >
                   {usagePlan}
                 </span>
@@ -277,7 +277,7 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
           disabled={isLoggingOut}
           title={isCollapsed ? 'ออกจากระบบ' : undefined}
           className={`
-            w-full flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-500 hover:text-red-400 hover:bg-red-500/[0.08] transition-all
+            w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-red-400 hover:bg-red-500/[0.08] transition-all
             ${isCollapsed ? 'justify-center' : ''}
           `}
         >

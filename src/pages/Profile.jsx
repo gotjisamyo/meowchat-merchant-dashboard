@@ -109,14 +109,14 @@ export default function Profile({ setSidebarOpen }) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
         {/* Avatar Section */}
         <div className="lg:col-span-1">
-          <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-4 sm:p-6 flex flex-col items-center gap-4 text-center">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center text-4xl font-bold text-white shadow-xl shadow-orange-500/20">
+          <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-4 sm:p-6 flex flex-col items-center gap-4 text-center">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-green-500 to-pink-500 flex items-center justify-center text-4xl font-bold text-gray-900 shadow-xl shadow-green-500/20">
               {profile.name?.charAt(0).toUpperCase() || 'M'}
             </div>
             <div>
-              <p className="font-bold text-white text-lg">{profile.name || 'Merchant'}</p>
-              <p className="text-zinc-500 text-sm">{profile.email}</p>
-              <span className="inline-block mt-2 px-3 py-1 text-xs font-bold rounded-full bg-orange-500/15 text-orange-400 border border-orange-500/20 capitalize">
+              <p className="font-bold text-gray-900 text-lg">{profile.name || 'Merchant'}</p>
+              <p className="text-gray-400 text-sm">{profile.email}</p>
+              <span className="inline-block mt-2 px-3 py-1 text-xs font-bold rounded-full bg-green-500/15 text-green-600 border border-green-500/20 capitalize">
                 {user?.role || 'merchant'}
               </span>
             </div>
@@ -133,12 +133,12 @@ export default function Profile({ setSidebarOpen }) {
         {/* Profile Form + Password */}
         <div className="lg:col-span-2 space-y-6">
           {/* Profile Info */}
-          <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
+          <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/20 flex items-center justify-center">
-                <User className="w-4 h-4 text-orange-400" />
+              <div className="w-9 h-9 rounded-xl bg-green-500/15 border border-green-500/20 flex items-center justify-center">
+                <User className="w-4 h-4 text-green-600" />
               </div>
-              <h2 className="text-lg font-bold text-white">ข้อมูลส่วนตัว</h2>
+              <h2 className="text-lg font-bold text-gray-900">ข้อมูลส่วนตัว</h2>
             </div>
 
             <form onSubmit={handleSaveProfile} className="space-y-4">
@@ -173,7 +173,7 @@ export default function Profile({ setSidebarOpen }) {
                 </FormField>
                 <FormField label="ชื่อบริษัท/ร้านค้า">
                   <div className="relative">
-                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                       <input
                         type="text"
                         value={profile.company}
@@ -189,7 +189,7 @@ export default function Profile({ setSidebarOpen }) {
                 <button
                   type="submit"
                   disabled={savingProfile || loading}
-                  className="btn-primary px-6 py-3 rounded-xl text-sm font-bold text-white flex items-center gap-2 disabled:opacity-50"
+                  className="btn-primary px-6 py-3 rounded-xl text-sm font-bold text-gray-900 flex items-center gap-2 disabled:opacity-50"
                 >
                   {savingProfile
                     ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -201,12 +201,12 @@ export default function Profile({ setSidebarOpen }) {
           </div>
 
           {/* Change Password */}
-          <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
+          <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-9 h-9 rounded-xl bg-purple-500/15 border border-purple-500/20 flex items-center justify-center">
                 <Lock className="w-4 h-4 text-purple-400" />
               </div>
-              <h2 className="text-lg font-bold text-white">เปลี่ยนรหัสผ่าน</h2>
+              <h2 className="text-lg font-bold text-gray-900">เปลี่ยนรหัสผ่าน</h2>
             </div>
 
             <form onSubmit={handleChangePassword} className="space-y-4">
@@ -220,7 +220,7 @@ export default function Profile({ setSidebarOpen }) {
                     placeholder="••••••••"
                     required
                   />
-                  <button type="button" onClick={() => togglePass('current')} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors">
+                  <button type="button" onClick={() => togglePass('current')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-zinc-300 transition-colors">
                     {showPass.current ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
@@ -237,7 +237,7 @@ export default function Profile({ setSidebarOpen }) {
                       placeholder="อย่างน้อย 6 ตัวอักษร"
                       required
                     />
-                    <button type="button" onClick={() => togglePass('next')} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors">
+                    <button type="button" onClick={() => togglePass('next')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-zinc-300 transition-colors">
                       {showPass.next ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
@@ -252,7 +252,7 @@ export default function Profile({ setSidebarOpen }) {
                       placeholder="••••••••"
                       required
                     />
-                    <button type="button" onClick={() => togglePass('confirm')} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors">
+                    <button type="button" onClick={() => togglePass('confirm')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-zinc-300 transition-colors">
                       {showPass.confirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
@@ -267,7 +267,7 @@ export default function Profile({ setSidebarOpen }) {
                 <button
                   type="submit"
                   disabled={savingPass || !passwords.current || !passwords.next || !passwords.confirm}
-                  className="btn-primary px-6 py-3 rounded-xl text-sm font-bold text-white flex items-center gap-2 disabled:opacity-50"
+                  className="btn-primary px-6 py-3 rounded-xl text-sm font-bold text-gray-900 flex items-center gap-2 disabled:opacity-50"
                 >
                   {savingPass
                     ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -295,8 +295,8 @@ function FormField({ label, children }) {
 function InfoRow({ label, value }) {
   return (
     <div className="flex justify-between gap-2 text-sm">
-      <span className="text-zinc-500">{label}</span>
-      <span className="text-white font-medium text-right truncate">{value}</span>
+      <span className="text-gray-400">{label}</span>
+      <span className="text-gray-900 font-medium text-right truncate">{value}</span>
     </div>
   );
 }

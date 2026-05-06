@@ -7,14 +7,14 @@ import PageLayout from '../components/PageLayout';
 
 function MockBrowser({ site, children }) {
   return (
-    <div className="rounded-xl overflow-hidden border border-white/[0.08] bg-[#0A0A0F] mb-4">
-      <div className="flex items-center gap-2 px-4 py-2 bg-zinc-900 border-b border-white/[0.06]">
+    <div className="rounded-xl overflow-hidden border border-black/[0.09] bg-white mb-4">
+      <div className="flex items-center gap-2 px-4 py-2 bg-white border-b border-white/[0.06]">
         <div className="flex gap-1.5">
           <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
           <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
           <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
         </div>
-        <div className="flex-1 bg-zinc-800 rounded px-3 py-0.5 text-[10px] text-zinc-500 font-mono">
+        <div className="flex-1 bg-gray-50 rounded px-3 py-0.5 text-[10px] text-gray-400 font-mono">
           🔒 {site}
         </div>
       </div>
@@ -25,7 +25,7 @@ function MockBrowser({ site, children }) {
 
 function Highlight({ children }) {
   return (
-    <div className="absolute inset-0 rounded-lg ring-2 ring-orange-400 ring-offset-1 ring-offset-transparent pointer-events-none z-10" />
+    <div className="absolute inset-0 rounded-lg ring-2 ring-green-400 ring-offset-1 ring-offset-transparent pointer-events-none z-10" />
   );
 }
 
@@ -39,13 +39,13 @@ function MockStep1() {
           <div className="w-6 h-6 bg-white rounded-sm flex items-center justify-center">
             <span className="text-[#00B900] text-xs font-extrabold">L</span>
           </div>
-          <span className="text-white font-bold text-sm">LINE Official Account Manager</span>
+          <span className="text-gray-900 font-bold text-sm">LINE Official Account Manager</span>
         </div>
         <div className="relative">
-          <div className="bg-white text-[#00B900] text-xs font-bold px-3 py-1.5 rounded-full ring-2 ring-orange-400 ring-offset-2 ring-offset-[#00B900]">
+          <div className="bg-white text-[#00B900] text-xs font-bold px-3 py-1.5 rounded-full ring-2 ring-green-400 ring-offset-2 ring-offset-[#00B900]">
             ＋ Create
           </div>
-          <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-orange-400 text-white text-[10px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
+          <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-green-400 text-gray-900 text-[10px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
             กดที่นี่
           </div>
         </div>
@@ -53,8 +53,8 @@ function MockStep1() {
       {/* Dropdown */}
       <div className="bg-white mx-auto mt-0 w-56 ml-auto mr-4 rounded-b-lg shadow-xl border border-gray-200 text-xs">
         <div className="px-4 py-2.5 text-gray-500 font-semibold border-b border-gray-100">Create</div>
-        <div className="px-4 py-3 flex items-center gap-2 bg-orange-50 border-l-2 border-orange-400">
-          <span className="w-5 h-5 rounded-full bg-[#00B900] flex items-center justify-center text-white text-[9px] font-bold">L</span>
+        <div className="px-4 py-3 flex items-center gap-2 bg-green-50 border-l-2 border-green-400">
+          <span className="w-5 h-5 rounded-full bg-[#00B900] flex items-center justify-center text-gray-900 text-[9px] font-bold">L</span>
           <span className="text-gray-800 font-semibold">Create LINE Official Account</span>
           <ChevronRight className="w-3 h-3 text-gray-400 ml-auto" />
         </div>
@@ -75,25 +75,25 @@ function MockStep2() {
     <MockBrowser site="manager.line.biz › ร้านของคุณ › Settings">
       <div className="flex text-xs">
         {/* Sidebar */}
-        <div className="w-40 bg-zinc-900 border-r border-white/[0.06] py-3 flex-shrink-0">
+        <div className="w-40 bg-white border-r border-white/[0.06] py-3 flex-shrink-0">
           {['Basic settings', 'Chat', 'Response settings', 'Messaging API', 'Account'].map((item) => (
-            <div key={item} className={`px-4 py-2.5 flex items-center gap-2 cursor-pointer ${item === 'Messaging API' ? 'bg-orange-500/20 border-l-2 border-orange-400 text-orange-300 font-bold' : 'text-zinc-500 hover:text-zinc-300'}`}>
-              {item === 'Messaging API' && <div className="w-1.5 h-1.5 rounded-full bg-orange-400 flex-shrink-0" />}
+            <div key={item} className={`px-4 py-2.5 flex items-center gap-2 cursor-pointer ${item === 'Messaging API' ? 'bg-green-500/20 border-l-2 border-green-400 text-green-500 font-bold' : 'text-gray-400 hover:text-zinc-300'}`}>
+              {item === 'Messaging API' && <div className="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0" />}
               {item}
             </div>
           ))}
         </div>
         {/* Content */}
         <div className="flex-1 p-5 bg-zinc-950">
-          <p className="text-white font-bold mb-1">Messaging API</p>
-          <p className="text-zinc-500 mb-4 text-[10px]">Use the Messaging API to build a bot that interacts with your customers</p>
-          <div className="bg-zinc-900 rounded-lg p-4 border border-white/[0.06]">
+          <p className="text-gray-900 font-bold mb-1">Messaging API</p>
+          <p className="text-gray-400 mb-4 text-[10px]">Use the Messaging API to build a bot that interacts with your customers</p>
+          <div className="bg-white rounded-lg p-4 border border-white/[0.06]">
             <p className="text-zinc-300 font-semibold mb-3">Messaging API status: <span className="text-red-400">Not enabled</span></p>
             <div className="relative inline-block">
-              <button className="bg-[#00B900] text-white text-xs font-bold px-4 py-2 rounded-lg ring-2 ring-orange-400 ring-offset-1 ring-offset-zinc-900">
+              <button className="bg-[#00B900] text-gray-900 text-xs font-bold px-4 py-2 rounded-lg ring-2 ring-green-400 ring-offset-1 ring-offset-zinc-900">
                 Enable Messaging API
               </button>
-              <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-orange-400 text-white text-[10px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
+              <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-green-400 text-gray-900 text-[10px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
                 กดที่นี่
               </div>
             </div>
@@ -110,9 +110,9 @@ function MockStep3() {
     <MockBrowser site="developers.line.biz › Console › Provider › Channel">
       <div className="bg-zinc-950 text-xs">
         {/* Tabs */}
-        <div className="flex border-b border-white/[0.06] bg-zinc-900">
+        <div className="flex border-b border-white/[0.06] bg-white">
           {['Basic settings', 'Messaging API', 'Statistics'].map((tab) => (
-            <div key={tab} className={`px-4 py-2.5 font-semibold cursor-pointer ${tab === 'Basic settings' ? 'text-[#00B900] border-b-2 border-[#00B900]' : 'text-zinc-500'}`}>
+            <div key={tab} className={`px-4 py-2.5 font-semibold cursor-pointer ${tab === 'Basic settings' ? 'text-[#00B900] border-b-2 border-[#00B900]' : 'text-gray-400'}`}>
               {tab}
             </div>
           ))}
@@ -120,17 +120,17 @@ function MockStep3() {
         {/* Basic settings tab */}
         <div className="p-4 space-y-3">
           <div>
-            <p className="text-zinc-400 mb-1 font-semibold">Channel ID</p>
-            <div className="bg-zinc-900 rounded px-3 py-2 text-zinc-400 font-mono border border-white/[0.06]">1234567890</div>
+            <p className="text-gray-500 mb-1 font-semibold">Channel ID</p>
+            <div className="bg-white rounded px-3 py-2 text-gray-500 font-mono border border-white/[0.06]">1234567890</div>
           </div>
           <div>
-            <p className="text-zinc-400 mb-1 font-semibold">Channel secret</p>
+            <p className="text-gray-500 mb-1 font-semibold">Channel secret</p>
             <div className="relative">
-              <div className="bg-zinc-900 rounded px-3 py-2 text-emerald-400 font-mono border border-orange-500/40 ring-1 ring-orange-500/30 tracking-wider">
+              <div className="bg-white rounded px-3 py-2 text-emerald-400 font-mono border border-green-500/40 ring-1 ring-green-500/30 tracking-wider">
                 a1b2c3d4e5f6••••••••••••••
               </div>
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-zinc-700 text-zinc-300 text-[10px] px-2 py-0.5 rounded cursor-pointer hover:bg-zinc-600">Copy</div>
-              <div className="absolute -top-6 right-0 bg-orange-400 text-white text-[10px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-100 text-zinc-300 text-[10px] px-2 py-0.5 rounded cursor-pointer hover:bg-zinc-600">Copy</div>
+              <div className="absolute -top-6 right-0 bg-green-400 text-gray-900 text-[10px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
                 ← คัดลอกค่านี้
               </div>
             </div>
@@ -138,23 +138,23 @@ function MockStep3() {
         </div>
         <div className="border-t border-white/[0.06] mx-4 my-1" />
         <div className="p-4">
-          <div className="flex border-b border-white/[0.06] bg-zinc-900 -mx-4 px-4 mb-3">
+          <div className="flex border-b border-white/[0.06] bg-white -mx-4 px-4 mb-3">
             {['Basic settings', 'Messaging API', 'Statistics'].map((tab) => (
-              <div key={tab} className={`px-4 py-2.5 font-semibold cursor-pointer text-xs ${tab === 'Messaging API' ? 'text-[#00B900] border-b-2 border-[#00B900]' : 'text-zinc-500'}`}>
+              <div key={tab} className={`px-4 py-2.5 font-semibold cursor-pointer text-xs ${tab === 'Messaging API' ? 'text-[#00B900] border-b-2 border-[#00B900]' : 'text-gray-400'}`}>
                 {tab}
               </div>
             ))}
           </div>
-          <p className="text-zinc-400 mb-1 font-semibold">Channel access token (long-lived)</p>
+          <p className="text-gray-500 mb-1 font-semibold">Channel access token (long-lived)</p>
           <div className="flex gap-2 items-center">
-            <div className="flex-1 bg-zinc-900 rounded px-3 py-2 text-zinc-600 border border-orange-500/40 ring-1 ring-orange-500/30 font-mono text-[10px]">
+            <div className="flex-1 bg-white rounded px-3 py-2 text-zinc-600 border border-green-500/40 ring-1 ring-green-500/30 font-mono text-[10px]">
               กดปุ่ม Issue เพื่อสร้าง token...
             </div>
             <div className="relative">
-              <button className="bg-[#00B900] text-white text-[10px] font-bold px-3 py-2 rounded ring-2 ring-orange-400 ring-offset-1 ring-offset-zinc-950 whitespace-nowrap">
+              <button className="bg-[#00B900] text-gray-900 text-[10px] font-bold px-3 py-2 rounded ring-2 ring-green-400 ring-offset-1 ring-offset-zinc-950 whitespace-nowrap">
                 Issue
               </button>
-              <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-orange-400 text-white text-[10px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
+              <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-green-400 text-gray-900 text-[10px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
                 กดก่อน
               </div>
             </div>
@@ -169,28 +169,28 @@ function MockStep3() {
 function MockStep4() {
   return (
     <MockBrowser site="my.meowchat.store › ตั้งค่าบอท">
-      <div className="bg-[#0A0A0F] p-4 space-y-3 text-xs">
-        <div className="bg-[#12121A] rounded-2xl border border-orange-500/30 p-4">
-          <p className="text-orange-400 font-bold mb-3 flex items-center gap-2">
+      <div className="bg-white p-4 space-y-3 text-xs">
+        <div className="bg-gray-50 rounded-2xl border border-green-500/30 p-4">
+          <p className="text-green-600 font-bold mb-3 flex items-center gap-2">
             <span className="w-5 h-5 rounded-full bg-[#00B900]/20 flex items-center justify-center text-[#00B900] font-extrabold text-[10px]">L</span>
             LINE OA Connection
           </p>
           <div className="space-y-3">
             <div>
-              <p className="text-zinc-400 mb-1 font-semibold">Channel Access Token</p>
-              <div className="bg-[#0A0A0F] border border-orange-500/40 ring-1 ring-orange-400/20 rounded-lg px-3 py-2 text-emerald-400 font-mono text-[10px] break-all">
+              <p className="text-gray-500 mb-1 font-semibold">Channel Access Token</p>
+              <div className="bg-white border border-green-500/40 ring-1 ring-green-400/20 rounded-lg px-3 py-2 text-emerald-400 font-mono text-[10px] break-all">
                 eyJhbGciOiJIUzI1NiJ9.••••••••••••••
               </div>
-              <p className="text-[10px] text-orange-400 mt-0.5">← วาง Channel access token ที่คัดลอกมา</p>
+              <p className="text-[10px] text-green-600 mt-0.5">← วาง Channel access token ที่คัดลอกมา</p>
             </div>
             <div>
-              <p className="text-zinc-400 mb-1 font-semibold">Channel Secret</p>
-              <div className="bg-[#0A0A0F] border border-orange-500/40 ring-1 ring-orange-400/20 rounded-lg px-3 py-2 text-emerald-400 font-mono text-[10px]">
+              <p className="text-gray-500 mb-1 font-semibold">Channel Secret</p>
+              <div className="bg-white border border-green-500/40 ring-1 ring-green-400/20 rounded-lg px-3 py-2 text-emerald-400 font-mono text-[10px]">
                 a1b2c3d4e5f6••••••••••••••
               </div>
-              <p className="text-[10px] text-orange-400 mt-0.5">← วาง Channel secret ที่คัดลอกมา</p>
+              <p className="text-[10px] text-green-600 mt-0.5">← วาง Channel secret ที่คัดลอกมา</p>
             </div>
-            <button className="w-full bg-gradient-to-r from-orange-500 to-orange-400 text-white font-bold py-2 rounded-xl text-xs ring-2 ring-orange-300 ring-offset-1 ring-offset-[#12121A]">
+            <button className="w-full bg-gradient-to-r from-green-500 to-green-400 text-gray-900 font-bold py-2 rounded-xl text-xs ring-2 ring-green-300 ring-offset-1 ring-offset-[#12121A]">
               💾 บันทึกการตั้งค่า
             </button>
           </div>
@@ -207,19 +207,19 @@ function MockStep5() {
       <div className="bg-zinc-950 p-4 text-xs space-y-4">
         <div>
           <p className="text-zinc-300 font-bold mb-2">Webhook settings</p>
-          <p className="text-zinc-400 mb-1">Webhook URL</p>
+          <p className="text-gray-500 mb-1">Webhook URL</p>
           <div className="flex gap-2">
-            <div className="flex-1 bg-zinc-900 border border-orange-500/40 ring-1 ring-orange-400/20 rounded px-3 py-2 text-orange-300 font-mono text-[10px] break-all">
+            <div className="flex-1 bg-white border border-green-500/40 ring-1 ring-green-400/20 rounded px-3 py-2 text-green-500 font-mono text-[10px] break-all">
               https://meowchat-engine-production.up.railway.app/webhook/line/your-bot-id
             </div>
           </div>
           <div className="flex gap-2 mt-2">
-            <button className="bg-zinc-700 text-zinc-300 px-3 py-1.5 rounded text-[10px] font-semibold">Update</button>
+            <button className="bg-gray-100 text-zinc-300 px-3 py-1.5 rounded text-[10px] font-semibold">Update</button>
             <div className="relative">
-              <button className="bg-[#00B900] text-white px-3 py-1.5 rounded text-[10px] font-bold ring-2 ring-orange-400 ring-offset-1 ring-offset-zinc-950">
+              <button className="bg-[#00B900] text-gray-900 px-3 py-1.5 rounded text-[10px] font-bold ring-2 ring-green-400 ring-offset-1 ring-offset-zinc-950">
                 Verify
               </button>
-              <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-orange-400 text-white text-[10px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
+              <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-green-400 text-gray-900 text-[10px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
                 กดตรวจสอบ
               </div>
             </div>
@@ -231,16 +231,16 @@ function MockStep5() {
           <p className="text-emerald-400 font-bold">Success — webhook connected!</p>
         </div>
 
-        <div className="flex items-center justify-between bg-zinc-900 rounded-lg px-3 py-3 border border-white/[0.06]">
+        <div className="flex items-center justify-between bg-white rounded-lg px-3 py-3 border border-white/[0.06]">
           <div>
             <p className="text-zinc-300 font-semibold">Use webhook</p>
             <p className="text-zinc-600 text-[10px]">Receive messages via webhook</p>
           </div>
           <div className="relative">
-            <div className="w-10 h-5 bg-[#00B900] rounded-full flex items-center px-0.5 ring-2 ring-orange-400 ring-offset-1 ring-offset-zinc-900">
+            <div className="w-10 h-5 bg-[#00B900] rounded-full flex items-center px-0.5 ring-2 ring-green-400 ring-offset-1 ring-offset-zinc-900">
               <div className="w-4 h-4 bg-white rounded-full ml-auto" />
             </div>
-            <div className="absolute -top-6 right-0 bg-orange-400 text-white text-[10px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
+            <div className="absolute -top-6 right-0 bg-green-400 text-gray-900 text-[10px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
               เปิดเป็น On
             </div>
           </div>
@@ -336,11 +336,11 @@ function CodeBlock({ code, note }) {
   };
   return (
     <div className="mt-3">
-      <div className="relative bg-[#0A0A0F] border border-orange-500/20 rounded-xl overflow-hidden">
-        <code className="block text-xs text-orange-300 px-4 py-3 pr-12 break-all leading-relaxed font-mono">{code}</code>
+      <div className="relative bg-white border border-green-500/20 rounded-xl overflow-hidden">
+        <code className="block text-xs text-green-500 px-4 py-3 pr-12 break-all leading-relaxed font-mono">{code}</code>
         <button
           onClick={handleCopy}
-          className="absolute right-2 top-2 p-1.5 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/5 transition-colors"
+          className="absolute right-2 top-2 p-1.5 rounded-lg text-gray-400 hover:text-zinc-300 hover:bg-black/3 transition-colors"
           title="คัดลอก"
         >
           {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -364,7 +364,7 @@ export default function LineSetupGuide({ setSidebarOpen }) {
       actions={
         <button
           onClick={() => navigate('/bot')}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-sm text-zinc-400 hover:text-white hover:border-white/20 transition-colors"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-sm text-gray-500 hover:text-gray-900 hover:border-white/20 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           กลับ Bot Settings
@@ -374,7 +374,7 @@ export default function LineSetupGuide({ setSidebarOpen }) {
       {/* Progress */}
       <div className="flex gap-1 mb-8">
         {STEPS.map((s) => (
-          <div key={s.number} className="flex-1 h-1 rounded-full bg-orange-500/80" />
+          <div key={s.number} className="flex-1 h-1 rounded-full bg-green-500/80" />
         ))}
       </div>
 
@@ -382,15 +382,15 @@ export default function LineSetupGuide({ setSidebarOpen }) {
         {STEPS.map((step, idx) => {
           const MockUI = STEP_MOCKUPS[idx];
           return (
-            <div key={step.number} className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
+            <div key={step.number} className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
               {/* Header */}
               <div className="flex items-start gap-4 mb-5">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-lg shadow-orange-500/20">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-gray-900 font-bold text-sm flex-shrink-0 shadow-lg shadow-green-500/20">
                   {step.number}
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-white">{step.title}</h2>
-                  <p className="text-sm text-zinc-500 mt-0.5">{step.description}</p>
+                  <h2 className="text-base font-bold text-gray-900">{step.title}</h2>
+                  <p className="text-sm text-gray-400 mt-0.5">{step.description}</p>
                 </div>
               </div>
 
@@ -400,8 +400,8 @@ export default function LineSetupGuide({ setSidebarOpen }) {
               {/* Steps */}
               <ol className="space-y-2">
                 {step.details.map((detail, i) => (
-                  <li key={i} className="flex gap-3 text-sm text-zinc-400">
-                    <span className="text-orange-500 font-bold flex-shrink-0 mt-0.5 w-4">{i + 1}.</span>
+                  <li key={i} className="flex gap-3 text-sm text-gray-500">
+                    <span className="text-green-700 font-bold flex-shrink-0 mt-0.5 w-4">{i + 1}.</span>
                     <span>{detail}</span>
                   </li>
                 ))}
@@ -419,9 +419,9 @@ export default function LineSetupGuide({ setSidebarOpen }) {
               {step.secrets && (
                 <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {step.secrets.map((s) => (
-                    <div key={s.label} className="bg-[#0A0A0F] rounded-xl p-3 border border-emerald-500/20">
+                    <div key={s.label} className="bg-white rounded-xl p-3 border border-emerald-500/20">
                       <p className="text-xs font-bold text-emerald-400 mb-1">🔑 {s.label}</p>
-                      <p className="text-[11px] text-zinc-500">{s.path}</p>
+                      <p className="text-[11px] text-gray-400">{s.path}</p>
                     </div>
                   ))}
                 </div>
@@ -430,7 +430,7 @@ export default function LineSetupGuide({ setSidebarOpen }) {
               {/* Code */}
               {step.hasCode && (
                 <div className="mt-4">
-                  <p className="text-xs font-semibold text-zinc-400 mb-1">{step.codeLabel}</p>
+                  <p className="text-xs font-semibold text-gray-500 mb-1">{step.codeLabel}</p>
                   <CodeBlock code={step.code} note={step.codeNote} />
                 </div>
               )}
@@ -441,7 +441,7 @@ export default function LineSetupGuide({ setSidebarOpen }) {
                   href={step.link.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-4 inline-flex items-center gap-1.5 text-xs text-orange-400 hover:text-orange-300 transition-colors"
+                  className="mt-4 inline-flex items-center gap-1.5 text-xs text-green-600 hover:text-green-500 transition-colors"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
                   {step.link.label}
@@ -455,10 +455,10 @@ export default function LineSetupGuide({ setSidebarOpen }) {
         <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-3xl p-6 text-center">
           <p className="text-3xl mb-2">🎉</p>
           <h3 className="text-base font-bold text-emerald-400 mb-1">เชื่อมต่อเสร็จแล้ว!</h3>
-          <p className="text-sm text-zinc-500 mb-4">บอทของคุณพร้อมตอบลูกค้าผ่าน LINE OA แล้ว ลองส่งข้อความทดสอบได้เลย</p>
+          <p className="text-sm text-gray-400 mb-4">บอทของคุณพร้อมตอบลูกค้าผ่าน LINE OA แล้ว ลองส่งข้อความทดสอบได้เลย</p>
           <button
             onClick={() => navigate('/bot')}
-            className="btn-primary px-6 py-2.5 rounded-xl text-sm font-bold text-white"
+            className="btn-primary px-6 py-2.5 rounded-xl text-sm font-bold text-gray-900"
           >
             กลับ Bot Settings
           </button>

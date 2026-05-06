@@ -28,7 +28,7 @@ export default function Settings({ setSidebarOpen }) {
       setSidebarOpen={setSidebarOpen}
     >
       {/* Tab Bar */}
-      <div className="flex gap-1 p-1 bg-[#12121A] rounded-2xl border border-white/[0.06] overflow-x-auto">
+      <div className="flex gap-1 p-1 bg-gray-50 rounded-2xl border border-white/[0.06] overflow-x-auto">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -39,8 +39,8 @@ export default function Settings({ setSidebarOpen }) {
               className={`
                 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all flex-1 justify-center
                 ${isActive
-                  ? 'bg-orange-500/15 text-orange-400 border border-orange-500/20'
-                  : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.04]'}
+                  ? 'bg-green-500/15 text-green-600 border border-green-500/20'
+                  : 'text-gray-400 hover:text-zinc-300 hover:bg-white/[0.04]'}
               `}
             >
               <Icon className="w-4 h-4 flex-shrink-0" />
@@ -105,14 +105,14 @@ function ProfileTab() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
         {/* Avatar Card */}
         <div className="lg:col-span-1">
-          <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-4 sm:p-6 flex flex-col items-center gap-4 text-center">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center text-4xl font-bold text-white shadow-xl shadow-orange-500/20">
+          <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-4 sm:p-6 flex flex-col items-center gap-4 text-center">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-green-500 to-pink-500 flex items-center justify-center text-4xl font-bold text-gray-900 shadow-xl shadow-green-500/20">
               {profile.name?.charAt(0).toUpperCase() || 'M'}
             </div>
             <div>
-              <p className="font-bold text-white text-lg">{profile.name || 'Merchant'}</p>
-              <p className="text-zinc-500 text-sm">{profile.email}</p>
-              <span className="inline-block mt-2 px-3 py-1 text-xs font-bold rounded-full bg-orange-500/15 text-orange-400 border border-orange-500/20 capitalize">
+              <p className="font-bold text-gray-900 text-lg">{profile.name || 'Merchant'}</p>
+              <p className="text-gray-400 text-sm">{profile.email}</p>
+              <span className="inline-block mt-2 px-3 py-1 text-xs font-bold rounded-full bg-green-500/15 text-green-600 border border-green-500/20 capitalize">
                 {user?.role || 'merchant'}
               </span>
             </div>
@@ -126,12 +126,12 @@ function ProfileTab() {
 
         {/* Form */}
         <div className="lg:col-span-2">
-          <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
+          <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/20 flex items-center justify-center">
-                <User className="w-4 h-4 text-orange-400" />
+              <div className="w-9 h-9 rounded-xl bg-green-500/15 border border-green-500/20 flex items-center justify-center">
+                <User className="w-4 h-4 text-green-600" />
               </div>
-              <h2 className="text-lg font-bold text-white">ข้อมูลส่วนตัว</h2>
+              <h2 className="text-lg font-bold text-gray-900">ข้อมูลส่วนตัว</h2>
             </div>
             <form onSubmit={handleSave} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -146,13 +146,13 @@ function ProfileTab() {
                 </FormField>
                 <FormField label="ชื่อบริษัท/ร้านค้า">
                   <div className="relative">
-                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                     <input type="text" value={profile.company} onChange={(e) => setProfile((p) => ({ ...p, company: e.target.value }))} className="input-premium pl-10" placeholder="ร้านอาหารสยาม" />
                   </div>
                 </FormField>
               </div>
               <div className="flex justify-end pt-2">
-                <button type="submit" disabled={saving || loading} className="btn-primary px-6 py-3 rounded-xl text-sm font-bold text-white flex items-center gap-2 disabled:opacity-50">
+                <button type="submit" disabled={saving || loading} className="btn-primary px-6 py-3 rounded-xl text-sm font-bold text-gray-900 flex items-center gap-2 disabled:opacity-50">
                   {saving ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
                   บันทึกข้อมูล
                 </button>
@@ -225,27 +225,27 @@ function NotificationsTab() {
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-      <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6 space-y-4">
+      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6 space-y-4">
         <div className="flex items-center gap-3 mb-2">
           <div className="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center">
             <Bell className="w-4 h-4 text-blue-400" />
           </div>
-          <h2 className="text-lg font-bold text-white">การแจ้งเตือน</h2>
+          <h2 className="text-lg font-bold text-gray-900">การแจ้งเตือน</h2>
         </div>
 
         {loading ? (
-          <div className="text-center py-6 text-zinc-500 text-sm">กำลังโหลด...</div>
+          <div className="text-center py-6 text-gray-400 text-sm">กำลังโหลด...</div>
         ) : (
           <div className="space-y-3">
             {items.map(({ key, label, desc }) => (
-              <div key={key} className="flex items-center justify-between p-4 rounded-2xl bg-[#0A0A0F] border border-white/[0.06]">
+              <div key={key} className="flex items-center justify-between p-4 rounded-2xl bg-white border border-white/[0.06]">
                 <div>
-                  <p className="text-sm font-semibold text-white">{label}</p>
-                  <p className="text-xs text-zinc-500 mt-0.5">{desc}</p>
+                  <p className="text-sm font-semibold text-gray-900">{label}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
                 </div>
                 <button
                   onClick={() => toggle(key)}
-                  className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ${settings[key] ? 'bg-orange-500' : 'bg-zinc-700'}`}
+                  className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ${settings[key] ? 'bg-green-500' : 'bg-gray-100'}`}
                 >
                   <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${settings[key] ? 'left-7' : 'left-1'}`} />
                 </button>
@@ -260,7 +260,7 @@ function NotificationsTab() {
           <button
             onClick={handleSave}
             disabled={saving || loading}
-            className="btn-primary px-6 py-3 rounded-xl text-sm font-bold text-white flex items-center gap-2 disabled:opacity-50"
+            className="btn-primary px-6 py-3 rounded-xl text-sm font-bold text-gray-900 flex items-center gap-2 disabled:opacity-50"
           >
             {saving ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
             บันทึกการตั้งค่า
@@ -369,21 +369,21 @@ function LineNotificationCard({ botId }) {
   if (phase === 'loading') return null;
 
   return (
-    <div className="mt-3 p-4 rounded-2xl bg-[#0A0A0F] border border-white/[0.06]">
+    <div className="mt-3 p-4 rounded-2xl bg-white border border-white/[0.06]">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       {phase === 'unpaired' && (
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold text-white flex items-center gap-2">
+            <p className="text-sm font-semibold text-gray-900 flex items-center gap-2">
               <Link2 className="w-4 h-4 text-green-400" />
               เชื่อมต่อ LINE เพื่อรับแจ้งเตือน
             </p>
-            <p className="text-xs text-zinc-500 mt-1">กด "เชื่อมต่อ" แล้วส่งรหัสไปที่ bot LINE ของร้าน</p>
+            <p className="text-xs text-gray-400 mt-1">กด "เชื่อมต่อ" แล้วส่งรหัสไปที่ bot LINE ของร้าน</p>
           </div>
           <button
             onClick={handleConnect}
-            className="btn-primary px-4 py-2 rounded-xl text-xs font-bold text-white whitespace-nowrap flex-shrink-0"
+            className="btn-primary px-4 py-2 rounded-xl text-xs font-bold text-gray-900 whitespace-nowrap flex-shrink-0"
           >
             เชื่อมต่อ LINE
           </button>
@@ -393,11 +393,11 @@ function LineNotificationCard({ botId }) {
       {phase === 'code' && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-zinc-400">รหัสของคุณ:</p>
+            <p className="text-sm text-gray-500">รหัสของคุณ:</p>
             <p className="text-xs text-zinc-600">หมดอายุใน {fmt(countdown)}</p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-2xl font-mono font-bold text-white tracking-widest">{code}</span>
+            <span className="text-2xl font-mono font-bold text-gray-900 tracking-widest">{code}</span>
             <button
               onClick={handleCopy}
               className="p-2 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] transition-colors"
@@ -405,12 +405,12 @@ function LineNotificationCard({ botId }) {
             >
               {copied
                 ? <CheckCircle2 className="w-4 h-4 text-green-400" />
-                : <Copy className="w-4 h-4 text-zinc-400" />}
+                : <Copy className="w-4 h-4 text-gray-500" />}
             </button>
           </div>
-          <p className="text-xs text-zinc-500">ส่งรหัสนี้ไปที่บอท LINE ของร้านคุณ</p>
+          <p className="text-xs text-gray-400">ส่งรหัสนี้ไปที่บอท LINE ของร้านคุณ</p>
           <p className="text-xs text-zinc-600 flex items-center gap-1.5">
-            <span className="w-3.5 h-3.5 border-2 border-zinc-600 border-t-orange-400 rounded-full animate-spin inline-block" />
+            <span className="w-3.5 h-3.5 border-2 border-zinc-600 border-t-green-400 rounded-full animate-spin inline-block" />
             กำลังรอการยืนยัน...
           </p>
         </div>
@@ -424,7 +424,7 @@ function LineNotificationCard({ botId }) {
               เชื่อมต่อ LINE แล้ว
             </p>
             {lineUserId && (
-              <p className="text-xs text-zinc-500 mt-1 font-mono">
+              <p className="text-xs text-gray-400 mt-1 font-mono">
                 LINE: {lineUserId.slice(0, 8)}...
               </p>
             )}
@@ -486,28 +486,28 @@ function SecurityTab() {
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       <div className="space-y-5">
         {/* Public IP Info */}
-        <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-5 flex items-center justify-between">
+        <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-purple-500/15 border border-purple-500/20 flex items-center justify-center">
               <Lock className="w-4 h-4 text-purple-400" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">IP ปัจจุบันของคุณ</p>
-              <p className="text-xs text-zinc-500">Public IP address ที่ใช้เข้าถึงระบบ</p>
+              <p className="text-sm font-semibold text-gray-900">IP ปัจจุบันของคุณ</p>
+              <p className="text-xs text-gray-400">Public IP address ที่ใช้เข้าถึงระบบ</p>
             </div>
           </div>
           <span className="text-sm font-mono font-bold text-purple-300 bg-purple-500/10 border border-purple-500/20 px-3 py-1.5 rounded-xl">
-            {publicIp ?? <span className="w-16 h-3 bg-zinc-700 rounded animate-pulse inline-block" />}
+            {publicIp ?? <span className="w-16 h-3 bg-gray-100 rounded animate-pulse inline-block" />}
           </span>
         </div>
 
         {/* Change Password */}
-        <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
+        <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-9 h-9 rounded-xl bg-purple-500/15 border border-purple-500/20 flex items-center justify-center">
             <Lock className="w-4 h-4 text-purple-400" />
           </div>
-          <h2 className="text-lg font-bold text-white">เปลี่ยนรหัสผ่าน</h2>
+          <h2 className="text-lg font-bold text-gray-900">เปลี่ยนรหัสผ่าน</h2>
         </div>
 
         <form onSubmit={handleChange} className="space-y-4 max-w-md">
@@ -521,7 +521,7 @@ function SecurityTab() {
                 placeholder="••••••••"
                 required
               />
-              <button type="button" onClick={() => togglePass('current')} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors">
+              <button type="button" onClick={() => togglePass('current')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-zinc-300 transition-colors">
                 {showPass.current ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
@@ -538,7 +538,7 @@ function SecurityTab() {
                   placeholder="อย่างน้อย 6 ตัวอักษร"
                   required
                 />
-                <button type="button" onClick={() => togglePass('next')} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors">
+                <button type="button" onClick={() => togglePass('next')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-zinc-300 transition-colors">
                   {showPass.next ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
@@ -553,7 +553,7 @@ function SecurityTab() {
                   placeholder="••••••••"
                   required
                 />
-                <button type="button" onClick={() => togglePass('confirm')} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors">
+                <button type="button" onClick={() => togglePass('confirm')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-zinc-300 transition-colors">
                   {showPass.confirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
@@ -568,7 +568,7 @@ function SecurityTab() {
             <button
               type="submit"
               disabled={saving || !passwords.current || !passwords.next || !passwords.confirm}
-              className="btn-primary px-6 py-3 rounded-xl text-sm font-bold text-white flex items-center gap-2 disabled:opacity-50"
+              className="btn-primary px-6 py-3 rounded-xl text-sm font-bold text-gray-900 flex items-center gap-2 disabled:opacity-50"
             >
               {saving ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Lock className="w-4 h-4" />}
               เปลี่ยนรหัสผ่าน
@@ -602,21 +602,21 @@ function SubscriptionTab() {
 
   const currentPlanId = usage?.plan?.toLowerCase() || 'trial';
   const usagePercent = usage ? Math.round((usage.used / (usage.limit || 1)) * 100) : 0;
-  const usageColor = usagePercent >= 90 ? '#EF4444' : usagePercent >= 70 ? '#F59E0B' : '#FF6B35';
+  const usageColor = usagePercent >= 90 ? '#EF4444' : usagePercent >= 70 ? '#F59E0B' : '#059669';
 
   const planColors = {
-    trial: 'text-zinc-400',
+    trial: 'text-gray-500',
     starter: 'text-emerald-400',
-    pro: 'text-orange-400',
+    pro: 'text-green-600',
     business: 'text-blue-400',
     enterprise: 'text-purple-400',
   };
-  const planColor = planColors[currentPlanId] || 'text-zinc-400';
+  const planColor = planColors[currentPlanId] || 'text-gray-500';
 
   const planIcons = {
-    trial: <Zap className="w-5 h-5 text-zinc-400" />,
+    trial: <Zap className="w-5 h-5 text-gray-500" />,
     starter: <Zap className="w-5 h-5 text-emerald-400" />,
-    pro: <Crown className="w-5 h-5 text-orange-400" />,
+    pro: <Crown className="w-5 h-5 text-green-600" />,
     business: <Zap className="w-5 h-5 text-blue-400" />,
     enterprise: <Crown className="w-5 h-5 text-purple-400" />,
   };
@@ -624,22 +624,22 @@ function SubscriptionTab() {
   return (
     <div className="space-y-5">
       {/* Current Plan */}
-      <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
+      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/20 flex items-center justify-center">
-            <CreditCard className="w-4 h-4 text-orange-400" />
+          <div className="w-9 h-9 rounded-xl bg-green-500/15 border border-green-500/20 flex items-center justify-center">
+            <CreditCard className="w-4 h-4 text-green-600" />
           </div>
-          <h2 className="text-lg font-bold text-white">แผนของคุณ</h2>
+          <h2 className="text-lg font-bold text-gray-900">แผนของคุณ</h2>
         </div>
 
         {usage ? (
           <div className="space-y-4">
             {/* Plan Badge */}
-            <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#0A0A0F] border border-white/[0.06]">
+            <div className="flex items-center gap-3 p-4 rounded-2xl bg-white border border-white/[0.06]">
               {planIcons[currentPlanId]}
               <div className="flex-1">
                 <p className={`text-xl font-extrabold capitalize ${planColor}`}>{currentPlanId}</p>
-                <p className="text-xs text-zinc-500">แผนปัจจุบันของคุณ</p>
+                <p className="text-xs text-gray-400">แผนปัจจุบันของคุณ</p>
               </div>
               <div className="text-right">
                 <p className={`text-sm font-bold ${planColor}`}>
@@ -653,10 +653,10 @@ function SubscriptionTab() {
             <div>
               <div className="flex justify-between items-end mb-2">
                 <div>
-                  <span className="text-3xl font-extrabold text-white">{(usage.used ?? 0).toLocaleString()}</span>
-                  <span className="text-zinc-500 text-sm ml-2">ข้อความ</span>
+                  <span className="text-3xl font-extrabold text-gray-900">{(usage.used ?? 0).toLocaleString()}</span>
+                  <span className="text-gray-400 text-sm ml-2">ข้อความ</span>
                 </div>
-                <span className="text-zinc-500 text-sm">จาก {(usage.limit ?? 0).toLocaleString()}</span>
+                <span className="text-gray-400 text-sm">จาก {(usage.limit ?? 0).toLocaleString()}</span>
               </div>
               <div className="progress-bar h-3">
                 <div
@@ -664,7 +664,7 @@ function SubscriptionTab() {
                   style={{ width: `${Math.min(usagePercent, 100)}%`, background: `linear-gradient(90deg, ${usageColor}, ${usageColor}bb)` }}
                 />
               </div>
-              <p className="text-xs text-zinc-500 mt-2">ใช้ไป {usagePercent}%</p>
+              <p className="text-xs text-gray-400 mt-2">ใช้ไป {usagePercent}%</p>
             </div>
 
             {usagePercent >= 80 && (
@@ -677,25 +677,25 @@ function SubscriptionTab() {
             )}
           </div>
         ) : (
-          <div className="text-center py-8 text-zinc-500 text-sm">กำลังโหลดข้อมูล...</div>
+          <div className="text-center py-8 text-gray-400 text-sm">กำลังโหลดข้อมูล...</div>
         )}
       </div>
 
       {/* Link to full Subscription page */}
       <button
         onClick={() => navigate('/subscription')}
-        className="w-full bg-[#12121A] rounded-3xl border border-white/[0.06] p-5 flex items-center justify-between hover:border-orange-500/20 transition-colors group"
+        className="w-full bg-gray-50 rounded-3xl border border-white/[0.06] p-5 flex items-center justify-between hover:border-green-500/20 transition-colors group"
       >
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/15 flex items-center justify-center">
-            <CreditCard className="w-4 h-4 text-orange-400" />
+          <div className="w-9 h-9 rounded-xl bg-green-500/10 border border-green-500/15 flex items-center justify-center">
+            <CreditCard className="w-4 h-4 text-green-600" />
           </div>
           <div className="text-left">
-            <p className="text-sm font-bold text-white">จัดการแผนและ Upgrade</p>
-            <p className="text-xs text-zinc-500">ดูแผนทั้งหมด, ซื้อเครดิตเพิ่ม</p>
+            <p className="text-sm font-bold text-gray-900">จัดการแผนและ Upgrade</p>
+            <p className="text-xs text-gray-400">ดูแผนทั้งหมด, ซื้อเครดิตเพิ่ม</p>
           </div>
         </div>
-        <ChevronRight className="w-5 h-5 text-zinc-600 group-hover:text-orange-400 transition-colors" />
+        <ChevronRight className="w-5 h-5 text-zinc-600 group-hover:text-green-600 transition-colors" />
       </button>
     </div>
   );
@@ -714,8 +714,8 @@ function FormField({ label, children }) {
 function InfoRow({ label, value }) {
   return (
     <div className="flex justify-between gap-2 text-sm">
-      <span className="text-zinc-500">{label}</span>
-      <span className="text-white font-medium text-right truncate">{value}</span>
+      <span className="text-gray-400">{label}</span>
+      <span className="text-gray-900 font-medium text-right truncate">{value}</span>
     </div>
   );
 }

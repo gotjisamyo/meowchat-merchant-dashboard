@@ -190,7 +190,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
       actions={
         <button
           onClick={openCreate}
-          className="btn-primary px-5 py-2.5 rounded-xl text-sm font-bold text-white flex items-center gap-2"
+          className="btn-primary px-5 py-2.5 rounded-xl text-sm font-bold text-gray-900 flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           เพิ่มรายการ
@@ -207,17 +207,17 @@ export default function KnowledgeBase({ setSidebarOpen }) {
       />
 
       {/* Tab Switcher */}
-      <div className="flex gap-1 p-1 bg-[#12121A] border border-white/[0.06] rounded-2xl w-fit">
+      <div className="flex gap-1 p-1 bg-gray-50 border border-white/[0.06] rounded-2xl w-fit">
         <button
           onClick={() => setActiveTab('kb')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === 'kb' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' : 'text-zinc-400 hover:text-white'}`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === 'kb' ? 'bg-green-500 text-gray-900 shadow-lg shadow-green-500/20' : 'text-gray-500 hover:text-gray-900'}`}
         >
           <BookOpen className="w-4 h-4" />
           Knowledge Base
         </button>
         <button
           onClick={() => setActiveTab('unanswered')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === 'unanswered' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' : 'text-zinc-400 hover:text-white'}`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === 'unanswered' ? 'bg-green-500 text-gray-900 shadow-lg shadow-green-500/20' : 'text-gray-500 hover:text-gray-900'}`}
         >
           <HelpCircle className="w-4 h-4" />
           คำถามที่ตอบไม่ได้
@@ -240,27 +240,27 @@ export default function KnowledgeBase({ setSidebarOpen }) {
 
       {/* Templates Section */}
       {entries.length === 0 && (
-        <div className="bg-gradient-to-br from-orange-500/10 to-pink-500/5 rounded-3xl border border-orange-500/20 p-5">
+        <div className="bg-gradient-to-br from-green-500/10 to-pink-500/5 rounded-3xl border border-green-500/20 p-5">
           <div className="flex items-center gap-2 mb-3">
-            <Sparkles className="w-5 h-5 text-orange-400" />
-            <p className="text-sm font-bold text-white">เริ่มต้นด้วย Template สำเร็จรูป</p>
+            <Sparkles className="w-5 h-5 text-green-600" />
+            <p className="text-sm font-bold text-gray-900">เริ่มต้นด้วย Template สำเร็จรูป</p>
           </div>
-          <p className="text-xs text-zinc-400 mb-4">นำเข้า KB สำหรับธุรกิจของคุณได้เลย บอทจะตอบลูกค้าได้ทันที</p>
+          <p className="text-xs text-gray-500 mb-4">นำเข้า KB สำหรับธุรกิจของคุณได้เลย บอทจะตอบลูกค้าได้ทันที</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {Object.entries(KB_TEMPLATES).map(([key, tpl]) => (
               <button
                 key={key}
                 onClick={() => handleImportTemplate(key)}
                 disabled={importingTemplate !== null}
-                className="flex items-center gap-3 p-3 rounded-xl bg-black/20 border border-white/[0.08] hover:border-orange-500/30 hover:bg-orange-500/5 transition-all text-left disabled:opacity-50"
+                className="flex items-center gap-3 p-3 rounded-xl bg-black/20 border border-black/[0.09] hover:border-green-500/30 hover:bg-green-500/5 transition-all text-left disabled:opacity-50"
               >
                 <span className="text-2xl">{tpl.label.split(' ')[0]}</span>
                 <div>
-                  <p className="text-sm font-bold text-white">{tpl.label.split(' ').slice(1).join(' ')}</p>
-                  <p className="text-xs text-zinc-500">{tpl.entries.length} รายการ</p>
+                  <p className="text-sm font-bold text-gray-900">{tpl.label.split(' ').slice(1).join(' ')}</p>
+                  <p className="text-xs text-gray-400">{tpl.entries.length} รายการ</p>
                 </div>
                 {importingTemplate === key && (
-                  <span className="ml-auto w-4 h-4 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin" />
+                  <span className="ml-auto w-4 h-4 border-2 border-green-500/30 border-t-green-500 rounded-full animate-spin" />
                 )}
               </button>
             ))}
@@ -272,7 +272,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
         <div>
           <button
             onClick={() => setShowTemplates(!showTemplates)}
-            className="flex items-center gap-2 text-sm text-orange-400 hover:text-orange-300 font-semibold transition-colors"
+            className="flex items-center gap-2 text-sm text-green-600 hover:text-green-500 font-semibold transition-colors"
           >
             <Sparkles className="w-4 h-4" />
             นำเข้า Template เพิ่ม
@@ -285,15 +285,15 @@ export default function KnowledgeBase({ setSidebarOpen }) {
                   key={key}
                   onClick={() => handleImportTemplate(key)}
                   disabled={importingTemplate !== null}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-[#12121A] border border-white/[0.06] hover:border-orange-500/30 hover:bg-orange-500/5 transition-all text-left disabled:opacity-50"
+                  className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-white/[0.06] hover:border-green-500/30 hover:bg-green-500/5 transition-all text-left disabled:opacity-50"
                 >
                   <span className="text-2xl">{tpl.label.split(' ')[0]}</span>
                   <div>
-                    <p className="text-sm font-bold text-white">{tpl.label.split(' ').slice(1).join(' ')}</p>
-                    <p className="text-xs text-zinc-500">{tpl.entries.length} รายการ</p>
+                    <p className="text-sm font-bold text-gray-900">{tpl.label.split(' ').slice(1).join(' ')}</p>
+                    <p className="text-xs text-gray-400">{tpl.entries.length} รายการ</p>
                   </div>
                   {importingTemplate === key && (
-                    <span className="ml-auto w-4 h-4 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin" />
+                    <span className="ml-auto w-4 h-4 border-2 border-green-500/30 border-t-green-500 rounded-full animate-spin" />
                   )}
                 </button>
               ))}
@@ -304,7 +304,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
 
       {/* Search */}
       <div className="relative w-full max-w-md">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
         <input
           type="text"
           value={search}
@@ -316,7 +316,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
 
       {/* KB Health Score */}
       {!loading && (
-        <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#12121A] border border-white/[0.06]">
+        <div className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 border border-white/[0.06]">
           <div className="relative w-14 h-14 flex-shrink-0">
             <svg viewBox="0 0 40 40" className="w-14 h-14 -rotate-90">
               <circle cx="20" cy="20" r="16" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="4" />
@@ -328,17 +328,17 @@ export default function KnowledgeBase({ setSidebarOpen }) {
               />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-xs font-extrabold text-white">{kbHealthScore}</span>
+              <span className="text-xs font-extrabold text-gray-900">{kbHealthScore}</span>
             </div>
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <p className="text-sm font-bold text-white">KB Health Score</p>
+              <p className="text-sm font-bold text-gray-900">KB Health Score</p>
               <span className="px-2 py-0.5 text-[10px] font-bold rounded-full" style={{ background: `${kbScoreColor}22`, color: kbScoreColor }}>
                 {kbScoreLabel}
               </span>
             </div>
-            <p className="text-xs text-zinc-500 truncate">💡 {kbNextTip}</p>
+            <p className="text-xs text-gray-400 truncate">💡 {kbNextTip}</p>
           </div>
           <div className="text-right flex-shrink-0">
             <p className="text-xs text-zinc-600">{entries.length} รายการ</p>
@@ -348,19 +348,19 @@ export default function KnowledgeBase({ setSidebarOpen }) {
 
       {/* Stats */}
       <div className="flex items-center gap-4 text-sm">
-        <span className="text-zinc-500">รายการทั้งหมด: <strong className="text-white">{entries.length}</strong></span>
-        {search && <span className="text-zinc-500">ผลลัพธ์: <strong className="text-orange-400">{filtered.length}</strong></span>}
+        <span className="text-gray-400">รายการทั้งหมด: <strong className="text-gray-900">{entries.length}</strong></span>
+        {search && <span className="text-gray-400">ผลลัพธ์: <strong className="text-green-600">{filtered.length}</strong></span>}
       </div>
 
       {/* Entries Grid */}
       {loading ? (
         <div className="flex items-center justify-center py-16">
-          <span className="w-8 h-8 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin" />
+          <span className="w-8 h-8 border-2 border-green-500/30 border-t-green-500 rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
           <BookOpen className="w-12 h-12 text-zinc-600" />
-          <p className="text-zinc-400 font-semibold">ไม่พบรายการ</p>
+          <p className="text-gray-500 font-semibold">ไม่พบรายการ</p>
           <p className="text-zinc-600 text-sm">ลองค้นหาด้วยคำอื่น หรือเพิ่มรายการใหม่</p>
         </div>
       ) : (
@@ -430,7 +430,7 @@ function UnansweredQuestions({ botId, setToast, onAddedToKB }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <span className="w-8 h-8 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin" />
+        <span className="w-8 h-8 border-2 border-green-500/30 border-t-green-500 rounded-full animate-spin" />
       </div>
     );
   }
@@ -439,7 +439,7 @@ function UnansweredQuestions({ botId, setToast, onAddedToKB }) {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
         <HelpCircle className="w-12 h-12 text-zinc-600" />
-        <p className="text-zinc-400 font-semibold">ยังไม่มีคำถามที่ตอบไม่ได้</p>
+        <p className="text-gray-500 font-semibold">ยังไม่มีคำถามที่ตอบไม่ได้</p>
         <p className="text-zinc-600 text-sm">เมื่อบอทตอบลูกค้าไม่ได้ คำถามจะปรากฏที่นี่</p>
       </div>
     );
@@ -447,14 +447,14 @@ function UnansweredQuestions({ botId, setToast, onAddedToKB }) {
 
   return (
     <div className="space-y-2">
-      <p className="text-xs text-zinc-500">{questions.length} คำถามที่บอทยังตอบไม่ได้ — เพิ่มเข้า KB เพื่อให้บอทเรียนรู้</p>
+      <p className="text-xs text-gray-400">{questions.length} คำถามที่บอทยังตอบไม่ได้ — เพิ่มเข้า KB เพื่อให้บอทเรียนรู้</p>
       {questions.map((q) => (
         <div
           key={q.id}
-          className="flex items-center gap-4 p-4 bg-[#12121A] rounded-2xl border border-white/[0.06] hover:border-orange-500/20 transition-all"
+          className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-white/[0.06] hover:border-green-500/20 transition-all"
         >
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-white truncate">{q.question}</p>
+            <p className="text-sm font-semibold text-gray-900 truncate">{q.question}</p>
             <div className="flex items-center gap-3 mt-1">
               {q.date && (
                 <span className="flex items-center gap-1 text-xs text-zinc-600">
@@ -473,10 +473,10 @@ function UnansweredQuestions({ botId, setToast, onAddedToKB }) {
           <button
             onClick={() => handleAddToKB(q)}
             disabled={adding.has(q.id)}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-orange-500/10 border border-orange-500/30 text-orange-400 hover:bg-orange-500/20 transition-all text-xs font-semibold flex-shrink-0 disabled:opacity-50"
+            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-green-500/10 border border-green-500/30 text-green-600 hover:bg-green-500/20 transition-all text-xs font-semibold flex-shrink-0 disabled:opacity-50"
           >
             {adding.has(q.id) ? (
-              <span className="w-3.5 h-3.5 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin" />
+              <span className="w-3.5 h-3.5 border-2 border-green-500/30 border-t-green-500 rounded-full animate-spin" />
             ) : (
               <PlusCircle className="w-3.5 h-3.5" />
             )}
@@ -490,26 +490,26 @@ function UnansweredQuestions({ botId, setToast, onAddedToKB }) {
 
 function KBCard({ entry, onEdit, onDelete }) {
   return (
-    <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-5 hover:border-orange-500/20 transition-all group">
+    <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-5 hover:border-green-500/20 transition-all group">
       <div className="flex items-start justify-between mb-3">
-        <h3 className="font-bold text-white text-base">{entry.topic}</h3>
+        <h3 className="font-bold text-gray-900 text-base">{entry.topic}</h3>
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={onEdit}
-            className="p-2 hover:bg-white/[0.06] rounded-xl text-zinc-500 hover:text-orange-400 transition-all"
+            className="p-2 hover:bg-white/[0.06] rounded-xl text-gray-400 hover:text-green-600 transition-all"
           >
             <Pencil className="w-4 h-4" />
           </button>
           <button
             onClick={onDelete}
-            className="p-2 hover:bg-red-500/10 rounded-xl text-zinc-500 hover:text-red-400 transition-all"
+            className="p-2 hover:bg-red-500/10 rounded-xl text-gray-400 hover:text-red-400 transition-all"
           >
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      <p className="text-zinc-400 text-sm leading-relaxed line-clamp-3 mb-4">{entry.content}</p>
+      <p className="text-gray-500 text-sm leading-relaxed line-clamp-3 mb-4">{entry.content}</p>
 
       {entry.keywords && entry.keywords.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
@@ -567,15 +567,15 @@ function KBModal({ entry, onSave, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
-      <div className="bg-[#12121A] rounded-3xl border border-white/[0.08] w-full max-w-lg shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-50 rounded-3xl border border-black/[0.09] w-full max-w-lg shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-white/[0.06]">
-          <h3 className="text-lg font-bold text-white">
+          <h3 className="text-lg font-bold text-gray-900">
             {entry ? 'แก้ไขรายการ' : 'เพิ่มรายการใหม่'}
           </h3>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/[0.06] rounded-xl text-zinc-500 hover:text-white transition-colors"
+            className="p-2 hover:bg-white/[0.06] rounded-xl text-gray-400 hover:text-gray-900 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -641,7 +641,7 @@ function KBModal({ entry, onSave, onClose }) {
                 onChange={(e) => setKwInput(e.target.value)}
                 onKeyDown={handleKwKeyDown}
                 onBlur={() => { if (kwInput.trim()) addKeyword(kwInput); }}
-                className="flex-1 min-w-[120px] bg-transparent border-none outline-none text-white text-sm placeholder-zinc-600"
+                className="flex-1 min-w-[120px] bg-transparent border-none outline-none text-gray-900 text-sm placeholder-gray-400"
                 placeholder={keywords.length === 0 ? 'เช่น เมนู, ราคา, ส่วนลด' : ''}
               />
             </div>
@@ -658,7 +658,7 @@ function KBModal({ entry, onSave, onClose }) {
             <button
               type="submit"
               disabled={saving || !topic.trim() || !content.trim()}
-              className="flex-1 btn-primary py-3 rounded-xl text-sm font-bold text-white disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 btn-primary py-3 rounded-xl text-sm font-bold text-gray-900 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {saving && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
               {entry ? 'บันทึก' : 'เพิ่มรายการ'}

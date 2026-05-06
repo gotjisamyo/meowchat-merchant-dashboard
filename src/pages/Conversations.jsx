@@ -63,7 +63,7 @@ export default function Conversations({ setSidebarOpen }) {
         <button
           onClick={handleRefresh}
           disabled={refreshing || loading}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-zinc-400 hover:text-white text-sm font-semibold transition-all disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-black/[0.09] hover:bg-black/[0.05] text-gray-500 hover:text-gray-900 text-sm font-semibold transition-all disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
           รีเฟรช
@@ -72,52 +72,52 @@ export default function Conversations({ setSidebarOpen }) {
     >
       {/* Stats row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-        <div className="bg-[#12121A] rounded-2xl border border-white/[0.06] p-4 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/20 flex items-center justify-center">
-            <Users className="w-4 h-4 text-orange-400" />
+        <div className="bg-gray-50 rounded-2xl border border-white/[0.06] p-4 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-green-500/15 border border-green-500/20 flex items-center justify-center">
+            <Users className="w-4 h-4 text-green-600" />
           </div>
           <div>
-            <p className="text-xl font-extrabold text-white">{conversations.length}</p>
-            <p className="text-zinc-500 text-xs">บทสนทนาทั้งหมด</p>
+            <p className="text-xl font-extrabold text-gray-900">{conversations.length}</p>
+            <p className="text-gray-400 text-xs">บทสนทนาทั้งหมด</p>
           </div>
         </div>
-        <div className="bg-[#12121A] rounded-2xl border border-white/[0.06] p-4 flex items-center gap-3">
+        <div className="bg-gray-50 rounded-2xl border border-white/[0.06] p-4 flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/20 flex items-center justify-center">
             <AlertCircle className="w-4 h-4 text-amber-400" />
           </div>
           <div>
-            <p className="text-xl font-extrabold text-white">{escalatedCount}</p>
-            <p className="text-zinc-500 text-xs">Escalated</p>
+            <p className="text-xl font-extrabold text-gray-900">{escalatedCount}</p>
+            <p className="text-gray-400 text-xs">Escalated</p>
           </div>
         </div>
-        <div className="bg-[#12121A] rounded-2xl border border-white/[0.06] p-4 flex items-center gap-3">
+        <div className="bg-gray-50 rounded-2xl border border-white/[0.06] p-4 flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center">
             <Clock className="w-4 h-4 text-blue-400" />
           </div>
           <div>
-            <p className="text-xl font-extrabold text-white">
+            <p className="text-xl font-extrabold text-gray-900">
               {conversations.filter((c) => c.time.includes('นาที')).length}
             </p>
-            <p className="text-zinc-500 text-xs">ภายใน 1 ชม.</p>
+            <p className="text-gray-400 text-xs">ภายใน 1 ชม.</p>
           </div>
         </div>
       </div>
 
       {/* Main Panel */}
-      <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] overflow-hidden">
+      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] overflow-hidden">
         <div className="flex flex-col lg:flex-row h-full">
           {/* List Panel */}
           <div className={`${selected ? 'hidden lg:flex' : 'flex'} flex-col w-full md:w-[320px] lg:w-[380px] lg:border-r border-white/[0.06] flex-shrink-0`}>
             {/* Toolbar */}
             <div className="p-4 border-b border-white/[0.06] space-y-3">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="ค้นหาบทสนทนา..."
-                  className="w-full pl-9 pr-4 py-2.5 bg-[#0A0A0F] border border-white/[0.06] rounded-xl text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-orange-500/40 transition-all"
+                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-white/[0.06] rounded-xl text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-green-500/40 transition-all"
                 />
               </div>
 
@@ -129,8 +129,8 @@ export default function Conversations({ setSidebarOpen }) {
                     onClick={() => setFilter(f.id)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                       filter === f.id
-                        ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                        : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.04]'
+                        ? 'bg-green-500/20 text-green-600 border border-green-500/30'
+                        : 'text-gray-400 hover:text-zinc-300 hover:bg-white/[0.04]'
                     }`}
                   >
                     {f.label}
@@ -148,20 +148,20 @@ export default function Conversations({ setSidebarOpen }) {
             <div className="overflow-y-auto flex-1 max-h-[60vh] lg:max-h-[500px]">
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <span className="w-6 h-6 border-2 border-orange-500/30 border-t-orange-500 rounded-full animate-spin" />
+                  <span className="w-6 h-6 border-2 border-green-500/30 border-t-green-500 rounded-full animate-spin" />
                 </div>
               ) : filtered.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 gap-3 text-center px-4">
-                  <div className="w-14 h-14 rounded-2xl bg-orange-500/10 border border-orange-500/15 flex items-center justify-center">
-                    <MessageSquare className="w-7 h-7 text-orange-400/60" />
+                  <div className="w-14 h-14 rounded-2xl bg-green-500/10 border border-green-500/15 flex items-center justify-center">
+                    <MessageSquare className="w-7 h-7 text-green-600/60" />
                   </div>
                   <div>
-                    <p className="text-zinc-400 text-sm font-semibold">ยังไม่มีบทสนทนา</p>
+                    <p className="text-gray-500 text-sm font-semibold">ยังไม่มีบทสนทนา</p>
                     <p className="text-zinc-600 text-xs mt-0.5">เชื่อม LINE OA เพื่อเริ่มรับส่งข้อความ</p>
                   </div>
                   <button
                     onClick={() => navigate('/bot')}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500/15 border border-orange-500/25 text-orange-400 hover:bg-orange-500/25 text-xs font-bold transition-all"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-500/15 border border-green-500/25 text-green-600 hover:bg-green-500/25 text-xs font-bold transition-all"
                   >
                     <Zap className="w-3.5 h-3.5" />
                     เชื่อม LINE OA
@@ -180,20 +180,20 @@ export default function Conversations({ setSidebarOpen }) {
                         setLoadingMsgs(false);
                       }
                     }}
-                    className={`w-full flex items-center gap-3 px-4 py-4 border-b border-white/[0.04] text-left hover:bg-white/[0.02] transition-colors ${
-                      selected?.id === conv.id ? 'bg-orange-500/[0.06]' : ''
+                    className={`w-full flex items-center gap-3 px-4 py-4 border-b border-black/[0.05] text-left hover:bg-white/[0.02] transition-colors ${
+                      selected?.id === conv.id ? 'bg-green-500/[0.06]' : ''
                     }`}
                   >
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500/20 to-pink-500/20 border border-white/[0.06] flex items-center justify-center text-sm font-bold text-white flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-pink-500/20 border border-white/[0.06] flex items-center justify-center text-sm font-bold text-gray-900 flex-shrink-0">
                       {conv.avatar}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-0.5 gap-2">
-                        <p className="font-semibold text-white text-sm truncate">{conv.customerName}</p>
+                        <p className="font-semibold text-gray-900 text-sm truncate">{conv.customerName}</p>
                         <span className="text-zinc-600 text-xs flex-shrink-0 whitespace-nowrap">{conv.time}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <p className="text-zinc-500 text-xs truncate flex-1">{conv.lastMessage}</p>
+                        <p className="text-gray-400 text-xs truncate flex-1">{conv.lastMessage}</p>
                         {conv.status === 'escalated' && (
                           <span className="flex-shrink-0 px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20">
                             !
@@ -213,10 +213,10 @@ export default function Conversations({ setSidebarOpen }) {
             <ChatDetail conv={selected} onClose={() => setSelected(null)} loadingMsgs={loadingMsgs} />
           ) : (
             <div className="hidden lg:flex flex-1 items-center justify-center py-16 flex-col gap-3 text-center px-6">
-              <div className="w-16 h-16 rounded-3xl bg-orange-500/8 border border-orange-500/10 flex items-center justify-center mb-1">
+              <div className="w-16 h-16 rounded-3xl bg-green-500/8 border border-green-500/10 flex items-center justify-center mb-1">
                 <MessageSquare className="w-8 h-8 text-zinc-700" />
               </div>
-              <p className="text-zinc-500 font-semibold">เลือกบทสนทนาเพื่อดูรายละเอียด</p>
+              <p className="text-gray-400 font-semibold">เลือกบทสนทนาเพื่อดูรายละเอียด</p>
               <p className="text-zinc-700 text-xs">คลิกบทสนทนาทางซ้ายเพื่ออ่านข้อความที่นี่</p>
             </div>
           )}
@@ -233,27 +233,27 @@ function ChatDetail({ conv, onClose, loadingMsgs }) {
       <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06]">
         <button
           onClick={onClose}
-          className="lg:hidden p-2 hover:bg-white/[0.06] rounded-xl text-zinc-500 hover:text-white transition-colors mr-1"
+          className="lg:hidden p-2 hover:bg-white/[0.06] rounded-xl text-gray-400 hover:text-gray-900 transition-colors mr-1"
         >
           <X className="w-4 h-4" />
         </button>
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500/20 to-pink-500/20 border border-white/[0.06] flex items-center justify-center text-sm font-bold text-white flex-shrink-0">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-pink-500/20 border border-white/[0.06] flex items-center justify-center text-sm font-bold text-gray-900 flex-shrink-0">
           {conv.avatar}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <p className="font-bold text-white truncate">{conv.customerName}</p>
+            <p className="font-bold text-gray-900 truncate">{conv.customerName}</p>
             {conv.status === 'escalated' && (
               <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20 whitespace-nowrap">
                 escalated
               </span>
             )}
           </div>
-          <p className="text-zinc-500 text-xs">{conv.time}</p>
+          <p className="text-gray-400 text-xs">{conv.time}</p>
         </div>
         <button
           onClick={onClose}
-          className="hidden lg:flex p-2 hover:bg-white/[0.06] rounded-xl text-zinc-500 hover:text-white transition-colors"
+          className="hidden lg:flex p-2 hover:bg-white/[0.06] rounded-xl text-gray-400 hover:text-gray-900 transition-colors"
         >
           <X className="w-4 h-4" />
         </button>
@@ -262,8 +262,8 @@ function ChatDetail({ conv, onClose, loadingMsgs }) {
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-5 space-y-4 max-h-[55vh] lg:max-h-[450px]">
         {loadingMsgs && (
-          <div className="flex items-center justify-center py-8 gap-2 text-zinc-500 text-sm">
-            <span className="w-4 h-4 border-2 border-zinc-700 border-t-orange-400 rounded-full animate-spin" />
+          <div className="flex items-center justify-center py-8 gap-2 text-gray-400 text-sm">
+            <span className="w-4 h-4 border-2 border-zinc-700 border-t-green-400 rounded-full animate-spin" />
             กำลังโหลดประวัติสนทนา...
           </div>
         )}
@@ -273,15 +273,15 @@ function ChatDetail({ conv, onClose, loadingMsgs }) {
         {(conv.messages || []).map((msg, i) => (
           <div key={i} className={`flex ${msg.from === 'customer' ? 'justify-start' : 'justify-end'}`}>
             {msg.from === 'customer' && (
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-600 flex items-center justify-center text-xs font-bold text-white mr-2 flex-shrink-0 mt-1">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-600 flex items-center justify-center text-xs font-bold text-gray-900 mr-2 flex-shrink-0 mt-1">
                 {conv.avatar}
               </div>
             )}
             <div className="max-w-[85%] sm:max-w-[75%] min-w-0">
               <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words ${
                 msg.from === 'customer'
-                  ? 'bg-[#1E1E28] text-white rounded-tl-sm'
-                  : 'bg-gradient-to-r from-orange-500 to-orange-400 text-white rounded-tr-sm'
+                  ? 'bg-white text-gray-900 rounded-tl-sm'
+                  : 'bg-gradient-to-r from-green-500 to-green-400 text-gray-900 rounded-tr-sm'
               }`}>
                 {msg.text}
               </div>
@@ -290,7 +290,7 @@ function ChatDetail({ conv, onClose, loadingMsgs }) {
               </p>
             </div>
             {msg.from === 'bot' && (
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center text-xs ml-2 flex-shrink-0 mt-1">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-green-400 flex items-center justify-center text-xs ml-2 flex-shrink-0 mt-1">
                 🐱
               </div>
             )}
@@ -299,7 +299,7 @@ function ChatDetail({ conv, onClose, loadingMsgs }) {
       </div>
 
       {/* Read-only notice */}
-      <div className="px-5 py-3 border-t border-white/[0.06] bg-[#0A0A0F]/50">
+      <div className="px-5 py-3 border-t border-white/[0.06] bg-black/30">
         <p className="text-xs text-zinc-600 text-center">
           นี่คือประวัติการสนทนา — บอทตอบโดยอัตโนมัติ
         </p>

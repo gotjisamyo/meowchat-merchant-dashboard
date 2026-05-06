@@ -192,7 +192,7 @@ export default function BotSettings({ setSidebarOpen }) {
         <button
           onClick={handleSave}
           disabled={isSaving || loading}
-          className="btn-primary px-5 py-2.5 rounded-xl text-sm font-bold text-white flex items-center gap-2 disabled:opacity-50"
+          className="btn-primary px-5 py-2.5 rounded-xl text-sm font-bold text-gray-900 flex items-center gap-2 disabled:opacity-50"
         >
           {isSaving ? (
             <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -219,15 +219,15 @@ export default function BotSettings({ setSidebarOpen }) {
         {/* Left column */}
         <div className="lg:col-span-2 space-y-6">
           {/* Profile */}
-          <Section title="โปรไฟล์บอท" icon={<Bot className="w-5 h-5 text-orange-400" />}>
+          <Section title="โปรไฟล์บอท" icon={<Bot className="w-5 h-5 text-green-600" />}>
             <div className="space-y-4">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500/20 to-orange-500/5 border border-orange-500/20 flex items-center justify-center text-3xl flex-shrink-0">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500/20 to-green-500/5 border border-green-500/20 flex items-center justify-center text-3xl flex-shrink-0">
                   🐱
                 </div>
                 <div>
-                  <p className="font-bold text-white">{form.name || 'ชื่อบอทของคุณ'}</p>
-                  <p className="text-zinc-500 text-sm">{form.businessName || 'ชื่อธุรกิจ'}</p>
+                  <p className="font-bold text-gray-900">{form.name || 'ชื่อบอทของคุณ'}</p>
+                  <p className="text-gray-400 text-sm">{form.businessName || 'ชื่อธุรกิจ'}</p>
                 </div>
               </div>
 
@@ -260,13 +260,13 @@ export default function BotSettings({ setSidebarOpen }) {
                       onClick={() => { setCustomMode(false); update('personality', p.value); }}
                       className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-all ${
                         !customMode && form.personality === p.value
-                          ? 'bg-orange-500/10 border-orange-500/40'
-                          : 'bg-[#0A0A0F] border-white/[0.06] hover:border-white/15'
+                          ? 'bg-green-500/10 border-green-500/40'
+                          : 'bg-white border-white/[0.06] hover:border-white/15'
                       }`}
                     >
                       <span className="text-xl flex-shrink-0 mt-0.5">{p.icon}</span>
                       <div className="min-w-0">
-                        <p className={`text-xs font-semibold leading-tight ${!customMode && form.personality === p.value ? 'text-orange-300' : 'text-zinc-300'}`}>
+                        <p className={`text-xs font-semibold leading-tight ${!customMode && form.personality === p.value ? 'text-green-500' : 'text-zinc-300'}`}>
                           {p.label}
                         </p>
                         <p className="text-[10px] text-zinc-600 mt-0.5 leading-tight">{p.desc}</p>
@@ -279,13 +279,13 @@ export default function BotSettings({ setSidebarOpen }) {
                     onClick={() => { setCustomMode(true); update('personality', ''); }}
                     className={`flex items-start gap-2.5 p-3 rounded-xl border text-left transition-all ${
                       customMode
-                        ? 'bg-orange-500/10 border-orange-500/40'
-                        : 'bg-[#0A0A0F] border-white/[0.06] hover:border-white/15'
+                        ? 'bg-green-500/10 border-green-500/40'
+                        : 'bg-white border-white/[0.06] hover:border-white/15'
                     }`}
                   >
                     <span className="text-xl flex-shrink-0 mt-0.5">✏️</span>
                     <div className="min-w-0">
-                      <p className={`text-xs font-semibold leading-tight ${customMode ? 'text-orange-300' : 'text-zinc-300'}`}>กำหนดเอง</p>
+                      <p className={`text-xs font-semibold leading-tight ${customMode ? 'text-green-500' : 'text-zinc-300'}`}>กำหนดเอง</p>
                       <p className="text-[10px] text-zinc-600 mt-0.5 leading-tight">พิมพ์บุคลิกแบบที่ต้องการ</p>
                     </div>
                   </button>
@@ -333,7 +333,7 @@ export default function BotSettings({ setSidebarOpen }) {
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <p className="text-sm font-semibold text-zinc-300 flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-zinc-500" />
+                      <Clock className="w-4 h-4 text-gray-400" />
                       Away Message (นอกเวลาทำการ)
                     </p>
                     <p className="text-xs text-zinc-600 mt-0.5">บอทจะตอบข้อความนี้เมื่อลูกค้าส่งข้อความนอกเวลา</p>
@@ -342,7 +342,7 @@ export default function BotSettings({ setSidebarOpen }) {
                     type="button"
                     onClick={() => update('workingHoursEnabled', !form.workingHoursEnabled)}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors flex-shrink-0 ${
-                      form.workingHoursEnabled ? 'bg-orange-500' : 'bg-zinc-700'
+                      form.workingHoursEnabled ? 'bg-green-500' : 'bg-gray-100'
                     }`}
                   >
                     <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
@@ -355,7 +355,7 @@ export default function BotSettings({ setSidebarOpen }) {
                   <div className="space-y-3 pl-0">
                     <div className="flex items-center gap-3">
                       <div className="flex-1">
-                        <label className="text-xs text-zinc-500 mb-1 block">เปิด</label>
+                        <label className="text-xs text-gray-400 mb-1 block">เปิด</label>
                         <input
                           type="time"
                           value={form.workingHoursStart}
@@ -365,7 +365,7 @@ export default function BotSettings({ setSidebarOpen }) {
                       </div>
                       <span className="text-zinc-600 mt-5">–</span>
                       <div className="flex-1">
-                        <label className="text-xs text-zinc-500 mb-1 block">ปิด</label>
+                        <label className="text-xs text-gray-400 mb-1 block">ปิด</label>
                         <input
                           type="time"
                           value={form.workingHoursEnd}
@@ -390,7 +390,7 @@ export default function BotSettings({ setSidebarOpen }) {
 
           {/* Quick Reply Templates */}
           <Section title="Quick Reply Templates" icon={<MessageSquare className="w-5 h-5 text-purple-400" />}>
-            <p className="text-xs text-zinc-500 mb-4">
+            <p className="text-xs text-gray-400 mb-4">
               ปุ่มลัดที่ลูกค้าเห็นใต้แชท — กดแทนการพิมพ์ (สูงสุด 13 ปุ่ม)
             </p>
             <div className="space-y-2 mb-3">
@@ -429,13 +429,13 @@ export default function BotSettings({ setSidebarOpen }) {
             {quickReplies.length < 13 && (
               <button
                 onClick={() => setQuickReplies(prev => [...prev, { label: '', text: '', _id: `qr_${Date.now()}_${Math.random()}` }])}
-                className="w-full py-2.5 rounded-xl border border-dashed border-white/[0.1] text-zinc-500 hover:text-zinc-300 hover:border-white/20 transition-colors text-sm flex items-center justify-center gap-2"
+                className="w-full py-2.5 rounded-xl border border-dashed border-white/[0.1] text-gray-400 hover:text-zinc-300 hover:border-white/20 transition-colors text-sm flex items-center justify-center gap-2"
               >
                 <Plus className="w-4 h-4" /> เพิ่มปุ่ม
               </button>
             )}
             {quickReplies.length > 0 && (
-              <div className="mt-4 p-3 bg-[#0A0A0F] rounded-xl border border-white/[0.06]">
+              <div className="mt-4 p-3 bg-white rounded-xl border border-white/[0.06]">
                 <p className="text-xs text-zinc-600 mb-2">Preview ปุ่ม:</p>
                 <div className="flex flex-wrap gap-2">
                   {quickReplies.filter(q => q.label).map((qr, i) => (
@@ -451,12 +451,12 @@ export default function BotSettings({ setSidebarOpen }) {
           {/* Escalation Keywords */}
           <Section title="คำสั่ง Escalation" icon={<PhoneCall className="w-5 h-5 text-red-400" />}>
             <div className="space-y-4">
-              <p className="text-xs text-zinc-500 leading-relaxed">
+              <p className="text-xs text-gray-400 leading-relaxed">
                 เมื่อลูกค้าพิมพ์คำเหล่านี้ บอทจะ<strong className="text-zinc-300">โอนให้พนักงาน</strong>ทันที — คั่นด้วยเครื่องหมายจุลภาค
               </p>
-              <div className="bg-[#0A0A0F] rounded-xl p-3 border border-white/[0.06]">
+              <div className="bg-white rounded-xl p-3 border border-white/[0.06]">
                 <p className="text-xs text-zinc-600 mb-1">คำ default (ใช้เสมอ):</p>
-                <p className="text-xs text-zinc-500">คืนเงิน, โกง, คุยกับคน, ขอพนักงาน, เจ้าหน้าที่, แจ้งความ, ร้องเรียน, ด่า, แย่มาก</p>
+                <p className="text-xs text-gray-400">คืนเงิน, โกง, คุยกับคน, ขอพนักงาน, เจ้าหน้าที่, แจ้งความ, ร้องเรียน, ด่า, แย่มาก</p>
               </div>
               <FormField label="คำเพิ่มเติมของร้านคุณ" hint="เช่น: ยกเลิก, คืนสินค้า, ไม่ได้รับของ">
                 <textarea
@@ -467,22 +467,22 @@ export default function BotSettings({ setSidebarOpen }) {
                   placeholder="เช่น ยกเลิก, คืนสินค้า, เสียหาย, ผิดรุ่น"
                 />
                 <p className="text-xs text-zinc-600 mt-1">
-                  ใส่คำ คั่นด้วย comma เช่น <span className="text-zinc-400">ยกเลิก, คืนของ, ไม่พอใจ</span>
+                  ใส่คำ คั่นด้วย comma เช่น <span className="text-gray-500">ยกเลิก, คืนของ, ไม่พอใจ</span>
                 </p>
               </FormField>
             </div>
           </Section>
 
           {/* Knowledge Base Shortcut */}
-          <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-5">
+          <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/15 to-emerald-500/5 border border-emerald-500/20 flex items-center justify-center">
                   <BookOpen className="w-5 h-5 text-emerald-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-white">Knowledge Base</p>
-                  <p className="text-xs text-zinc-500">ข้อมูลที่บอทใช้ตอบคำถาม</p>
+                  <p className="text-sm font-bold text-gray-900">Knowledge Base</p>
+                  <p className="text-xs text-gray-400">ข้อมูลที่บอทใช้ตอบคำถาม</p>
                 </div>
               </div>
               <Link
@@ -497,7 +497,7 @@ export default function BotSettings({ setSidebarOpen }) {
           {/* Test Bot Panel */}
           <Section title="ทดสอบบอท" icon={<Send className="w-5 h-5 text-cyan-400" />}>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-xs text-zinc-500">พิมพ์ข้อความทดสอบโดยไม่ต้องเปิด LINE จริง</p>
+              <p className="text-xs text-gray-400">พิมพ์ข้อความทดสอบโดยไม่ต้องเปิด LINE จริง</p>
               <button
                 onClick={() => setTestMessages(prev => [...prev, { role: 'bot', type: 'branding' }])}
                 className="text-xs px-2.5 py-1 rounded-lg bg-[#1C1B33] border border-[#E8C56B]/30 text-[#E8C56B] hover:bg-[#252445] transition-colors"
@@ -505,7 +505,7 @@ export default function BotSettings({ setSidebarOpen }) {
                 🐱 ดู Branding Bubble
               </button>
             </div>
-            <div className="bg-[#0A0A0F] rounded-2xl border border-white/[0.06] flex flex-col h-72">
+            <div className="bg-white rounded-2xl border border-white/[0.06] flex flex-col h-72">
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {testMessages.length === 0 && (
@@ -524,7 +524,7 @@ export default function BotSettings({ setSidebarOpen }) {
                     ) : (
                       <div className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${
                         msg.role === 'user'
-                          ? 'bg-orange-500/20 text-orange-100 rounded-br-sm'
+                          ? 'bg-green-500/20 text-green-100 rounded-br-sm'
                           : 'bg-white/[0.06] text-zinc-200 rounded-bl-sm'
                       }`}>
                         {msg.text}
@@ -557,12 +557,12 @@ export default function BotSettings({ setSidebarOpen }) {
                   onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendTest()}
                   placeholder={!bot?.id ? 'บันทึกการตั้งค่าก่อนทดสอบ' : 'พิมพ์ข้อความ...'}
                   disabled={!bot?.id || testLoading}
-                  className="flex-1 bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-orange-500/40 disabled:opacity-40"
+                  className="flex-1 bg-white/[0.04] border border-black/[0.09] rounded-xl px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-green-500/40 disabled:opacity-40"
                 />
                 <button
                   onClick={handleSendTest}
                   disabled={!testInput.trim() || !bot?.id || testLoading}
-                  className="p-2.5 rounded-xl bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 transition-colors disabled:opacity-30"
+                  className="p-2.5 rounded-xl bg-green-500/20 text-green-600 hover:bg-green-500/30 transition-colors disabled:opacity-30"
                 >
                   <Send className="w-4 h-4" />
                 </button>
@@ -571,7 +571,7 @@ export default function BotSettings({ setSidebarOpen }) {
             {testMessages.length > 0 && (
               <button
                 onClick={() => setTestMessages([])}
-                className="mt-2 text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
+                className="mt-2 text-xs text-zinc-600 hover:text-gray-500 transition-colors"
               >
                 ล้างประวัติแชท
               </button>
@@ -599,7 +599,7 @@ export default function BotSettings({ setSidebarOpen }) {
                     }`} />
                     <span className={`text-sm font-bold ${
                       lineVerifyResult?.ok ? 'text-emerald-400' :
-                      form.lineAccessToken ? 'text-yellow-400' : 'text-zinc-400'
+                      form.lineAccessToken ? 'text-yellow-400' : 'text-gray-500'
                     }`}>
                       {lineVerifyResult?.ok
                         ? `✓ Token ถูกต้อง${lineVerifyResult.name ? ` — ${lineVerifyResult.name}` : ''}`
@@ -611,7 +611,7 @@ export default function BotSettings({ setSidebarOpen }) {
                       type="button"
                       onClick={handleVerifyLine}
                       disabled={lineVerifying}
-                      className="text-xs px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/10 text-zinc-300 transition-colors disabled:opacity-50 flex items-center gap-1.5 flex-shrink-0"
+                      className="text-xs px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-black/5 text-zinc-300 transition-colors disabled:opacity-50 flex items-center gap-1.5 flex-shrink-0"
                     >
                       {lineVerifying
                         ? <span className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" />
@@ -640,7 +640,7 @@ export default function BotSettings({ setSidebarOpen }) {
                   </p>
                   <Link
                     to="/line-guide"
-                    className="text-xs text-orange-400 hover:text-orange-300 transition-colors whitespace-nowrap ml-2 flex-shrink-0"
+                    className="text-xs text-green-600 hover:text-green-500 transition-colors whitespace-nowrap ml-2 flex-shrink-0"
                   >
                     ดูคู่มือ →
                   </Link>
@@ -662,48 +662,48 @@ export default function BotSettings({ setSidebarOpen }) {
               </FormField>
 
               {/* Webhook URL */}
-              <div className="bg-[#0A0A0F] rounded-2xl p-4 border border-orange-500/20">
-                <p className="text-xs text-orange-400 font-bold mb-2">📋 Webhook URL — ใส่ใน LINE Developers Console</p>
-                <code className="text-xs text-orange-300 bg-orange-500/10 px-3 py-2 rounded-lg block break-all select-all">
+              <div className="bg-white rounded-2xl p-4 border border-green-500/20">
+                <p className="text-xs text-green-600 font-bold mb-2">📋 Webhook URL — ใส่ใน LINE Developers Console</p>
+                <code className="text-xs text-green-500 bg-green-500/10 px-3 py-2 rounded-lg block break-all select-all">
                   {`https://meowchat-engine-production.up.railway.app/webhook/line/${bot?.id || '{botId}'}`}
                 </code>
                 <p className="text-xs text-zinc-600 mt-2">Messaging API → Webhook settings → Webhook URL → Update → Verify</p>
               </div>
 
               {/* How to connect */}
-              <div className="bg-[#0A0A0F] rounded-2xl p-4 border border-white/[0.06]">
+              <div className="bg-white rounded-2xl p-4 border border-white/[0.06]">
                 <div className="flex items-center gap-2 mb-3">
                   <Info className="w-4 h-4 text-blue-400" />
-                  <span className="text-sm font-bold text-white">วิธีเชื่อมต่อ LINE OA (ทำครั้งเดียว)</span>
+                  <span className="text-sm font-bold text-gray-900">วิธีเชื่อมต่อ LINE OA (ทำครั้งเดียว)</span>
                 </div>
-                <ol className="space-y-3 text-xs text-zinc-400">
+                <ol className="space-y-3 text-xs text-gray-500">
                   <li className="flex gap-2">
-                    <span className="text-orange-400 font-bold flex-shrink-0">1.</span>
-                    <span>เข้า <strong className="text-white">developers.line.biz</strong> → Login → เลือก Provider → เลือก Channel (Messaging API)</span>
+                    <span className="text-green-600 font-bold flex-shrink-0">1.</span>
+                    <span>เข้า <strong className="text-gray-900">developers.line.biz</strong> → Login → เลือก Provider → เลือก Channel (Messaging API)</span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-orange-400 font-bold flex-shrink-0">2.</span>
-                    <span>แท็บ <strong className="text-white">Basic settings</strong> → เลื่อนหา <strong className="text-white">Channel secret</strong> → กด <strong className="text-green-400">Copy</strong> → วางในช่อง Channel Secret ด้านบน</span>
+                    <span className="text-green-600 font-bold flex-shrink-0">2.</span>
+                    <span>แท็บ <strong className="text-gray-900">Basic settings</strong> → เลื่อนหา <strong className="text-gray-900">Channel secret</strong> → กด <strong className="text-green-400">Copy</strong> → วางในช่อง Channel Secret ด้านบน</span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-orange-400 font-bold flex-shrink-0">3.</span>
-                    <span>แท็บ <strong className="text-white">Messaging API</strong> → เลื่อนหา <strong className="text-white">Channel access token</strong> → กด <strong className="text-green-400">Issue</strong> → Copy → วางในช่อง Channel Access Token ด้านบน</span>
+                    <span className="text-green-600 font-bold flex-shrink-0">3.</span>
+                    <span>แท็บ <strong className="text-gray-900">Messaging API</strong> → เลื่อนหา <strong className="text-gray-900">Channel access token</strong> → กด <strong className="text-green-400">Issue</strong> → Copy → วางในช่อง Channel Access Token ด้านบน</span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-orange-400 font-bold flex-shrink-0">4.</span>
-                    <span>กด <strong className="text-white">บันทึก</strong> ในหน้านี้ก่อน</span>
+                    <span className="text-green-600 font-bold flex-shrink-0">4.</span>
+                    <span>กด <strong className="text-gray-900">บันทึก</strong> ในหน้านี้ก่อน</span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-orange-400 font-bold flex-shrink-0">5.</span>
-                    <span>กลับไป LINE Developers → <strong className="text-white">Webhook settings</strong> → วาง Webhook URL → กด <strong className="text-green-400">Update</strong> → กด <strong className="text-green-400">Verify</strong> (ต้องขึ้น Success)</span>
+                    <span className="text-green-600 font-bold flex-shrink-0">5.</span>
+                    <span>กลับไป LINE Developers → <strong className="text-gray-900">Webhook settings</strong> → วาง Webhook URL → กด <strong className="text-green-400">Update</strong> → กด <strong className="text-green-400">Verify</strong> (ต้องขึ้น Success)</span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-orange-400 font-bold flex-shrink-0">6.</span>
-                    <span>เปิด <strong className="text-white">Use webhook</strong> เป็น <strong className="text-green-400">Enabled</strong></span>
+                    <span className="text-green-600 font-bold flex-shrink-0">6.</span>
+                    <span>เปิด <strong className="text-gray-900">Use webhook</strong> เป็น <strong className="text-green-400">Enabled</strong></span>
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-orange-400 font-bold flex-shrink-0">7.</span>
-                    <span>เลื่อนหา <strong className="text-white">Auto-reply messages</strong> → ตั้งเป็น <strong className="text-red-400">Disabled</strong></span>
+                    <span className="text-green-600 font-bold flex-shrink-0">7.</span>
+                    <span>เลื่อนหา <strong className="text-gray-900">Auto-reply messages</strong> → ตั้งเป็น <strong className="text-red-400">Disabled</strong></span>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-green-400 font-bold flex-shrink-0">✓</span>
@@ -726,9 +726,9 @@ export default function BotSettings({ setSidebarOpen }) {
 
           {/* Slip Verification */}
           <Section title="ตรวจสอบสลิปโอนเงิน" icon={<Receipt className="w-5 h-5 text-blue-400" />}>
-            <p className="text-xs text-zinc-500 mb-4">
+            <p className="text-xs text-gray-400 mb-4">
               บอทจะอ่านสลิปที่ลูกค้าส่งมาผ่าน Gemini Vision และบันทึกคำสั่งซื้ออัตโนมัติ
-              <span className="text-zinc-400"> (~฿0.005/ภาพ ใช้เครดิต Gemini)</span>
+              <span className="text-gray-500"> (~฿0.005/ภาพ ใช้เครดิต Gemini)</span>
             </p>
             <div className="space-y-3">
               {[
@@ -739,7 +739,7 @@ export default function BotSettings({ setSidebarOpen }) {
                 <label key={opt.value} className={`flex items-start gap-3 p-4 rounded-2xl border cursor-pointer transition-colors ${
                   form.slipVerifyMode === opt.value
                     ? 'bg-blue-500/10 border-blue-500/30'
-                    : 'bg-[#0A0A0F] border-white/[0.06] hover:border-white/10'
+                    : 'bg-white border-white/[0.06] hover:border-white/10'
                 }`}>
                   <input
                     type="radio"
@@ -750,8 +750,8 @@ export default function BotSettings({ setSidebarOpen }) {
                     className="mt-0.5 accent-blue-500 flex-shrink-0"
                   />
                   <div>
-                    <p className="text-sm font-semibold text-white">{opt.label}</p>
-                    <p className="text-xs text-zinc-500 mt-0.5">{opt.desc}</p>
+                    <p className="text-sm font-semibold text-gray-900">{opt.label}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{opt.desc}</p>
                   </div>
                 </label>
               ))}
@@ -786,10 +786,10 @@ export default function BotSettings({ setSidebarOpen }) {
                       key={m.value}
                       className={`flex items-start gap-3 p-4 rounded-2xl border transition-colors ${
                         m.locked
-                          ? 'opacity-50 cursor-not-allowed bg-[#0A0A0F] border-white/[0.06]'
+                          ? 'opacity-50 cursor-not-allowed bg-white border-white/[0.06]'
                           : form.aiModel === m.value
                             ? 'bg-violet-500/10 border-violet-500/30 cursor-pointer'
-                            : 'bg-[#0A0A0F] border-white/[0.06] hover:border-white/10 cursor-pointer'
+                            : 'bg-white border-white/[0.06] hover:border-white/10 cursor-pointer'
                       }`}
                     >
                       <input
@@ -804,10 +804,10 @@ export default function BotSettings({ setSidebarOpen }) {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
                           {m.icon}
-                          <p className="text-sm font-semibold text-white">{m.label}</p>
-                          {m.locked && <span className="text-xs text-orange-400 font-semibold ml-1">Pro+</span>}
+                          <p className="text-sm font-semibold text-gray-900">{m.label}</p>
+                          {m.locked && <span className="text-xs text-green-600 font-semibold ml-1">Pro+</span>}
                         </div>
-                        <p className="text-xs text-zinc-500 mt-0.5">{m.desc}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">{m.desc}</p>
                       </div>
                     </label>
                   ))}
@@ -820,7 +820,7 @@ export default function BotSettings({ setSidebarOpen }) {
           <button
             onClick={handleSave}
             disabled={isSaving || loading}
-            className="xl:hidden btn-primary w-full py-3.5 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2 disabled:opacity-50"
+            className="xl:hidden btn-primary w-full py-3.5 rounded-xl text-sm font-bold text-gray-900 flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isSaving
               ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -835,12 +835,12 @@ export default function BotSettings({ setSidebarOpen }) {
 
 function Section({ title, icon, children }) {
   return (
-    <div className="bg-[#12121A] rounded-3xl border border-white/[0.06] p-6">
+    <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500/15 to-orange-500/5 border border-orange-500/20 flex items-center justify-center">
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-500/15 to-green-500/5 border border-green-500/20 flex items-center justify-center">
           {icon}
         </div>
-        <h2 className="text-lg font-bold text-white">{title}</h2>
+        <h2 className="text-lg font-bold text-gray-900">{title}</h2>
       </div>
       {children}
     </div>
