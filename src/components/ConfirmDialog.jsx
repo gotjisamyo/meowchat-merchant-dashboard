@@ -10,14 +10,14 @@ export default function ConfirmDialog({ isOpen, title, message, onConfirm, onCan
       onClick={onCancel}
     >
       <div
-        className="bg-gray-50 rounded-3xl border border-black/[0.09] w-full max-w-sm shadow-2xl animate-scale-in"
+        className="bg-gray-50 rounded-3xl border border-gray-200 w-full max-w-sm shadow-2xl animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
           <h3 className="text-base font-bold text-gray-900">{title}</h3>
           <button
             onClick={onCancel}
-            className="p-1.5 hover:bg-white/[0.06] rounded-xl text-gray-400 hover:text-gray-900 transition-colors"
+            className="p-1.5 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-gray-900 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>

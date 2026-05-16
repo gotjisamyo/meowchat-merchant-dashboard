@@ -219,14 +219,14 @@ export default function CRM({ setSidebarOpen }) {
       )}
 
       {/* Usage Guide Panel */}
-      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] overflow-hidden">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
         <button
           onClick={() => setShowGuide(v => !v)}
-          className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/[0.02] transition-colors"
+          className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50/50 transition-colors"
         >
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center">
-              <BookOpen className="w-4 h-4 text-blue-400" />
+            <div className="w-8 h-8 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center">
+              <BookOpen className="w-4 h-4 text-green-600" />
             </div>
             <div className="text-left">
               <p className="text-sm font-bold text-gray-900">คู่มือการใช้งาน CRM</p>
@@ -239,7 +239,7 @@ export default function CRM({ setSidebarOpen }) {
         </button>
 
         {showGuide && (
-          <div className="px-5 pb-6 border-t border-white/[0.06] pt-5">
+          <div className="px-5 pb-6 border-t border-gray-100 pt-5">
             <p className="text-xs text-gray-400 mb-4 font-semibold uppercase tracking-wider">ตัวอย่างการใช้งาน 10 ใช้</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {[
@@ -250,8 +250,8 @@ export default function CRM({ setSidebarOpen }) {
                   desc: 'ลูกค้าทักมาใน LINE → เพิ่มชื่อ-เบอร์ไว้ใน CRM เพื่อติดตามภายหลังได้',
                 },
                 {
-                  icon: <Tag className="w-4 h-4 text-purple-400" />,
-                  color: 'bg-purple-500/10 border-purple-500/15',
+                  icon: <Tag className="w-4 h-4 text-green-600" />,
+                  color: 'bg-green-500/5 border-purple-500/15',
                   title: 'ชั้นลูกค้าด้วยแท็ก',
                   desc: 'แท็ก VIP, ลูกค้าใหม่, สนใจโปรโมชั่น, สมาชิก → กรองเพื่อส่งโปรออฯตรงเป้าหมายได้',
                 },
@@ -280,7 +280,7 @@ export default function CRM({ setSidebarOpen }) {
                   desc: 'แบ่งลูคเป็น ไฟเฟ้า/ทอง/เพชร ด้วยแท็ก → ส่งโปรตรงระดับได้',
                 },
                 {
-                  icon: <Send className="w-4 h-4 text-blue-400" />,
+                  icon: <Send className="w-4 h-4 text-green-600" />,
                   color: 'bg-blue-500/10 border-blue-500/15',
                   title: 'สำรองข้อมูลแบบครบวงจร',
                   desc: 'เก็บอีเมลและเบอร์ไว้ในที่เดียว เพื่อส่งต่อได้ทั้งผ่านอีเมลและโทรศัพท์',
@@ -305,7 +305,7 @@ export default function CRM({ setSidebarOpen }) {
                 },
               ].map((item, i) => (
                 <div key={i} className={`flex items-start gap-3 p-4 rounded-2xl border ${item.color}`}>
-                  <div className="w-8 h-8 rounded-xl bg-black/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0 mt-0.5">
                     {item.icon}
                   </div>
                   <div>
@@ -320,7 +320,7 @@ export default function CRM({ setSidebarOpen }) {
       </div>
 
       {/* Import/Export Section */}
-      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-5 space-y-4">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5 space-y-4">
         <div className="flex items-center gap-2 mb-1">
           <Upload className="w-4 h-4 text-green-600" />
           <p className="text-sm font-bold text-gray-900">นำเข้า / ส่งออกรายชื่อ</p>
@@ -343,7 +343,7 @@ export default function CRM({ setSidebarOpen }) {
             {showTooltip && (
               <div className="absolute left-0 top-full mt-2 z-50 w-80 p-4 bg-[#1A1A2E] border border-black/[0.14] rounded-2xl shadow-2xl">
                 <p className="text-xs font-bold text-gray-900 mb-2">รูปแบบ CSV</p>
-                <pre className="text-[11px] text-gray-500 bg-black/30 rounded-xl p-3 overflow-x-auto leading-relaxed font-mono">
+                <pre className="text-[11px] text-gray-500 bg-white rounded-xl p-3 overflow-x-auto leading-relaxed font-mono">
 {`name,phone,email,tag,note
 สมชาย ใจดี,0812345678,some@email.com,VIP,หมายเหตุ`}
                 </pre>
@@ -369,7 +369,7 @@ export default function CRM({ setSidebarOpen }) {
           <button
             onClick={() => fileRef.current?.click()}
             disabled={importing}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-black/[0.09] text-zinc-300 hover:border-green-500/30 hover:text-green-600 transition-all text-sm font-semibold disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-600 hover:border-green-500/30 hover:text-green-600 transition-all text-sm font-semibold disabled:opacity-50"
           >
             {importing ? (
               <span className="w-4 h-4 border-2 border-green-500/30 border-t-green-500 rounded-full animate-spin" />
@@ -400,7 +400,7 @@ export default function CRM({ setSidebarOpen }) {
           </div>
         )}
 
-        <p className="text-xs text-zinc-600">รองรับไฟล์ .csv ขนาดไม่เกิน 5MB · ดาวน์โหลด template ด้านบนเพื่อดูรูปแบบที่ถูกต้อง</p>
+        <p className="text-xs text-gray-400">รองรับไฟล์ .csv ขนาดไม่เกิน 5MB · ดาวน์โหลด template ด้านบนเพื่อดูรูปแบบที่ถูกต้อง</p>
       </div>
 
       {/* Search + Stats + Tag Filters */}
@@ -425,7 +425,7 @@ export default function CRM({ setSidebarOpen }) {
         {/* Tag Filter Tabs */}
         {allTags.length > 1 && (
           <div className="flex items-center gap-2 flex-wrap">
-            <Filter className="w-3.5 h-3.5 text-zinc-600 flex-shrink-0" />
+            <Filter className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
             {allTags.map(tag => (
               <button
                 key={tag}
@@ -433,7 +433,7 @@ export default function CRM({ setSidebarOpen }) {
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                   tagFilter === tag
                     ? 'bg-green-500/20 text-green-600 border border-green-500/30'
-                    : 'text-gray-400 hover:text-zinc-300 hover:bg-white/[0.04] border border-transparent'
+                    : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50 border border-transparent'
                 }`}
               >
                 {tag === 'all' ? 'ทั้งหมด' : tag}
@@ -461,7 +461,7 @@ export default function CRM({ setSidebarOpen }) {
           </div>
           <div className="text-center">
             <p className="text-gray-500 font-semibold">{contacts.length === 0 ? 'ยังไม่มีรายชื่อ' : 'ไม่พบรายชื่อ'}</p>
-            <p className="text-zinc-600 text-sm mt-0.5">{contacts.length === 0 ? 'เพิ่มรายชื่อแรกหรือนำเข้า CSV' : 'ลองค้นหาด้วยคำอื่น'}</p>
+            <p className="text-gray-400 text-sm mt-0.5">{contacts.length === 0 ? 'เพิ่มรายชื่อแรกหรือนำเข้า CSV' : 'ลองค้นหาด้วยคำอื่น'}</p>
           </div>
           {contacts.length === 0 && (
             <button
@@ -474,9 +474,9 @@ export default function CRM({ setSidebarOpen }) {
           )}
         </div>
       ) : (
-        <div className="bg-gray-50 rounded-3xl border border-white/[0.06] overflow-hidden">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
           {/* Header */}
-          <div className="grid grid-cols-[1fr_1fr_1fr_auto_auto] sm:grid-cols-[1.5fr_1fr_1fr_1fr_auto] gap-4 px-5 py-3 border-b border-white/[0.06] text-xs font-bold text-gray-400 uppercase tracking-wider">
+          <div className="grid grid-cols-[1fr_1fr_1fr_auto_auto] sm:grid-cols-[1.5fr_1fr_1fr_1fr_auto] gap-4 px-5 py-3 border-b border-gray-100 text-xs font-bold text-gray-400 uppercase tracking-wider">
             <span className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5" />ชื่อ</span>
             <span className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />เบอร์</span>
             <span className="hidden sm:flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" />อีเมล</span>
@@ -488,12 +488,12 @@ export default function CRM({ setSidebarOpen }) {
           {filtered.map((contact, i) => (
             <div
               key={contact.id}
-              className={`grid grid-cols-[1fr_1fr_1fr_auto_auto] sm:grid-cols-[1.5fr_1fr_1fr_1fr_auto] gap-4 px-5 py-4 items-center hover:bg-white/[0.02] transition-colors group ${i < filtered.length - 1 ? 'border-b border-black/[0.05]' : ''}`}
+              className={`grid grid-cols-[1fr_1fr_1fr_auto_auto] sm:grid-cols-[1.5fr_1fr_1fr_1fr_auto] gap-4 px-5 py-4 items-center hover:bg-gray-50/50 transition-colors group ${i < filtered.length - 1 ? 'border-b border-black/[0.05]' : ''}`}
             >
               <div>
                 <p className="text-sm font-semibold text-gray-900">{contact.name}</p>
                 {contact.note && (
-                  <p className="text-xs text-zinc-600 flex items-center gap-1 mt-0.5">
+                  <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
                     <StickyNote className="w-3 h-3" />{contact.note}
                   </p>
                 )}
@@ -504,13 +504,13 @@ export default function CRM({ setSidebarOpen }) {
                 {contact.tag ? (
                   <span className="tag-chip text-xs">{contact.tag}</span>
                 ) : (
-                  <span className="text-zinc-700 text-xs">—</span>
+                  <span className="text-gray-400 text-xs">—</span>
                 )}
               </div>
               <button
                 onClick={() => setConfirmDeleteContact(contact)}
                 disabled={deleteId === contact.id}
-                className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-all disabled:opacity-50"
+                className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all disabled:opacity-50"
                 title="ลบรายชื่อ"
               >
                 {deleteId === contact.id
@@ -526,7 +526,7 @@ export default function CRM({ setSidebarOpen }) {
       {/* Add Contact Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-gray-50 rounded-3xl border border-black/[0.09] p-7 shadow-2xl animate-fade-in">
+          <div className="w-full max-w-md bg-gray-50 rounded-3xl border border-gray-200 p-7 shadow-2xl animate-fade-in">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-green-500/15 border border-green-500/20 flex items-center justify-center">
@@ -536,7 +536,7 @@ export default function CRM({ setSidebarOpen }) {
               </div>
               <button
                 onClick={() => { setShowAddModal(false); setAddForm(EMPTY_FORM); }}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-white/[0.06] transition-colors"
+                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -550,7 +550,7 @@ export default function CRM({ setSidebarOpen }) {
                   value={addForm.name}
                   onChange={e => setAddForm(f => ({ ...f, name: e.target.value }))}
                   placeholder="สมชาย ใจดี"
-                  className="w-full px-4 py-2.5 bg-white border border-black/[0.09] rounded-xl text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-green-500/40 transition-all"
+                  className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-green-500/40 transition-all"
                   autoFocus
                 />
               </div>
@@ -562,7 +562,7 @@ export default function CRM({ setSidebarOpen }) {
                     value={addForm.phone}
                     onChange={e => setAddForm(f => ({ ...f, phone: e.target.value }))}
                     placeholder="0812345678"
-                    className="w-full px-4 py-2.5 bg-white border border-black/[0.09] rounded-xl text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-green-500/40 transition-all"
+                    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-green-500/40 transition-all"
                   />
                 </div>
                 <div>
@@ -572,7 +572,7 @@ export default function CRM({ setSidebarOpen }) {
                     value={addForm.tag}
                     onChange={e => setAddForm(f => ({ ...f, tag: e.target.value }))}
                     placeholder="VIP, ลูกค้าเก่า..."
-                    className="w-full px-4 py-2.5 bg-white border border-black/[0.09] rounded-xl text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-green-500/40 transition-all"
+                    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-green-500/40 transition-all"
                   />
                 </div>
               </div>
@@ -583,7 +583,7 @@ export default function CRM({ setSidebarOpen }) {
                   value={addForm.email}
                   onChange={e => setAddForm(f => ({ ...f, email: e.target.value }))}
                   placeholder="email@example.com"
-                  className="w-full px-4 py-2.5 bg-white border border-black/[0.09] rounded-xl text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-green-500/40 transition-all"
+                  className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-green-500/40 transition-all"
                 />
               </div>
               <div>
@@ -593,7 +593,7 @@ export default function CRM({ setSidebarOpen }) {
                   onChange={e => setAddForm(f => ({ ...f, note: e.target.value }))}
                   placeholder="บันทึกเพิ่มเติม..."
                   rows={2}
-                  className="w-full px-4 py-2.5 bg-white border border-black/[0.09] rounded-xl text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-green-500/40 transition-all resize-none"
+                  className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:border-green-500/40 transition-all resize-none"
                 />
               </div>
 
@@ -601,7 +601,7 @@ export default function CRM({ setSidebarOpen }) {
                 <button
                   type="button"
                   onClick={() => { setShowAddModal(false); setAddForm(EMPTY_FORM); }}
-                  className="flex-1 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] text-gray-500 hover:text-gray-900 text-sm font-semibold transition-all"
+                  className="flex-1 py-2.5 rounded-xl bg-gray-50 border border-gray-100 text-gray-500 hover:text-gray-900 text-sm font-semibold transition-all"
                 >
                   ยกเลิก
                 </button>

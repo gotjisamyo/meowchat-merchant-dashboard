@@ -86,14 +86,14 @@ function ChatPanel({ handoff, onStatusUpdate, refreshTick }) {
   };
 
   return (
-    <div className="border-t border-white/[0.06] mt-3 pt-3 px-1">
+    <div className="border-t border-gray-100 mt-3 pt-3 px-1">
       <div className="h-56 overflow-y-auto space-y-2 pr-1 mb-3">
         {loadingMsgs ? (
           <div className="flex items-center justify-center h-full text-gray-400">
             <Loader2 className="w-4 h-4 animate-spin mr-2" /> กำลังโหลด...
           </div>
         ) : messages.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-zinc-600 text-xs">ยังไม่มีประวัติการสนทนา</div>
+          <div className="flex items-center justify-center h-full text-gray-400 text-xs">ยังไม่มีประวัติการสนทนา</div>
         ) : (
           messages.map((m, i) => {
             const isAdmin = m.role === 'admin';
@@ -104,9 +104,9 @@ function ChatPanel({ handoff, onStatusUpdate, refreshTick }) {
                     ? 'bg-green-500/20 text-green-100 rounded-br-sm'
                     : m.role === 'assistant'
                     ? 'bg-blue-500/15 text-blue-200 rounded-bl-sm'
-                    : 'bg-white/[0.07] text-zinc-200 rounded-bl-sm'
+                    : 'bg-gray-100 text-gray-700 rounded-bl-sm'
                 }`}>
-                  {m.role === 'assistant' && <div className="text-[10px] text-blue-400 mb-0.5 font-medium">🤖 AI</div>}
+                  {m.role === 'assistant' && <div className="text-[10px] text-green-600 mb-0.5 font-medium">🤖 AI</div>}
                   <p className="whitespace-pre-wrap break-words">{m.content}</p>
                   <div className="text-[10px] mt-0.5 opacity-50 text-right">{timeAgo(m.created_at)}</div>
                 </div>
@@ -125,7 +125,7 @@ function ChatPanel({ handoff, onStatusUpdate, refreshTick }) {
           onKeyDown={handleKey}
           placeholder="พิมพ์ข้อความถึงลูกค้า... (Enter ส่ง)"
           rows={2}
-          className="flex-1 bg-black/[0.03] border border-black/[0.09] rounded-xl px-3 py-2 text-xs text-gray-900 placeholder-gray-400 resize-none focus:outline-none focus:border-green-500/40 transition-colors"
+          className="flex-1 bg-black/[0.03] border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 placeholder-gray-400 resize-none focus:outline-none focus:border-green-500/40 transition-colors"
         />
         <button
           onClick={send}
@@ -266,7 +266,7 @@ export default function Handoff({ setSidebarOpen }) {
         <button
           onClick={() => botId && load(botId, true)}
           disabled={refreshing || loading}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-black/[0.09] hover:bg-black/[0.05] text-gray-500 hover:text-gray-900 text-sm font-semibold transition-all disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 hover:bg-gray-50 text-gray-500 hover:text-gray-900 text-sm font-semibold transition-all disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
           รีเฟรช
@@ -284,14 +284,14 @@ export default function Handoff({ setSidebarOpen }) {
       />
 
       {/* Usage Guide */}
-      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] overflow-hidden">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
         <button
           onClick={() => setShowGuide(v => !v)}
-          className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/[0.02] transition-colors"
+          className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50/50 transition-colors"
         >
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center">
-              <BookOpen className="w-4 h-4 text-blue-400" />
+            <div className="w-8 h-8 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center">
+              <BookOpen className="w-4 h-4 text-green-600" />
             </div>
             <div className="text-left">
               <p className="text-sm font-bold text-gray-900">Handoff คืออะไร? ใช้งานอย่างไร?</p>
@@ -304,7 +304,7 @@ export default function Handoff({ setSidebarOpen }) {
         </button>
 
         {showGuide && (
-          <div className="px-5 pb-6 border-t border-white/[0.06] pt-5 space-y-5">
+          <div className="px-5 pb-6 border-t border-gray-100 pt-5 space-y-5">
             <div className="p-4 rounded-2xl bg-green-500/8 border border-green-500/15">
               <p className="text-sm font-bold text-green-600 mb-1">Handoff คืออะไร?</p>
               <p className="text-xs text-gray-500 leading-relaxed">
@@ -315,13 +315,13 @@ export default function Handoff({ setSidebarOpen }) {
               <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-3">ขั้นตอนการใช้งาน</p>
               <div className="space-y-2">
                 {[
-                  { icon: <MessageSquare className="w-4 h-4 text-blue-400" />, color: 'bg-blue-500/10 border-blue-500/15', step: '1', title: 'ลูกค้าพิมพ์ขอคุยกับคน', desc: 'เช่น "ขอคุยคน", "อยากได้พนักงาน" — บอทจะสร้าง Handoff Request อัตโนมัติ' },
+                  { icon: <MessageSquare className="w-4 h-4 text-green-600" />, color: 'bg-blue-500/10 border-blue-500/15', step: '1', title: 'ลูกค้าพิมพ์ขอคุยกับคน', desc: 'เช่น "ขอคุยคน", "อยากได้พนักงาน" — บอทจะสร้าง Handoff Request อัตโนมัติ' },
                   { icon: <BellRing className="w-4 h-4 text-amber-400" />, color: 'bg-amber-500/10 border-amber-500/15', step: '2', title: 'แจ้งเตือน Real-time', desc: 'หน้านี้อัปเดตแบบ Real-time ไม่ต้องรีเฟรชเอง' },
                   { icon: <PhoneCall className="w-4 h-4 text-green-600" />, color: 'bg-green-500/10 border-green-500/15', step: '3', title: 'กด "คุย" เพื่อตอบในหน้านี้', desc: 'พิมพ์ข้อความและกด Enter — ข้อความจะส่งผ่าน LINE ถึงลูกค้าทันที' },
                   { icon: <UserCheck className="w-4 h-4 text-emerald-400" />, color: 'bg-emerald-500/10 border-emerald-500/15', step: '4', title: 'กด "ปิด" เมื่อเสร็จ', desc: 'ปิด Handoff เพื่อให้บอทกลับมาตอบอีกครั้ง' },
                 ].map((item) => (
                   <div key={item.step} className={`flex items-start gap-3 p-3.5 rounded-2xl border ${item.color}`}>
-                    <div className="w-7 h-7 rounded-lg bg-black/20 flex items-center justify-center flex-shrink-0 mt-0.5">{item.icon}</div>
+                    <div className="w-7 h-7 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0 mt-0.5">{item.icon}</div>
                     <div>
                       <p className="text-sm font-bold text-gray-900 mb-0.5">ขั้นตอนที่ {item.step}: {item.title}</p>
                       <p className="text-xs text-gray-400 leading-relaxed">{item.desc}</p>
@@ -345,7 +345,7 @@ export default function Handoff({ setSidebarOpen }) {
       <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:max-w-sm">
         <button
           onClick={() => setFilter(filter === 'waiting' ? 'all' : 'waiting')}
-          className={`bg-gray-50 rounded-2xl border p-4 flex items-center gap-3 transition-all ${filter === 'waiting' ? 'border-red-500/30' : 'border-white/[0.06] hover:border-black/[0.14]'}`}
+          className={`bg-gray-50 rounded-2xl border p-4 flex items-center gap-3 transition-all ${filter === 'waiting' ? 'border-red-500/30' : 'border-gray-100 hover:border-black/[0.14]'}`}
         >
           <div className="w-9 h-9 rounded-xl bg-red-500/15 border border-red-500/20 flex items-center justify-center">
             <AlertCircle className="w-4 h-4 text-red-400" />
@@ -357,7 +357,7 @@ export default function Handoff({ setSidebarOpen }) {
         </button>
         <button
           onClick={() => setFilter(filter === 'accepted' ? 'all' : 'accepted')}
-          className={`bg-gray-50 rounded-2xl border p-4 flex items-center gap-3 transition-all ${filter === 'accepted' ? 'border-green-500/30' : 'border-white/[0.06] hover:border-black/[0.14]'}`}
+          className={`bg-gray-50 rounded-2xl border p-4 flex items-center gap-3 transition-all ${filter === 'accepted' ? 'border-green-500/30' : 'border-gray-100 hover:border-black/[0.14]'}`}
         >
           <div className="w-9 h-9 rounded-xl bg-green-500/15 border border-green-500/20 flex items-center justify-center">
             <CheckCircle className="w-4 h-4 text-green-400" />
@@ -372,16 +372,16 @@ export default function Handoff({ setSidebarOpen }) {
       {/* Filter indicator */}
       {filter !== 'all' && (
         <div className="flex items-center gap-2">
-          <ListFilter className="w-3.5 h-3.5 text-zinc-600" />
+          <ListFilter className="w-3.5 h-3.5 text-gray-400" />
           <span className="text-xs text-gray-400">
             กรอง: <strong className="text-green-600">{filter === 'waiting' ? 'รอรับสาย' : 'กำลังคุย'}</strong>
           </span>
-          <button onClick={() => setFilter('all')} className="text-xs text-zinc-600 hover:text-gray-500 underline transition-colors">ล้าง</button>
+          <button onClick={() => setFilter('all')} className="text-xs text-gray-400 hover:text-gray-500 underline transition-colors">ล้าง</button>
         </div>
       )}
 
       {/* List */}
-      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] overflow-hidden">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <span className="w-6 h-6 border-2 border-green-500/30 border-t-green-500 rounded-full animate-spin" />
@@ -389,13 +389,13 @@ export default function Handoff({ setSidebarOpen }) {
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3 text-center px-6">
             <div className="w-16 h-16 rounded-3xl bg-green-500/8 border border-green-500/10 flex items-center justify-center">
-              <HeadphonesIcon className="w-8 h-8 text-zinc-700" />
+              <HeadphonesIcon className="w-8 h-8 text-gray-400" />
             </div>
             <div>
               <p className="text-gray-400 font-semibold">
                 {filter !== 'all' ? `ไม่มีลูกค้า${filter === 'waiting' ? 'รอรับสาย' : 'กำลังคุย'}` : 'ไม่มี Handoff Request ตอนนี้'}
               </p>
-              <p className="text-zinc-600 text-sm mt-0.5">เมื่อลูกค้าต้องการคุยกับคน จะแสดงที่นี่</p>
+              <p className="text-gray-400 text-sm mt-0.5">เมื่อลูกค้าต้องการคุยกับคน จะแสดงที่นี่</p>
             </div>
             {filter !== 'all' && (
               <button onClick={() => setFilter('all')} className="text-xs text-green-600 hover:text-green-500 font-semibold transition-colors">ดูทั้งหมด →</button>
@@ -426,32 +426,32 @@ export default function Handoff({ setSidebarOpen }) {
 
       {/* คุยเสร็จแล้ว */}
       {closedHandoffs.length > 0 && (
-        <div className="bg-gray-50 rounded-3xl border border-white/[0.06] overflow-hidden">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-black/[0.05] flex items-center gap-3">
             <div className="w-7 h-7 rounded-xl bg-zinc-500/15 border border-zinc-500/20 flex items-center justify-center">
               <CheckCircle className="w-3.5 h-3.5 text-gray-400" />
             </div>
             <p className="text-sm font-bold text-gray-500">คุยเสร็จแล้ว</p>
-            <span className="ml-auto text-xs text-zinc-600">{closedHandoffs.length} รายการ</span>
+            <span className="ml-auto text-xs text-gray-400">{closedHandoffs.length} รายการ</span>
           </div>
           <div className="divide-y divide-white/[0.04]">
             {closedHandoffs.map((h) => (
               <div key={h.id} className="flex items-center gap-4 px-5 py-3 opacity-60">
-                <div className="w-9 h-9 rounded-full bg-gray-50 border border-black/[0.05] flex items-center justify-center text-sm font-bold text-gray-400 flex-shrink-0">
+                <div className="w-9 h-9 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-sm font-bold text-gray-400 flex-shrink-0">
                   {h.avatar || <User className="w-4 h-4" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-gray-500 text-sm">{h.customerName}</p>
-                  <p className="text-zinc-600 text-xs truncate">{h.lastMessage}</p>
+                  <p className="text-gray-400 text-xs truncate">{h.lastMessage}</p>
                 </div>
-                <span className="text-xs text-zinc-600 flex-shrink-0">{h.time}</span>
+                <span className="text-xs text-gray-400 flex-shrink-0">{h.time}</span>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      <p className="text-center text-xs text-zinc-700">อัปเดต Real-time · กด "รีเฟรช" เพื่อดูล่าสุดทันที</p>
+      <p className="text-center text-xs text-gray-400">อัปเดต Real-time · กด "รีเฟรช" เพื่อดูล่าสุดทันที</p>
     </PageLayout>
   );
 }
@@ -461,8 +461,8 @@ function HandoffCard({ handoff, onAccept, onClose, onToggleChat, chatOpen, isLoa
   const waitTime = useWaitTime(handoff.createdAt);
 
   return (
-    <div className="flex items-start gap-4 px-5 py-4 hover:bg-white/[0.02] transition-colors">
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-500/20 border border-white/[0.06] flex items-center justify-center text-sm font-bold text-gray-900 flex-shrink-0 mt-0.5">
+    <div className="flex items-start gap-4 px-5 py-4 hover:bg-gray-50/50 transition-colors">
+      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-500/20 border border-gray-100 flex items-center justify-center text-sm font-bold text-gray-900 flex-shrink-0 mt-0.5">
         {handoff.avatar || <User className="w-4 h-4" />}
       </div>
 
@@ -477,7 +477,7 @@ function HandoffCard({ handoff, onAccept, onClose, onToggleChat, chatOpen, isLoa
         </div>
         <p className="text-gray-500 text-xs truncate mb-1.5">{handoff.lastMessage}</p>
         <div className="flex items-center gap-3 text-xs">
-          <span className="flex items-center gap-1 text-zinc-600"><Clock className="w-3 h-3" />{handoff.time}</span>
+          <span className="flex items-center gap-1 text-gray-400"><Clock className="w-3 h-3" />{handoff.time}</span>
           {waitTime && isWaiting && (
             <span className={`flex items-center gap-1 font-semibold ${
               waitTime.includes('ชม') ? 'text-red-400' : waitTime.includes('นาที') && parseInt(waitTime) >= 5 ? 'text-amber-400' : 'text-gray-400'
@@ -505,7 +505,7 @@ function HandoffCard({ handoff, onAccept, onClose, onToggleChat, chatOpen, isLoa
           className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
             chatOpen
               ? 'bg-green-500/20 text-green-600 border-green-500/30'
-              : 'bg-white/[0.04] text-gray-500 border-white/[0.06] hover:text-gray-900 hover:border-white/[0.15]'
+              : 'bg-gray-50 text-gray-500 border-gray-100 hover:text-gray-900 hover:border-white/[0.15]'
           }`}
         >
           <MessageSquare className="w-3.5 h-3.5" />
@@ -515,7 +515,7 @@ function HandoffCard({ handoff, onAccept, onClose, onToggleChat, chatOpen, isLoa
         <button
           onClick={onClose}
           disabled={isLoading}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-black/[0.05] text-gray-500 hover:text-gray-900 text-xs font-bold border border-white/[0.06] transition-all disabled:opacity-50"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gray-50 hover:bg-gray-50 text-gray-500 hover:text-gray-900 text-xs font-bold border border-gray-100 transition-all disabled:opacity-50"
         >
           {isLoading
             ? <span className="w-3.5 h-3.5 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />

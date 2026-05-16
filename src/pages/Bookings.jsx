@@ -8,7 +8,7 @@ const STATUSES = [
   { value: 'all',       label: 'ทั้งหมด' },
   { value: 'pending',   label: 'รอยืนยัน',  cls: 'bg-amber-500/15 border-amber-500/30 text-amber-300' },
   { value: 'confirmed', label: 'ยืนยันแล้ว', cls: 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300' },
-  { value: 'completed', label: 'เสร็จแล้ว',  cls: 'bg-blue-500/15 border-blue-500/30 text-blue-300' },
+  { value: 'completed', label: 'เสร็จแล้ว',  cls: 'bg-blue-500/15 border-blue-500/30 text-green-500' },
   { value: 'cancelled', label: 'ยกเลิก',     cls: 'bg-red-500/15 border-red-500/30 text-red-300' },
 ];
 
@@ -117,7 +117,7 @@ export default function Bookings({ setSidebarOpen }) {
         ].map(s => {
           const Icon = s.icon;
           return (
-            <div key={s.label} className="bg-gray-50 rounded-2xl border border-white/[0.06] p-4">
+            <div key={s.label} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
               <div className="flex items-center gap-2 mb-1">
                 <Icon className="w-4 h-4 text-gray-400" />
                 <span className="text-xs text-gray-400">{s.label}</span>
@@ -139,7 +139,7 @@ export default function Bookings({ setSidebarOpen }) {
                 ? s.value === 'all'
                   ? 'bg-green-500/15 border-green-500/30 text-green-500'
                   : s.cls
-                : 'bg-white/[0.03] border-white/[0.06] text-gray-400 hover:border-white/20'
+                : 'bg-gray-50 border-gray-100 text-gray-400 hover:border-green-500/30'
             }`}
           >
             {s.label}
@@ -166,7 +166,7 @@ export default function Bookings({ setSidebarOpen }) {
             const st = statusInfo(b.status);
             const isUpdating = updatingId === b.id;
             return (
-              <div key={b.id} className="bg-gray-50 rounded-2xl border border-white/[0.06] p-4 sm:p-5">
+              <div key={b.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                   {/* Info */}
                   <div className="flex-1 min-w-0">
@@ -174,7 +174,7 @@ export default function Bookings({ setSidebarOpen }) {
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${st.cls}`}>
                         {st.label}
                       </span>
-                      <span className="text-xs text-zinc-600">{formatDatetime(b.created_at)}</span>
+                      <span className="text-xs text-gray-400">{formatDatetime(b.created_at)}</span>
                     </div>
                     <p className="text-gray-900 font-semibold text-sm truncate">{b.service}</p>
                     {b.booking_datetime && (
@@ -190,7 +190,7 @@ export default function Bookings({ setSidebarOpen }) {
                       </div>
                     )}
                     {b.note && (
-                      <p className="mt-2 text-xs text-gray-400 bg-white/[0.03] rounded-lg px-3 py-2">
+                      <p className="mt-2 text-xs text-gray-400 bg-gray-50 rounded-lg px-3 py-2">
                         {b.note}
                       </p>
                     )}
@@ -221,7 +221,7 @@ export default function Bookings({ setSidebarOpen }) {
                     <button
                       onClick={() => handleStatus(b, 'completed')}
                       disabled={isUpdating}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-500/15 border border-blue-500/30 text-blue-400 hover:bg-blue-500/25 transition-colors disabled:opacity-50 flex-shrink-0"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-500/15 border border-blue-500/30 text-green-600 hover:bg-blue-500/25 transition-colors disabled:opacity-50 flex-shrink-0"
                     >
                       {isUpdating ? <Loader className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                       เสร็จสิ้น
@@ -259,7 +259,7 @@ function EmptyState({ isFiltered, onClear }) {
           ดูทั้งหมด →
         </button>
       ) : (
-        <p className="text-xs text-zinc-600 px-2 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+        <p className="text-xs text-gray-400 px-2 py-1.5 rounded-xl bg-gray-50 border border-white/[0.05]">
           💡 ตั้งค่าบอทให้รับนัดหมายในหน้า <span className="text-gray-500 font-semibold">ตั้งค่าบอท</span>
         </p>
       )}

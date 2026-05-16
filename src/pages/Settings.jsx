@@ -28,7 +28,7 @@ export default function Settings({ setSidebarOpen }) {
       setSidebarOpen={setSidebarOpen}
     >
       {/* Tab Bar */}
-      <div className="flex gap-1 p-1 bg-gray-50 rounded-2xl border border-white/[0.06] overflow-x-auto">
+      <div className="flex gap-1 p-1 bg-gray-50 rounded-2xl border border-gray-100 overflow-x-auto">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -40,7 +40,7 @@ export default function Settings({ setSidebarOpen }) {
                 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all flex-1 justify-center
                 ${isActive
                   ? 'bg-green-500/15 text-green-600 border border-green-500/20'
-                  : 'text-gray-400 hover:text-zinc-300 hover:bg-white/[0.04]'}
+                  : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}
               `}
             >
               <Icon className="w-4 h-4 flex-shrink-0" />
@@ -105,7 +105,7 @@ function ProfileTab() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
         {/* Avatar Card */}
         <div className="lg:col-span-1">
-          <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-4 sm:p-6 flex flex-col items-center gap-4 text-center">
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-4 sm:p-6 flex flex-col items-center gap-4 text-center">
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-green-600 to-green-400 flex items-center justify-center text-4xl font-bold text-gray-900 shadow-xl shadow-green-500/20">
               {profile.name?.charAt(0).toUpperCase() || 'M'}
             </div>
@@ -116,7 +116,7 @@ function ProfileTab() {
                 {user?.role || 'merchant'}
               </span>
             </div>
-            <div className="w-full pt-4 border-t border-white/[0.06] space-y-3 text-left">
+            <div className="w-full pt-4 border-t border-gray-100 space-y-3 text-left">
               <InfoRow label="อีเมล" value={profile.email || '-'} />
               <InfoRow label="เบอร์โทร" value={profile.phone || '-'} />
               <InfoRow label="บริษัท" value={profile.company || '-'} />
@@ -126,7 +126,7 @@ function ProfileTab() {
 
         {/* Form */}
         <div className="lg:col-span-2">
-          <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-9 h-9 rounded-xl bg-green-500/15 border border-green-500/20 flex items-center justify-center">
                 <User className="w-4 h-4 text-green-600" />
@@ -225,10 +225,10 @@ function NotificationsTab() {
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6 space-y-4">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-4">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center">
-            <Bell className="w-4 h-4 text-blue-400" />
+          <div className="w-9 h-9 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center">
+            <Bell className="w-4 h-4 text-green-600" />
           </div>
           <h2 className="text-lg font-bold text-gray-900">การแจ้งเตือน</h2>
         </div>
@@ -238,7 +238,7 @@ function NotificationsTab() {
         ) : (
           <div className="space-y-3">
             {items.map(({ key, label, desc }) => (
-              <div key={key} className="flex items-center justify-between p-4 rounded-2xl bg-white border border-white/[0.06]">
+              <div key={key} className="flex items-center justify-between p-4 rounded-2xl bg-white border border-gray-100">
                 <div>
                   <p className="text-sm font-semibold text-gray-900">{label}</p>
                   <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
@@ -369,7 +369,7 @@ function LineNotificationCard({ botId }) {
   if (phase === 'loading') return null;
 
   return (
-    <div className="mt-3 p-4 rounded-2xl bg-white border border-white/[0.06]">
+    <div className="mt-3 p-4 rounded-2xl bg-white border border-gray-100">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       {phase === 'unpaired' && (
@@ -394,13 +394,13 @@ function LineNotificationCard({ botId }) {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">รหัสของคุณ:</p>
-            <p className="text-xs text-zinc-600">หมดอายุใน {fmt(countdown)}</p>
+            <p className="text-xs text-gray-400">หมดอายุใน {fmt(countdown)}</p>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-2xl font-mono font-bold text-gray-900 tracking-widest">{code}</span>
             <button
               onClick={handleCopy}
-              className="p-2 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] transition-colors"
+              className="p-2 rounded-lg bg-gray-100 hover:bg-white/[0.1] transition-colors"
               title="คัดลอกรหัส"
             >
               {copied
@@ -409,7 +409,7 @@ function LineNotificationCard({ botId }) {
             </button>
           </div>
           <p className="text-xs text-gray-400">ส่งรหัสนี้ไปที่บอท LINE ของร้านคุณ</p>
-          <p className="text-xs text-zinc-600 flex items-center gap-1.5">
+          <p className="text-xs text-gray-400 flex items-center gap-1.5">
             <span className="w-3.5 h-3.5 border-2 border-zinc-600 border-t-green-400 rounded-full animate-spin inline-block" />
             กำลังรอการยืนยัน...
           </p>
@@ -486,26 +486,26 @@ function SecurityTab() {
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       <div className="space-y-5">
         {/* Public IP Info */}
-        <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-5 flex items-center justify-between">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-purple-500/15 border border-purple-500/20 flex items-center justify-center">
-              <Lock className="w-4 h-4 text-purple-400" />
+            <div className="w-9 h-9 rounded-xl bg-purple-500/15 border border-green-500/20 flex items-center justify-center">
+              <Lock className="w-4 h-4 text-green-600" />
             </div>
             <div>
               <p className="text-sm font-semibold text-gray-900">IP ปัจจุบันของคุณ</p>
               <p className="text-xs text-gray-400">Public IP address ที่ใช้เข้าถึงระบบ</p>
             </div>
           </div>
-          <span className="text-sm font-mono font-bold text-purple-300 bg-purple-500/10 border border-purple-500/20 px-3 py-1.5 rounded-xl">
+          <span className="text-sm font-mono font-bold text-green-500 bg-green-500/5 border border-green-500/20 px-3 py-1.5 rounded-xl">
             {publicIp ?? <span className="w-16 h-3 bg-gray-100 rounded animate-pulse inline-block" />}
           </span>
         </div>
 
         {/* Change Password */}
-        <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-9 h-9 rounded-xl bg-purple-500/15 border border-purple-500/20 flex items-center justify-center">
-            <Lock className="w-4 h-4 text-purple-400" />
+          <div className="w-9 h-9 rounded-xl bg-purple-500/15 border border-green-500/20 flex items-center justify-center">
+            <Lock className="w-4 h-4 text-green-600" />
           </div>
           <h2 className="text-lg font-bold text-gray-900">เปลี่ยนรหัสผ่าน</h2>
         </div>
@@ -521,7 +521,7 @@ function SecurityTab() {
                 placeholder="••••••••"
                 required
               />
-              <button type="button" onClick={() => togglePass('current')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-zinc-300 transition-colors">
+              <button type="button" onClick={() => togglePass('current')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
                 {showPass.current ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
@@ -538,7 +538,7 @@ function SecurityTab() {
                   placeholder="อย่างน้อย 6 ตัวอักษร"
                   required
                 />
-                <button type="button" onClick={() => togglePass('next')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-zinc-300 transition-colors">
+                <button type="button" onClick={() => togglePass('next')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
                   {showPass.next ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
@@ -553,7 +553,7 @@ function SecurityTab() {
                   placeholder="••••••••"
                   required
                 />
-                <button type="button" onClick={() => togglePass('confirm')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-zinc-300 transition-colors">
+                <button type="button" onClick={() => togglePass('confirm')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
                   {showPass.confirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
@@ -608,8 +608,8 @@ function SubscriptionTab() {
     trial: 'text-gray-500',
     starter: 'text-emerald-400',
     pro: 'text-green-600',
-    business: 'text-blue-400',
-    enterprise: 'text-purple-400',
+    business: 'text-green-600',
+    enterprise: 'text-green-600',
   };
   const planColor = planColors[currentPlanId] || 'text-gray-500';
 
@@ -617,14 +617,14 @@ function SubscriptionTab() {
     trial: <Zap className="w-5 h-5 text-gray-500" />,
     starter: <Zap className="w-5 h-5 text-emerald-400" />,
     pro: <Crown className="w-5 h-5 text-green-600" />,
-    business: <Zap className="w-5 h-5 text-blue-400" />,
-    enterprise: <Crown className="w-5 h-5 text-purple-400" />,
+    business: <Zap className="w-5 h-5 text-green-600" />,
+    enterprise: <Crown className="w-5 h-5 text-green-600" />,
   };
 
   return (
     <div className="space-y-5">
       {/* Current Plan */}
-      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
         <div className="flex items-center gap-3 mb-5">
           <div className="w-9 h-9 rounded-xl bg-green-500/15 border border-green-500/20 flex items-center justify-center">
             <CreditCard className="w-4 h-4 text-green-600" />
@@ -635,7 +635,7 @@ function SubscriptionTab() {
         {usage ? (
           <div className="space-y-4">
             {/* Plan Badge */}
-            <div className="flex items-center gap-3 p-4 rounded-2xl bg-white border border-white/[0.06]">
+            <div className="flex items-center gap-3 p-4 rounded-2xl bg-white border border-gray-100">
               {planIcons[currentPlanId]}
               <div className="flex-1">
                 <p className={`text-xl font-extrabold capitalize ${planColor}`}>{currentPlanId}</p>
@@ -645,7 +645,7 @@ function SubscriptionTab() {
                 <p className={`text-sm font-bold ${planColor}`}>
                   {usage.limit ? `${usage.limit.toLocaleString()} ข้อความ/เดือน` : 'ไม่จำกัด'}
                 </p>
-                <p className="text-xs text-zinc-600 mt-0.5">รีเซ็ต {usage.resetDate ?? '1 ของเดือน'}</p>
+                <p className="text-xs text-gray-400 mt-0.5">รีเซ็ต {usage.resetDate ?? '1 ของเดือน'}</p>
               </div>
             </div>
 
@@ -684,7 +684,7 @@ function SubscriptionTab() {
       {/* Link to full Subscription page */}
       <button
         onClick={() => navigate('/subscription')}
-        className="w-full bg-gray-50 rounded-3xl border border-white/[0.06] p-5 flex items-center justify-between hover:border-green-500/20 transition-colors group"
+        className="w-full bg-white rounded-3xl border border-gray-100 shadow-sm p-5 flex items-center justify-between hover:border-green-500/20 transition-colors group"
       >
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-green-500/10 border border-green-500/15 flex items-center justify-center">
@@ -695,7 +695,7 @@ function SubscriptionTab() {
             <p className="text-xs text-gray-400">ดูแผนทั้งหมด, ซื้อเครดิตเพิ่ม</p>
           </div>
         </div>
-        <ChevronRight className="w-5 h-5 text-zinc-600 group-hover:text-green-600 transition-colors" />
+        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-green-600 transition-colors" />
       </button>
     </div>
   );
@@ -705,7 +705,7 @@ function SubscriptionTab() {
 function FormField({ label, children }) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-zinc-300 mb-1.5">{label}</label>
+      <label className="block text-sm font-semibold text-gray-600 mb-1.5">{label}</label>
       {children}
     </div>
   );

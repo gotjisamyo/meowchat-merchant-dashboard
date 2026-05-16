@@ -19,7 +19,7 @@ const DAYS_TH = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
 
 function StatCard({ icon: Icon, label, value, sub, color = '#059669', loading }) {
   return (
-    <div className="bg-gray-50 rounded-2xl border border-white/[0.06] p-5 flex items-start gap-4">
+    <div className="bg-gray-50 rounded-2xl border border-gray-100 p-5 flex items-start gap-4">
       <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${color}18` }}>
         <Icon className="w-5 h-5" style={{ color }} />
       </div>
@@ -35,7 +35,7 @@ function StatCard({ icon: Icon, label, value, sub, color = '#059669', loading })
 function CustomTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-[#1A1A26] border border-black/[0.09] rounded-xl p-3 text-xs shadow-xl">
+    <div className="bg-[#1A1A26] border border-gray-200 rounded-xl p-3 text-xs shadow-xl">
       <p className="text-gray-500 font-semibold mb-2">{label}</p>
       {payload.map((p) => (
         <p key={p.dataKey} style={{ color: p.color }} className="font-bold">
@@ -131,7 +131,7 @@ export default function Analytics({ setSidebarOpen }) {
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
                 days === d
                   ? 'bg-green-500/20 text-green-600 border border-green-500/30'
-                  : 'text-gray-400 hover:text-zinc-300 border border-transparent'
+                  : 'text-gray-400 hover:text-gray-600 border border-transparent'
               }`}
             >
               {DAYS_LABEL[d]}
@@ -140,7 +140,7 @@ export default function Analytics({ setSidebarOpen }) {
           <button
             onClick={handleExport}
             disabled={loading || !botId || !isAdvanced}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-gray-900 bg-black/3 hover:bg-black/5 transition-colors border border-black/[0.09] disabled:opacity-40"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-gray-900 bg-black/3 hover:bg-black/5 transition-colors border border-gray-200 disabled:opacity-40"
           >
             <Download className="w-3.5 h-3.5" />
             <span className="hidden xl:inline">Export CSV</span>
@@ -148,7 +148,7 @@ export default function Analytics({ setSidebarOpen }) {
           <button
             onClick={handleRefresh}
             disabled={loading || !botId}
-            className="p-2 rounded-lg text-gray-400 hover:text-zinc-300 hover:bg-black/[0.03] transition-colors border border-white/[0.06] disabled:opacity-40"
+            className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-black/[0.03] transition-colors border border-gray-100 disabled:opacity-40"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -171,17 +171,17 @@ export default function Analytics({ setSidebarOpen }) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-6">
-        <div className="bg-gray-50 rounded-2xl border border-white/[0.06] p-5">
+        <div className="bg-gray-50 rounded-2xl border border-gray-100 p-5">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">ช่วงพีคสุด</p>
           <p className="text-xl font-extrabold text-gray-900">{loading ? '—' : peakSummary?.bestHour || '—'}</p>
           <p className="text-xs text-gray-400 mt-1">{peakSummary?.bestDay ? `${peakSummary.bestDay} • ${peakSummary.peakLoad} แชทในชั่วโมงพีค` : 'รอข้อมูลช่วงเวลาที่ลูกค้าทักเยอะที่สุด'}</p>
         </div>
-        <div className="bg-gray-50 rounded-2xl border border-white/[0.06] p-5">
+        <div className="bg-gray-50 rounded-2xl border border-gray-100 p-5">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Intent เด่น</p>
           <p className="text-xl font-extrabold text-gray-900">{loading ? '—' : peakSummary?.topIntent || intents[0]?.name || '—'}</p>
           <p className="text-xs text-gray-400 mt-1">หมวดคำถามที่เข้ามาหนักสุดในช่วงนี้</p>
         </div>
-        <div className="bg-gray-50 rounded-2xl border border-white/[0.06] p-5">
+        <div className="bg-gray-50 rounded-2xl border border-gray-100 p-5">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">ลิงก์ทำเงินสุด</p>
           <p className="text-xl font-extrabold text-gray-900 truncate">{loading ? '—' : topLinks[0]?.url?.replace('https://', '') || '—'}</p>
           <p className="text-xs text-gray-400 mt-1">{topLinks[0] ? `${topLinks[0].clicks} คลิก • ${topLinks[0].conversions || 0} conversion` : 'รอข้อมูลลิงก์ที่ลูกค้าคลิกมากที่สุด'}</p>
@@ -189,15 +189,15 @@ export default function Analytics({ setSidebarOpen }) {
       </div>
 
       {/* Daily Trend Chart */}
-      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6 mb-4">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 mb-4">
         <div className="flex items-center gap-2 mb-5">
           <TrendingUp className="w-5 h-5 text-green-600" />
           <h2 className="text-base font-bold text-gray-900">แนวโน้มรายวัน</h2>
-          <span className="text-xs text-zinc-600 ml-1">({days} วันล่าสุด)</span>
+          <span className="text-xs text-gray-400 ml-1">({days} วันล่าสุด)</span>
         </div>
 
         {loading || chartData.length === 0 ? (
-          <div className="h-48 flex items-center justify-center text-zinc-600 text-sm">
+          <div className="h-48 flex items-center justify-center text-gray-400 text-sm">
             {loading ? 'กำลังโหลด...' : 'ยังไม่มีข้อมูล'}
           </div>
         ) : (
@@ -248,9 +248,9 @@ export default function Analytics({ setSidebarOpen }) {
       {/* Advanced Chart Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Advanced Top Keywords */}
-        <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6 relative overflow-hidden flex flex-col min-h-[300px]">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 relative overflow-hidden flex flex-col min-h-[300px]">
           <div className="flex items-center gap-2 mb-5">
-            <BarChart2 className="w-5 h-5 text-purple-400" />
+            <BarChart2 className="w-5 h-5 text-green-600" />
             <h2 className="text-base font-bold text-gray-900">ลูกค้าถามอะไรบ่อย</h2>
           </div>
 
@@ -262,7 +262,7 @@ export default function Analytics({ setSidebarOpen }) {
                   const color = COLORS[i % COLORS.length];
                   return (
                     <div key={word} className="flex items-center gap-3">
-                      <span className="w-6 text-right text-[10px] font-bold text-zinc-600 flex-shrink-0">{i + 1}</span>
+                      <span className="w-6 text-right text-[10px] font-bold text-gray-400 flex-shrink-0">{i + 1}</span>
                       <div className="flex-1 flex items-center gap-2.5">
                         <div className="h-6 rounded-lg flex items-center px-2.5 transition-all w-full" style={{ maxWidth: `${Math.max(pct, 15)}%`, background: `${color}20`, border: `1px solid ${color}30` }}>
                           <span className="text-xs font-bold truncate" style={{ color }}>{word}</span>
@@ -273,7 +273,7 @@ export default function Analytics({ setSidebarOpen }) {
                   );
                 })
               ) : (
-                <p className="text-zinc-600 text-sm text-center py-6">ยังไม่มีข้อมูล</p>
+                <p className="text-gray-400 text-sm text-center py-6">ยังไม่มีข้อมูล</p>
               )}
             </div>
           </div>
@@ -293,7 +293,7 @@ export default function Analytics({ setSidebarOpen }) {
         </div>
 
         {/* Intent Distribution */}
-        <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6 relative overflow-hidden flex flex-col min-h-[300px]">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 relative overflow-hidden flex flex-col min-h-[300px]">
           <div className="flex items-center gap-2 mb-5">
             <PieChartIcon className="w-5 h-5 text-emerald-400" />
             <h2 className="text-base font-bold text-gray-900">สัดส่วนหมวดหมู่คำถาม (Intents)</h2>
@@ -337,7 +337,7 @@ export default function Analytics({ setSidebarOpen }) {
                     </div>
                   </>
                 ) : (
-                  <p className="text-zinc-600 text-sm text-center">ยังไม่มีข้อมูล</p>
+                  <p className="text-gray-400 text-sm text-center">ยังไม่มีข้อมูล</p>
                 )}
              </div>
           </div>
@@ -358,7 +358,7 @@ export default function Analytics({ setSidebarOpen }) {
       </div>
 
       {/* Heatmap Section */}
-      <div className="mt-6 bg-gray-50 rounded-3xl border border-white/[0.06] p-6 relative overflow-hidden min-h-[250px] mb-6">
+      <div className="mt-6 bg-white rounded-3xl border border-gray-100 shadow-sm p-6 relative overflow-hidden min-h-[250px] mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
            <div className="flex items-center gap-2">
              <Map className="w-5 h-5 text-[#059669]" />
@@ -367,7 +367,8 @@ export default function Analytics({ setSidebarOpen }) {
            {isAdvanced && <p className="text-[#059669] text-xs font-bold bg-[#059669]/10 px-3 py-1 rounded-full self-start sm:self-auto">สีเข้ม = ทักเยอะ</p>}
         </div>
 
-        <div className={`overflow-x-auto transition-all ${!isAdvanced ? 'blur-md opacity-50 pointer-events-none' : ''}`}>
+        <div className={`relative overflow-x-auto transition-all ${!isAdvanced ? 'blur-md opacity-50 pointer-events-none' : ''}`}>
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white/80 to-transparent z-10 sm:hidden" />
           <div className="min-w-[600px] flex">
             {/* Y Axis - Days */}
             <div className="flex flex-col justify-between pt-5 pb-2 pr-3 border-r border-white/10">
@@ -419,9 +420,9 @@ export default function Analytics({ setSidebarOpen }) {
       {/* Advanced Performance & Insights */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Response Time */}
-        <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6 relative overflow-hidden flex flex-col">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 relative overflow-hidden flex flex-col">
           <div className="flex items-center gap-2 mb-5">
-            <Timer className="w-5 h-5 text-blue-400" />
+            <Timer className="w-5 h-5 text-green-600" />
             <h2 className="text-base font-bold text-gray-900">ความเร็วในการตอบกลับ</h2>
           </div>
           <div className={`flex-1 flex flex-col justify-center space-y-6 transition-all ${!isAdvanced ? 'blur-md opacity-50 pointer-events-none' : ''}`}>
@@ -429,12 +430,12 @@ export default function Analytics({ setSidebarOpen }) {
               <div>
                 <p className="text-gray-500 text-sm mb-1">AI ทำได้</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-extrabold text-blue-400">{stats?.aiTime > 0 ? stats.aiTime : '—'}</span>
-                  <span className="text-sm text-blue-400/80 font-bold">วินาที</span>
+                  <span className="text-3xl font-extrabold text-green-600">{stats?.aiTime > 0 ? stats.aiTime : '—'}</span>
+                  <span className="text-sm text-green-600/80 font-bold">วินาที</span>
                 </div>
               </div>
               <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <Zap className="w-5 h-5 text-blue-400" />
+                <Zap className="w-5 h-5 text-green-600" />
               </div>
             </div>
             <div className="h-px w-full bg-black/3" />
@@ -442,9 +443,9 @@ export default function Analytics({ setSidebarOpen }) {
               <div>
                 <p className="text-gray-400 text-sm mb-1">เทียบกับแอดมินคน</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-xl font-bold text-zinc-300">{Math.floor((stats?.humanTime ?? 0) / 60)}</span>
+                  <span className="text-xl font-bold text-gray-600">{Math.floor((stats?.humanTime ?? 0) / 60)}</span>
                   <span className="text-xs text-gray-400">นาที</span>
-                  <span className="text-xl font-bold text-zinc-300 ml-1">{(stats?.humanTime ?? 0) % 60}</span>
+                  <span className="text-xl font-bold text-gray-600 ml-1">{(stats?.humanTime ?? 0) % 60}</span>
                   <span className="text-xs text-gray-400">วิ</span>
                 </div>
               </div>
@@ -465,7 +466,7 @@ export default function Analytics({ setSidebarOpen }) {
         </div>
 
         {/* Sentiment Breakdown */}
-        <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6 relative overflow-hidden flex flex-col">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 relative overflow-hidden flex flex-col">
           <div className="flex items-center gap-2 mb-5">
             <Smile className="w-5 h-5 text-emerald-400" />
             <h2 className="text-base font-bold text-gray-900">อารมณ์ของลูกค้าในแชท</h2>
@@ -478,7 +479,7 @@ export default function Analytics({ setSidebarOpen }) {
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2 text-zinc-300"><Smile className="w-4 h-4 text-emerald-400" /> พอใจมาก</div>
+                <div className="flex items-center gap-2 text-gray-600"><Smile className="w-4 h-4 text-emerald-400" /> พอใจมาก</div>
                 <span className="font-bold text-gray-900">{Math.round((sentiment.happy / totalSentiment) * 100)}%</span>
               </div>
               <div className="flex items-center justify-between text-sm">
@@ -503,14 +504,14 @@ export default function Analytics({ setSidebarOpen }) {
         </div>
 
         {/* Top Links Clicked */}
-        <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6 relative overflow-hidden flex flex-col">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 relative overflow-hidden flex flex-col">
           <div className="flex items-center gap-2 mb-5">
             <LinkIcon className="w-5 h-5 text-pink-400" />
             <h2 className="text-base font-bold text-gray-900">ลิงก์ที่ถูกคลิกมากที่สุด</h2>
           </div>
           <div className={`flex-1 space-y-4 py-2 transition-all ${!isAdvanced ? 'blur-md opacity-50 pointer-events-none' : ''}`}>
             {topLinks.length > 0 ? topLinks.map((link, idx) => (
-              <div key={idx} className="flex flex-col gap-1.5 p-3 rounded-xl bg-white/[0.02] border border-black/[0.05]">
+              <div key={idx} className="flex flex-col gap-1.5 p-3 rounded-xl bg-gray-50/50 border border-gray-100">
                 <p className="text-xs font-medium text-gray-900 truncate">{link.url}</p>
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-gray-400">คลิกเข้าดู <span className="font-bold text-pink-400">{link.clicks}</span> ครั้ง</span>
@@ -518,7 +519,7 @@ export default function Analytics({ setSidebarOpen }) {
                 </div>
               </div>
             )) : (
-              <p className="text-zinc-600 text-sm text-center py-6">ยังไม่มีข้อมูล</p>
+              <p className="text-gray-400 text-sm text-center py-6">ยังไม่มีข้อมูล</p>
             )}
           </div>
           {!isAdvanced && (
@@ -533,7 +534,7 @@ export default function Analytics({ setSidebarOpen }) {
         </div>
       </div>
 
-      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6 relative overflow-hidden mb-6">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 relative overflow-hidden mb-6">
         <div className="flex items-center gap-2 mb-5">
           <Clock className="w-5 h-5 text-cyan-400" />
           <h2 className="text-base font-bold text-gray-900">ตัวอย่างคำถามล่าสุด</h2>
@@ -547,21 +548,21 @@ export default function Analytics({ setSidebarOpen }) {
               angry: 'text-rose-200 bg-rose-500/10 border-rose-500/20',
             };
             return (
-              <div key={`${sample.customerName}-${index}`} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+              <div key={`${sample.customerName}-${index}`} className="rounded-2xl border border-gray-100 bg-gray-50/50 p-4">
                 <div className="flex items-center justify-between gap-3 mb-2">
                   <div>
                     <p className="text-sm font-bold text-gray-900">{sample.customerName}</p>
                     <p className="text-xs text-gray-400">{sample.intent || 'ไม่ระบุ intent'}</p>
                   </div>
-                  <span className={`text-[10px] px-2 py-1 rounded-full border ${moodStyles[sample.mood] || 'text-zinc-300 bg-black/3 border-white/10'}`}>
+                  <span className={`text-[10px] px-2 py-1 rounded-full border ${moodStyles[sample.mood] || 'text-gray-600 bg-black/3 border-white/10'}`}>
                     {sample.mood === 'happy' ? 'พอใจ' : sample.mood === 'angry' ? 'เร่งด่วน' : 'ทั่วไป'}
                   </span>
                 </div>
-                <p className="text-sm text-zinc-200 leading-6">“{sample.text}”</p>
+                <p className="text-sm text-gray-700 leading-6">“{sample.text}”</p>
               </div>
             );
           }) : (
-            <p className="text-zinc-600 text-sm text-center py-6 md:col-span-2">ยังไม่มีข้อมูล</p>
+            <p className="text-gray-400 text-sm text-center py-6 md:col-span-2">ยังไม่มีข้อมูล</p>
           )}
         </div>
         {!isAdvanced && (

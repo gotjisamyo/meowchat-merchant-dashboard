@@ -460,14 +460,19 @@ export const billingAPI = {
       return [];
     }
   },
-  checkout: async ({ planId, shopId }) => {
+  checkout: async ({ planId, shopId, billingPeriod = 'monthly' }) => {
     const origin = window.location.origin;
     const res = await api.post('/api/billing/checkout', {
       planId,
       shopId,
-      successUrl: `${origin}/subscription?payment=success`,
-      cancelUrl: `${origin}/subscription?payment=cancel`,
+      billingPeriod,
+      successUrl: `${origin}/billing/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancelUrl: `${origin}/billing/cancel`,
     });
+    return res.data?.data;
+  },
+  checkoutFromPending: async () => {
+    const res = await api.post('/api/billing/checkout-from-pending');
     return res.data?.data;
   },
 };
@@ -928,6 +933,46 @@ export const bookingsAPI = {
   },
   updateStatus: async (bookingId, status) => {
     const res = await api.put(`/api/bookings/${bookingId}/status`, { status });
+    return res.data;
+  },
+};
+
+// ── Inventory ────────────────────────────────────────────────────────────────
+
+export const inventoryAPI = {
+  getStock: async (shopId) => {
+    try {
+      const res = await api.get(`/api/inventory/${shopId}`);
+      return Array.isArray(res.data) ? res.data : [];
+    } catch { return []; }
+  },
+  getMovements: async (shopId, { productId, limit = 50 } = {}) => {
+    try {
+      const params = new URLSearchParams();
+      if (productId) params.set('productId', productId);
+      params.set('limit', limit);
+      const res = await api.get(`/api/inventory/${shopId}/movements?${params}`);
+      return Array.isArray(res.data) ? res.data : [];
+    } catch { return []; }
+  },
+  getAlerts: async (shopId) => {
+    try {
+      const res = await api.get(`/api/inventory/${shopId}/alerts`);
+      return Array.isArray(res.data) ? res.data : [];
+    } catch { return []; }
+  },
+  getSummary: async (shopId) => {
+    try {
+      const res = await api.get(`/api/inventory/${shopId}/summary`);
+      return res.data ?? {};
+    } catch { return {}; }
+  },
+  markAlertRead: async (alertId) => {
+    const res = await api.put(`/api/inventory/alerts/${alertId}/read`);
+    return res.data;
+  },
+  adjustStock: async (shopId, productId, adjustment, notes) => {
+    const res = await api.post('/api/inventory/adjustment', { shopId, productId, adjustment, notes });
     return res.data;
   },
 };

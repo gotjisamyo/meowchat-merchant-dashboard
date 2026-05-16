@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Bot, BookOpen, MessageSquare, CreditCard, User,
-  ChevronLeft, ChevronRight, Cat, LogOut, Loader2, PhoneCall, Gift, Megaphone, BarChart2, Users, Zap, HelpCircle, Package, ShoppingCart, Calendar,
+  ChevronLeft, ChevronRight, Cat, LogOut, Loader2, PhoneCall, Gift, Megaphone, BarChart2, Users, Zap, HelpCircle, Package, ShoppingCart, Calendar, Boxes,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { handoffAPI, billingAPI, botAPI, ordersAPI, bookingsAPI } from '../services/api';
@@ -19,9 +19,10 @@ const menuGroups = [
   {
     label: 'การขาย',
     items: [
-      { path: '/catalog',  id: 'catalog',  label: 'รายการสินค้า', icon: Package },
-      { path: '/orders',   id: 'orders',   label: 'ออเดอร์',      icon: ShoppingCart, badgeKey: 'orders' },
-      { path: '/bookings', id: 'bookings', label: 'นัดหมาย',      icon: Calendar,     badgeKey: 'bookings' },
+      { path: '/catalog',   id: 'catalog',   label: 'รายการสินค้า', icon: Package },
+      { path: '/inventory', id: 'inventory', label: 'คลังสินค้า',   icon: Boxes },
+      { path: '/orders',    id: 'orders',    label: 'ออเดอร์',      icon: ShoppingCart, badgeKey: 'orders' },
+      { path: '/bookings',  id: 'bookings',  label: 'นัดหมาย',      icon: Calendar,     badgeKey: 'bookings' },
     ],
   },
   {
@@ -164,13 +165,13 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
         <div className="flex items-center gap-1">
           <button
             onClick={toggleCollapse}
-            className="hidden lg:flex p-2 hover:bg-white/[0.06] rounded-xl transition-colors text-gray-400 hover:text-gray-900"
+            className="hidden lg:flex p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-400 hover:text-gray-900"
           >
             {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
           <button
             onClick={onClose}
-            className="lg:hidden p-2 hover:bg-white/[0.06] rounded-xl transition-colors text-gray-400 hover:text-gray-900"
+            className="lg:hidden p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-400 hover:text-gray-900"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -182,12 +183,12 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
         {menuGroups.map((group, groupIdx) => (
           <div key={group.label}>
             {!isCollapsed && (
-              <p className={`px-4 pb-2 text-[10px] font-bold text-zinc-600 uppercase tracking-[3px] ${groupIdx > 0 ? 'pt-2' : ''}`}>
+              <p className={`px-4 pb-2 text-[10px] font-bold text-gray-400 uppercase tracking-[3px] ${groupIdx > 0 ? 'pt-2' : ''}`}>
                 {group.label}
               </p>
             )}
             {isCollapsed && groupIdx > 0 && (
-              <div className="mx-auto w-6 h-px bg-white/[0.06] mb-3" />
+              <div className="mx-auto w-6 h-px bg-gray-100 mb-3" />
             )}
             <div className="space-y-1">
               {group.items.map((item) => {
@@ -208,7 +209,7 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
                     title={isCollapsed ? item.label : undefined}
                     className={`
                       w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 group relative
-                      ${isActive ? 'text-gray-900' : 'text-gray-400 hover:text-zinc-300 hover:bg-white/[0.03]'}
+                      ${isActive ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'}
                       ${isCollapsed ? 'justify-center px-0' : ''}
                     `}
                     style={isActive ? {
@@ -260,8 +261,8 @@ function SidebarContent({ menuItems, isCollapsed, toggleCollapse, onClose }) {
                 <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide
                   ${usagePlan === 'pro' ? 'bg-green-500/20 text-green-600 border border-green-500/30'
                   : usagePlan === 'starter' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                  : usagePlan === 'business' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                  : usagePlan === 'enterprise' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                  : usagePlan === 'business' ? 'bg-green-500/10 text-green-600 border border-blue-500/30'
+                  : usagePlan === 'enterprise' ? 'bg-green-500/10 text-green-600 border border-green-500/20'
                   : 'bg-zinc-500/20 text-gray-500 border border-zinc-500/30'}`}
                 >
                   {usagePlan}

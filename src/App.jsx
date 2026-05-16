@@ -24,6 +24,9 @@ import FAQ from './pages/FAQ';
 import Catalog from './pages/Catalog';
 import Orders from './pages/Orders';
 import Bookings from './pages/Bookings';
+import Inventory from './pages/Inventory';
+import BillingSuccess from './pages/BillingSuccess';
+import BillingCancel from './pages/BillingCancel';
 
 function MerchantLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -54,6 +57,8 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/billing/success" element={<BillingSuccess />} />
+          <Route path="/billing/cancel" element={<BillingCancel />} />
 
           {/* Protected layout */}
           <Route
@@ -81,6 +86,7 @@ export default function App() {
                       <Route path="/catalog" element={<Catalog setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/orders" element={<Orders setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/bookings" element={<Bookings setSidebarOpen={setSidebarOpen} />} />
+                      <Route path="/inventory" element={<Inventory setSidebarOpen={setSidebarOpen} />} />
                       <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                   )}

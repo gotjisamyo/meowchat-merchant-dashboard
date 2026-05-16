@@ -164,18 +164,18 @@ export default function Dashboard({ setSidebarOpen }) {
                     step.done
                       ? 'bg-emerald-500/5 border border-emerald-500/15'
                       : step.link
-                      ? 'bg-black/20 border border-black/[0.05] cursor-pointer hover:border-green-500/20'
-                      : 'bg-black/20 border border-black/[0.05]'
+                      ? 'bg-gray-50 border border-gray-100 cursor-pointer hover:border-green-500/20'
+                      : 'bg-gray-50 border border-gray-100'
                   }`}
                 >
                   {step.done
                     ? <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
-                    : <Circle className="w-5 h-5 text-zinc-600 flex-shrink-0" />}
+                    : <Circle className="w-5 h-5 text-gray-400 flex-shrink-0" />}
                   <span className={`text-sm font-semibold ${step.done ? 'text-emerald-400 line-through opacity-60' : 'text-gray-900'}`}>
                     {step.label}
                   </span>
                   {!step.done && step.link && (
-                    <ChevronRight className="w-4 h-4 text-zinc-600 ml-auto" />
+                    <ChevronRight className="w-4 h-4 text-gray-400 ml-auto" />
                   )}
                 </div>
               ))}
@@ -196,8 +196,8 @@ export default function Dashboard({ setSidebarOpen }) {
         <StatCard
           label="บทสนทนาทั้งหมด"
           value={loading ? '...' : (kpi?.totalConversations ?? 0).toLocaleString()}
-          icon={<Users className="w-5 h-5 text-blue-400" />}
-          color="from-blue-500/15 to-blue-500/5"
+          icon={<Users className="w-5 h-5 text-green-600" />}
+          color="from-green-500/15 to-green-500/5"
           delay="delay-200"
         />
         <StatCard
@@ -239,7 +239,7 @@ export default function Dashboard({ setSidebarOpen }) {
       {/* Orders Stats Row */}
       {orders.length > 0 && (
         <div
-          className="bg-gray-50 rounded-3xl border border-white/[0.06] p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 cursor-pointer hover:border-green-500/20 transition-colors"
+          className="bg-gray-50 rounded-3xl border border-gray-100 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 cursor-pointer hover:border-green-500/20 transition-colors"
           onClick={() => navigate('/orders')}
         >
           <div className="flex items-center gap-3 flex-shrink-0">
@@ -251,7 +251,7 @@ export default function Dashboard({ setSidebarOpen }) {
               <p className="text-sm font-bold text-gray-900">{loading ? '...' : `${orders.length} รายการ`}</p>
             </div>
           </div>
-          <div className="w-px h-10 bg-white/[0.06] hidden sm:block" />
+          <div className="w-px h-10 bg-gray-200 hidden sm:block" />
           <div className="flex gap-6 flex-wrap">
             <div>
               <p className="text-xs text-gray-400 mb-0.5">รอดำเนินการ</p>
@@ -278,14 +278,14 @@ export default function Dashboard({ setSidebarOpen }) {
               {pendingOrders.length} รอยืนยัน
             </div>
           )}
-          <ChevronRight className="w-4 h-4 text-zinc-600 hidden sm:block flex-shrink-0" />
+          <ChevronRight className="w-4 h-4 text-gray-400 hidden sm:block flex-shrink-0" />
         </div>
       )}
 
       {/* Main Grid: Usage + Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6">
         {/* Usage Card */}
-        <div className="lg:col-span-1 bg-gray-50 rounded-3xl border border-white/[0.06] p-4 sm:p-6 flex flex-col gap-5">
+        <div className="lg:col-span-1 bg-gray-50 rounded-3xl border border-gray-100 p-4 sm:p-6 flex flex-col gap-5">
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-xl font-bold text-gray-900">การใช้งานเดือนนี้</h2>
@@ -331,14 +331,14 @@ export default function Dashboard({ setSidebarOpen }) {
         </div>
 
         {/* Weekly Messages Chart */}
-        <div className="lg:col-span-2 bg-gray-50 rounded-3xl border border-white/[0.06] p-4 sm:p-6">
+        <div className="lg:col-span-2 bg-gray-50 rounded-3xl border border-gray-100 p-4 sm:p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-1">ข้อความรายสัปดาห์</h2>
           <p className="text-gray-400 text-sm mb-5">7 วันที่ผ่านมา</p>
           {!loading && !weeklyHasData ? (
             <div className="h-[200px] flex flex-col items-center justify-center gap-3 text-center">
               <span className="text-5xl">📈</span>
-              <p className="text-zinc-300 text-sm font-bold">กราฟกำลังรอข้อมูลจากคุณ</p>
-              <p className="text-zinc-600 text-xs leading-relaxed">เมื่อลูกค้าส่งข้อความมาบน LINE OA<br/>กราฟจะแสดงสถิติรายวันที่นี่</p>
+              <p className="text-gray-500 text-sm font-bold">กราฟกำลังรอข้อมูลจากคุณ</p>
+              <p className="text-gray-400 text-xs leading-relaxed">เมื่อลูกค้าส่งข้อความมาบน LINE OA<br/>กราฟจะแสดงสถิติรายวันที่นี่</p>
               <button
                 onClick={() => navigate('/bot')}
                 className="mt-1 px-4 py-2 rounded-xl bg-green-500/15 border border-green-500/30 text-green-600 text-xs font-bold hover:bg-green-500/25 transition-colors"
@@ -397,12 +397,12 @@ export default function Dashboard({ setSidebarOpen }) {
             detail={loading ? '...' : `${(kpi?.totalConversations ?? 0) - (kpi?.escalated ?? 0)} บทสนทนา`}
           />
           {/* Active Today */}
-          <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6 flex flex-col gap-4">
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 flex flex-col gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center">
-                <MessageSquare className="w-4 h-4 text-blue-400" />
+              <div className="w-8 h-8 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center">
+                <MessageSquare className="w-4 h-4 text-green-600" />
               </div>
-              <span className="text-sm font-semibold text-zinc-300">บทสนทนาวันนี้</span>
+              <span className="text-sm font-semibold text-gray-700">บทสนทนาวันนี้</span>
             </div>
             <div>
               <p className="text-4xl font-extrabold text-gray-900 tracking-tight">
@@ -443,20 +443,20 @@ export default function Dashboard({ setSidebarOpen }) {
               ลองดูว่าคุณจะประหยัดได้แค่ไหนถ้ามี <strong className="text-gray-900">500 ข้อความ/เดือน</strong>
             </p>
             <div className="grid grid-cols-3 gap-3 w-full">
-              <div className="bg-black/30 rounded-2xl p-4 text-center border border-black/[0.05]">
+              <div className="bg-white rounded-2xl p-4 text-center border border-gray-100 shadow-sm">
                 <p className="text-3xl font-extrabold text-green-600/60 mb-1">500</p>
                 <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">ข้อความ/เดือน</p>
-                <p className="text-[10px] text-zinc-700 mt-1">ตัวอย่าง projection</p>
+                <p className="text-[10px] text-gray-400 mt-1">ตัวอย่าง projection</p>
               </div>
-              <div className="bg-black/30 rounded-2xl p-4 text-center border border-black/[0.05]">
+              <div className="bg-white rounded-2xl p-4 text-center border border-gray-100 shadow-sm">
                 <p className="text-3xl font-extrabold text-emerald-400/60 mb-1">25</p>
                 <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">ชม.ที่ประหยัด</p>
-                <p className="text-[10px] text-zinc-700 mt-1">≈ 3 นาที/ข้อความ</p>
+                <p className="text-[10px] text-gray-400 mt-1">≈ 3 นาที/ข้อความ</p>
               </div>
-              <div className="bg-black/30 rounded-2xl p-4 text-center border border-black/[0.05]">
-                <p className="text-3xl font-extrabold text-blue-400/60 mb-1">฿3,750</p>
+              <div className="bg-white rounded-2xl p-4 text-center border border-gray-100 shadow-sm">
+                <p className="text-3xl font-extrabold text-green-600/60 mb-1">฿3,750</p>
                 <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">มูลค่าที่ได้</p>
-                <p className="text-[10px] text-zinc-700 mt-1">vs จ้างพนักงาน</p>
+                <p className="text-[10px] text-gray-400 mt-1">vs จ้างพนักงาน</p>
               </div>
             </div>
             <button
@@ -469,26 +469,26 @@ export default function Dashboard({ setSidebarOpen }) {
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-black/20 rounded-2xl p-4 text-center">
+              <div className="bg-white/80 rounded-2xl p-4 text-center border border-gray-100">
                 <p className="text-4xl font-extrabold text-green-600 mb-1">
                   {loading ? '...' : totalReplies.toLocaleString()}
                 </p>
                 <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider">ข้อความที่บอทตอบแทน</p>
-                <p className="text-xs text-zinc-600 mt-1">ไม่ต้องพิมพ์เอง</p>
+                <p className="text-xs text-gray-400 mt-1">ไม่ต้องพิมพ์เอง</p>
               </div>
-              <div className="bg-black/20 rounded-2xl p-4 text-center">
+              <div className="bg-white/80 rounded-2xl p-4 text-center border border-gray-100">
                 <p className="text-4xl font-extrabold text-emerald-400 mb-1">
                   {loading ? '...' : `${timeSavedHours}`}
                 </p>
                 <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider">ชั่วโมงที่ประหยัดได้</p>
-                <p className="text-xs text-zinc-600 mt-1">≈ 3 นาที/ข้อความ</p>
+                <p className="text-xs text-gray-400 mt-1">≈ 3 นาที/ข้อความ</p>
               </div>
-              <div className="bg-black/20 rounded-2xl p-4 text-center">
-                <p className="text-4xl font-extrabold text-blue-400 mb-1">
+              <div className="bg-white/80 rounded-2xl p-4 text-center border border-gray-100">
+                <p className="text-4xl font-extrabold text-green-600 mb-1">
                   {loading ? '...' : `฿${moneySaved.toLocaleString()}`}
                 </p>
                 <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider">มูลค่าที่ประหยัด</p>
-                <p className="text-xs text-zinc-600 mt-1">vs จ้างพนักงานตอบ LINE</p>
+                <p className="text-xs text-gray-400 mt-1">vs จ้างพนักงานตอบ LINE</p>
               </div>
             </div>
             {!loading && moneySaved > 490 && (
@@ -505,16 +505,16 @@ export default function Dashboard({ setSidebarOpen }) {
       </div>
 
       {/* Customer Insights Widget */}
-      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-purple-400" />
+            <TrendingUp className="w-5 h-5 text-green-600" />
             <h2 className="text-lg font-bold text-gray-900">ลูกค้าถามอะไรบ่อย</h2>
           </div>
           <div className="flex gap-1.5">
             {[7, 30].map(d => (
               <button key={d} onClick={() => setInsightsDays(d)}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${insightsDays === d ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'text-gray-400 hover:text-zinc-300'}`}>
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${insightsDays === d ? 'bg-green-500/10 text-green-600 border border-green-500/20' : 'text-gray-400 hover:text-gray-500'}`}>
                 {d} วัน
               </button>
             ))}
@@ -524,11 +524,11 @@ export default function Dashboard({ setSidebarOpen }) {
         {/* Stats row */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 mb-5">
           {[
-            { label: 'บทสนทนา', value: insights?.stats?.totalConversations ?? 0, color: '#A78BFA' },
+            { label: 'บทสนทนา', value: insights?.stats?.totalConversations ?? 0, color: '#059669' },
             { label: 'ผู้ใช้ไม่ซ้ำ', value: insights?.stats?.uniqueUsers ?? 0, color: '#34D399' },
             { label: 'ขอคุยคน', value: insights?.stats?.escalations ?? 0, color: '#F59E0B' },
           ].map(s => (
-            <div key={s.label} className="bg-white/[0.03] rounded-2xl p-3 text-center">
+            <div key={s.label} className="bg-gray-50 rounded-xl border border-gray-100 p-3 text-center">
               <p className="text-2xl font-extrabold" style={{ color: s.color }}>{loading ? '...' : s.value}</p>
               <p className="text-[11px] text-gray-400 mt-0.5 font-semibold">{s.label}</p>
             </div>
@@ -540,19 +540,19 @@ export default function Dashboard({ setSidebarOpen }) {
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
               {insights.topKeywords.slice(0, 5).map(({ word, count }) => (
-                <span key={word} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-xs font-semibold text-zinc-300 hover:bg-white/[0.07] transition-colors">
+                <span key={word} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200 text-xs font-semibold text-gray-700 hover:bg-gray-100 transition-colors">
                   {word}
                   <span className="text-[10px] text-gray-400 font-bold">{count}</span>
                 </span>
               ))}
-              <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-white/[0.02] border border-dashed border-white/10 text-[10px] font-bold text-zinc-600">
+              <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-white border border-dashed border-gray-200 text-[10px] font-bold text-gray-400">
                 +{Math.max(0, insights.topKeywords.length - 5)} keywords อื่นๆ
               </span>
             </div>
             
             <button
               onClick={() => navigate('/analytics')}
-              className="w-full py-3 rounded-2xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 hover:border-purple-500/40 text-xs font-bold text-purple-400 transition-all flex items-center justify-center gap-2 group"
+              className="w-full py-3 rounded-2xl bg-gradient-to-r bg-green-500/5 border border-green-500/20 hover:border-green-500/40 text-xs font-bold text-green-600 transition-all flex items-center justify-center gap-2 group"
             >
               <Sparkles className="w-3.5 h-3.5 group-hover:animate-pulse" />
               ดูบทวิเคราะห์และพฤติกรรมลูกค้าเชิงลึก (Advanced Insights)
@@ -563,7 +563,7 @@ export default function Dashboard({ setSidebarOpen }) {
           <div className="py-6 flex flex-col items-center gap-2 text-center">
             <span className="text-4xl">🔍</span>
             <p className="text-gray-500 text-sm font-semibold">ยังไม่มีข้อมูล</p>
-            <p className="text-zinc-600 text-xs leading-relaxed">
+            <p className="text-gray-400 text-xs leading-relaxed">
               เมื่อลูกค้าเริ่มส่งข้อความ AI จะวิเคราะห์<br />ว่าลูกค้าถามเรื่องอะไรบ่อยที่สุด
             </p>
           </div>
@@ -571,7 +571,7 @@ export default function Dashboard({ setSidebarOpen }) {
       </div>
 
       {/* Bot Status Card */}
-      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-xl font-bold text-gray-900">สถานะ LINE OA</h2>
           <button
@@ -608,7 +608,7 @@ export default function Dashboard({ setSidebarOpen }) {
       </div>
 
       {/* Recent Conversations */}
-      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-xl font-bold text-gray-900">บทสนทนาล่าสุด</h2>
           <button
@@ -623,8 +623,8 @@ export default function Dashboard({ setSidebarOpen }) {
           {conversations.length === 0 && !loading && (
             <div className="py-8 flex flex-col items-center gap-3 text-center">
               <span className="text-5xl">💬</span>
-              <p className="text-zinc-300 text-sm font-bold">ยังไม่มีบทสนทนา</p>
-              <p className="text-zinc-600 text-xs leading-relaxed">
+              <p className="text-gray-500 text-sm font-bold">ยังไม่มีบทสนทนา</p>
+              <p className="text-gray-400 text-xs leading-relaxed">
                 เมื่อลูกค้าส่งข้อความมาบน LINE OA<br />บทสนทนาจะปรากฏที่นี่แบบ real-time
               </p>
               <button
@@ -636,8 +636,8 @@ export default function Dashboard({ setSidebarOpen }) {
             </div>
           )}
           {conversations.map((conv) => (
-            <div key={conv.id} className="flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-white/[0.03] transition-colors cursor-pointer group">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-500/20 to-green-500/20 border border-white/[0.06] flex items-center justify-center text-sm font-bold text-gray-900 flex-shrink-0">
+            <div key={conv.id} className="flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer group">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-500/20 to-green-500/20 border border-gray-100 flex items-center justify-center text-sm font-bold text-gray-900 flex-shrink-0">
                 {conv.avatar}
               </div>
               <div className="flex-1 min-w-0">
@@ -651,7 +651,7 @@ export default function Dashboard({ setSidebarOpen }) {
                 </div>
                 <p className="text-gray-400 text-xs truncate">{conv.lastMessage}</p>
               </div>
-              <span className="text-zinc-600 text-xs flex-shrink-0 whitespace-nowrap">{conv.time}</span>
+              <span className="text-gray-400 text-xs flex-shrink-0 whitespace-nowrap">{conv.time}</span>
             </div>
           ))}
         </div>
@@ -662,8 +662,8 @@ export default function Dashboard({ setSidebarOpen }) {
 
 function StatCard({ label, value, icon, color, delay, offlineAction }) {
   return (
-    <div className={`bg-gray-50 rounded-3xl border border-white/[0.06] p-5 hover:border-green-500/20 transition-all animate-fade-in ${delay}`}>
-      <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${color} border border-white/[0.06] flex items-center justify-center mb-4`}>
+    <div className={`bg-white rounded-3xl border border-gray-100 shadow-sm p-5 hover:border-green-500/30 hover:shadow-md transition-all animate-fade-in ${delay}`}>
+      <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${color} border border-green-500/20 flex items-center justify-center mb-4`}>
         {icon}
       </div>
       <p className="text-2xl font-extrabold text-gray-900 tracking-tight">{value}</p>
@@ -689,13 +689,13 @@ function KpiRingCard({ label, sublabel, value, color, icon, detail, lowerIsBette
   const statusColor = warn ? '#EF4444' : good ? color : '#F59E0B';
 
   return (
-    <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6 flex flex-col gap-3">
+    <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 flex flex-col gap-3">
       <div className="flex items-center gap-2">
         <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: `${color}22`, border: `1px solid ${color}33` }}>
           {icon}
         </div>
         <div>
-          <p className="text-sm font-semibold text-zinc-200">{label}</p>
+          <p className="text-sm font-semibold text-gray-800">{label}</p>
           <p className="text-xs text-gray-400">{sublabel}</p>
         </div>
       </div>

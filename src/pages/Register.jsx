@@ -1,8 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Mail, Lock, Eye, EyeOff, Loader2, Cat, User, Building2 } from 'lucide-react';
 import api from '../services/api';
+
+const PLAN_LABELS = { starter: 'Starter', pro: 'Pro', business: 'Business' };
+const PLAN_COLORS = {
+  starter: 'bg-emerald-50 border-emerald-200 text-emerald-700',
+  pro: 'bg-green-50 border-green-200 text-green-700',
+  business: 'bg-blue-50 border-blue-200 text-blue-700',
+};
 
 export default function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', shopName: '' });
@@ -14,6 +21,10 @@ export default function Register() {
 
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const selectedPlan = searchParams.get('plan')?.toLowerCase();
+  const selectedBilling = searchParams.get('billing') === 'annual' ? 'annual' : 'monthly';
+  const validPlan = PLAN_LABELS[selectedPlan] ? selectedPlan : null;
 
   useEffect(() => {
     if (isAuthenticated) navigate('/', { replace: true });
@@ -50,6 +61,7 @@ export default function Register() {
         email: form.email,
         password: form.password,
         shopName: form.shopName,
+        ...(validPlan && { plan: validPlan, billing_period: selectedBilling }),
       });
       await login(form.email, form.password);
       navigate('/onboarding', { replace: true });
@@ -79,53 +91,59 @@ export default function Register() {
           </div>
           <h1 className="text-2xl font-extrabold text-gray-900 mb-1">เริ่มต้นฟรี 14 วัน</h1>
           <p className="text-gray-400 text-sm">สมัครใช้งาน MeowChat — ไม่ต้องใส่บัตรเครดิต</p>
+          {validPlan && (
+            <div className={`inline-flex items-center gap-2 mt-3 px-4 py-2 rounded-xl border text-sm font-semibold ${PLAN_COLORS[validPlan]}`}>
+              <span>แผน {PLAN_LABELS[validPlan]}</span>
+              {selectedBilling === 'annual' && <span className="text-xs font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">รายปี · ประหยัดกว่า</span>}
+            </div>
+          )}
         </div>
 
-        <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-7 shadow-2xl">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-7 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name */}
             <div>
-              <label className="block text-sm font-semibold text-zinc-300 mb-2">ชื่อของคุณ</label>
+              <label className="block text-sm font-semibold text-gray-600 mb-2">ชื่อของคุณ</label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                 <input name="name" type="text" value={form.name} onChange={handleChange}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-black/[0.09] rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
                   placeholder="ชื่อ-นามสกุล" autoComplete="name" />
               </div>
             </div>
 
             {/* Shop Name */}
             <div>
-              <label className="block text-sm font-semibold text-zinc-300 mb-2">ชื่อร้านค้า / ธุรกิจ</label>
+              <label className="block text-sm font-semibold text-gray-600 mb-2">ชื่อร้านค้า / ธุรกิจ</label>
               <div className="relative">
                 <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                 <input name="shopName" type="text" value={form.shopName} onChange={handleChange}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-black/[0.09] rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
                   placeholder="ร้านอาหาร / ร้านเสื้อผ้า / ฯลฯ" />
               </div>
             </div>
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-semibold text-zinc-300 mb-2">อีเมล</label>
+              <label className="block text-sm font-semibold text-gray-600 mb-2">อีเมล</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                 <input name="email" ref={emailRef} type="email" value={form.email} onChange={handleChange}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-black/[0.09] rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
                   placeholder="your@email.com" autoComplete="email" />
               </div>
             </div>
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-semibold text-zinc-300 mb-2">รหัสผ่าน</label>
+              <label className="block text-sm font-semibold text-gray-600 mb-2">รหัสผ่าน</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                 <input name="password" ref={passRef} type={showPassword ? 'text' : 'password'} value={form.password} onChange={handleChange}
-                  className="w-full pl-11 pr-12 py-3 bg-white border border-black/[0.09] rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
+                  className="w-full pl-11 pr-12 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
                   placeholder="อย่างน้อย 6 ตัวอักษร" autoComplete="new-password" />
                 <button type="button" onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-zinc-300 transition-colors">
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
@@ -133,11 +151,11 @@ export default function Register() {
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-sm font-semibold text-zinc-300 mb-2">ยืนยันรหัสผ่าน</label>
+              <label className="block text-sm font-semibold text-gray-600 mb-2">ยืนยันรหัสผ่าน</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                 <input name="confirmPassword" type={showPassword ? 'text' : 'password'} value={form.confirmPassword} onChange={handleChange}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-black/[0.09] rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
                   placeholder="••••••••" autoComplete="new-password" />
               </div>
             </div>
@@ -162,7 +180,7 @@ export default function Register() {
           </p>
         </div>
 
-        <p className="text-center mt-6 text-zinc-600 text-xs">© 2026 MeowChat by Mawsom Company Limited</p>
+        <p className="text-center mt-6 text-gray-400 text-xs">© 2026 MeowChat by Mawsom Company Limited</p>
       </div>
     </div>
   );

@@ -207,7 +207,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
       />
 
       {/* Tab Switcher */}
-      <div className="flex gap-1 p-1 bg-gray-50 border border-white/[0.06] rounded-2xl w-fit">
+      <div className="flex gap-1 p-1 bg-gray-50 border border-gray-100 rounded-2xl w-fit">
         <button
           onClick={() => setActiveTab('kb')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === 'kb' ? 'bg-green-500 text-gray-900 shadow-lg shadow-green-500/20' : 'text-gray-500 hover:text-gray-900'}`}
@@ -252,7 +252,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
                 key={key}
                 onClick={() => handleImportTemplate(key)}
                 disabled={importingTemplate !== null}
-                className="flex items-center gap-3 p-3 rounded-xl bg-black/20 border border-black/[0.09] hover:border-green-500/30 hover:bg-green-500/5 transition-all text-left disabled:opacity-50"
+                className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-200 hover:border-green-500/30 hover:bg-green-500/5 transition-all text-left disabled:opacity-50"
               >
                 <span className="text-2xl">{tpl.label.split(' ')[0]}</span>
                 <div>
@@ -285,7 +285,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
                   key={key}
                   onClick={() => handleImportTemplate(key)}
                   disabled={importingTemplate !== null}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-white/[0.06] hover:border-green-500/30 hover:bg-green-500/5 transition-all text-left disabled:opacity-50"
+                  className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100 hover:border-green-500/30 hover:bg-green-500/5 transition-all text-left disabled:opacity-50"
                 >
                   <span className="text-2xl">{tpl.label.split(' ')[0]}</span>
                   <div>
@@ -316,7 +316,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
 
       {/* KB Health Score */}
       {!loading && (
-        <div className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 border border-white/[0.06]">
+        <div className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100">
           <div className="relative w-14 h-14 flex-shrink-0">
             <svg viewBox="0 0 40 40" className="w-14 h-14 -rotate-90">
               <circle cx="20" cy="20" r="16" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="4" />
@@ -341,7 +341,7 @@ export default function KnowledgeBase({ setSidebarOpen }) {
             <p className="text-xs text-gray-400 truncate">💡 {kbNextTip}</p>
           </div>
           <div className="text-right flex-shrink-0">
-            <p className="text-xs text-zinc-600">{entries.length} รายการ</p>
+            <p className="text-xs text-gray-400">{entries.length} รายการ</p>
           </div>
         </div>
       )}
@@ -359,9 +359,9 @@ export default function KnowledgeBase({ setSidebarOpen }) {
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-          <BookOpen className="w-12 h-12 text-zinc-600" />
+          <BookOpen className="w-12 h-12 text-gray-400" />
           <p className="text-gray-500 font-semibold">ไม่พบรายการ</p>
-          <p className="text-zinc-600 text-sm">ลองค้นหาด้วยคำอื่น หรือเพิ่มรายการใหม่</p>
+          <p className="text-gray-400 text-sm">ลองค้นหาด้วยคำอื่น หรือเพิ่มรายการใหม่</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-4">
@@ -438,9 +438,9 @@ function UnansweredQuestions({ botId, setToast, onAddedToKB }) {
   if (questions.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-        <HelpCircle className="w-12 h-12 text-zinc-600" />
+        <HelpCircle className="w-12 h-12 text-gray-400" />
         <p className="text-gray-500 font-semibold">ยังไม่มีคำถามที่ตอบไม่ได้</p>
-        <p className="text-zinc-600 text-sm">เมื่อบอทตอบลูกค้าไม่ได้ คำถามจะปรากฏที่นี่</p>
+        <p className="text-gray-400 text-sm">เมื่อบอทตอบลูกค้าไม่ได้ คำถามจะปรากฏที่นี่</p>
       </div>
     );
   }
@@ -451,19 +451,19 @@ function UnansweredQuestions({ botId, setToast, onAddedToKB }) {
       {questions.map((q) => (
         <div
           key={q.id}
-          className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-white/[0.06] hover:border-green-500/20 transition-all"
+          className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-green-500/20 transition-all"
         >
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-gray-900 truncate">{q.question}</p>
             <div className="flex items-center gap-3 mt-1">
               {q.date && (
-                <span className="flex items-center gap-1 text-xs text-zinc-600">
+                <span className="flex items-center gap-1 text-xs text-gray-400">
                   <Calendar className="w-3 h-3" />
                   {new Date(q.date).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })}
                 </span>
               )}
               {q.count > 0 && (
-                <span className="flex items-center gap-1 text-xs text-zinc-600">
+                <span className="flex items-center gap-1 text-xs text-gray-400">
                   <Hash className="w-3 h-3" />
                   {q.count} ครั้ง
                 </span>
@@ -490,13 +490,13 @@ function UnansweredQuestions({ botId, setToast, onAddedToKB }) {
 
 function KBCard({ entry, onEdit, onDelete }) {
   return (
-    <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-5 hover:border-green-500/20 transition-all group">
+    <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5 hover:border-green-500/20 transition-all group">
       <div className="flex items-start justify-between mb-3">
         <h3 className="font-bold text-gray-900 text-base">{entry.topic}</h3>
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={onEdit}
-            className="p-2 hover:bg-white/[0.06] rounded-xl text-gray-400 hover:text-green-600 transition-all"
+            className="p-2 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-green-600 transition-all"
           >
             <Pencil className="w-4 h-4" />
           </button>
@@ -513,7 +513,7 @@ function KBCard({ entry, onEdit, onDelete }) {
 
       {entry.keywords && entry.keywords.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
-          <Tag className="w-3.5 h-3.5 text-zinc-600 mt-0.5 flex-shrink-0" />
+          <Tag className="w-3.5 h-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
           {entry.keywords.map((kw, i) => (
             <span key={i} className="tag-chip">{kw}</span>
           ))}
@@ -567,15 +567,15 @@ function KBModal({ entry, onSave, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
-      <div className="bg-gray-50 rounded-3xl border border-black/[0.09] w-full max-w-lg shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-50 rounded-3xl border border-gray-200 w-full max-w-lg shadow-2xl animate-scale-in max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100">
           <h3 className="text-lg font-bold text-gray-900">
             {entry ? 'แก้ไขรายการ' : 'เพิ่มรายการใหม่'}
           </h3>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/[0.06] rounded-xl text-gray-400 hover:text-gray-900 transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-gray-900 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -590,7 +590,7 @@ function KBModal({ entry, onSave, onClose }) {
           )}
           
           <div>
-            <label className="block text-sm font-semibold text-zinc-300 mb-2">หัวข้อ *</label>
+            <label className="block text-sm font-semibold text-gray-600 mb-2">หัวข้อ *</label>
             <input
               type="text"
               value={topic}
@@ -603,7 +603,7 @@ function KBModal({ entry, onSave, onClose }) {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-zinc-300 mb-2">เนื้อหา *</label>
+            <label className="block text-sm font-semibold text-gray-600 mb-2">เนื้อหา *</label>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
@@ -615,8 +615,8 @@ function KBModal({ entry, onSave, onClose }) {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-zinc-300 mb-2">Keywords</label>
-            <p className="text-xs text-zinc-600 mb-2">กด Enter หรือ , เพื่อเพิ่ม keyword</p>
+            <label className="block text-sm font-semibold text-gray-600 mb-2">Keywords</label>
+            <p className="text-xs text-gray-400 mb-2">กด Enter หรือ , เพื่อเพิ่ม keyword</p>
             <div
               className="input-premium flex flex-wrap gap-1.5 cursor-text min-h-[46px]"
               style={{ padding: '8px 12px' }}

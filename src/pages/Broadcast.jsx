@@ -109,7 +109,7 @@ export default function Broadcast({ setSidebarOpen }) {
         {/* Compose */}
         <div className="lg:col-span-2 space-y-6">
           {/* Recipient Count */}
-          <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500/20 to-green-500/5 border border-green-500/20 flex items-center justify-center">
                 <Users className="w-6 h-6 text-green-600" />
@@ -124,11 +124,11 @@ export default function Broadcast({ setSidebarOpen }) {
 
             {/* Target Audience Selector */}
             <div className="mb-6">
-              <label className="text-sm font-semibold text-zinc-300 mb-2 block">เลือกกลุ่มเป้าหมาย (Audience)</label>
+              <label className="text-sm font-semibold text-gray-600 mb-2 block">เลือกกลุ่มเป้าหมาย (Audience)</label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button
                   onClick={() => handleAudienceChange('all')}
-                  className={`flex flex-col items-start p-4 rounded-2xl border transition-all text-left ${audience === 'all' ? 'border-green-500 bg-green-500/10' : 'border-black/[0.09] hover:border-white/20 bg-white/[0.02]'}`}
+                  className={`flex flex-col items-start p-4 rounded-2xl border transition-all text-left ${audience === 'all' ? 'border-green-500 bg-green-500/10' : 'border-black/[0.09] hover:border-green-500/30 bg-gray-50/50'}`}
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <Users className={`w-4 h-4 ${audience === 'all' ? 'text-green-600' : 'text-gray-500'}`} />
@@ -138,7 +138,7 @@ export default function Broadcast({ setSidebarOpen }) {
                 </button>
                 <button
                   onClick={() => handleAudienceChange('unhappy')}
-                  className={`flex flex-col items-start p-4 rounded-2xl border transition-all text-left relative overflow-hidden ${audience === 'unhappy' ? 'border-rose-500 bg-rose-500/10' : 'border-black/[0.09] hover:border-white/20 bg-white/[0.02]'}`}
+                  className={`flex flex-col items-start p-4 rounded-2xl border transition-all text-left relative overflow-hidden ${audience === 'unhappy' ? 'border-rose-500 bg-rose-500/10' : 'border-black/[0.09] hover:border-green-500/30 bg-gray-50/50'}`}
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <AlertCircle className={`w-4 h-4 ${audience === 'unhappy' ? 'text-rose-400' : 'text-gray-500'}`} />
@@ -165,8 +165,8 @@ export default function Broadcast({ setSidebarOpen }) {
 
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-semibold text-zinc-300">ข้อความ</label>
-                <span className={`text-xs font-mono ${message.length > 450 ? 'text-amber-400' : 'text-zinc-600'}`}>
+                <label className="text-sm font-semibold text-gray-600">ข้อความ</label>
+                <span className={`text-xs font-mono ${message.length > 450 ? 'text-amber-400' : 'text-gray-400'}`}>
                   {message.length}/500
                 </span>
               </div>
@@ -181,22 +181,22 @@ export default function Broadcast({ setSidebarOpen }) {
               {/* Image section */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-semibold text-zinc-300 flex items-center gap-1.5">
+                  <label className="text-sm font-semibold text-gray-600 flex items-center gap-1.5">
                     <Image className="w-4 h-4 text-gray-400" />
-                    รูปภาพโปรโมชั่น <span className="text-zinc-600 font-normal">(ไม่บังคับ)</span>
+                    รูปภาพโปรโมชั่น <span className="text-gray-400 font-normal">(ไม่บังคับ)</span>
                   </label>
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploadingImg}
-                    className="text-xs flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-gray-500 hover:text-gray-900 hover:bg-white/[0.1] disabled:opacity-50"
+                    className="text-xs flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 border border-gray-200 text-gray-500 hover:text-gray-900 hover:bg-white/[0.1] disabled:opacity-50"
                   >
                     {uploadingImg ? <span className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" /> : <Upload className="w-3 h-3" />}
                     {uploadingImg ? 'กำลังอัพ...' : 'อัพโหลดรูป'}
                   </button>
                 </div>
                 {imageUrl ? (
-                  <div className="relative rounded-xl overflow-hidden border border-white/[0.06]">
+                  <div className="relative rounded-xl overflow-hidden border border-gray-100">
                     <img src={imageUrl} alt="broadcast" className="w-full h-32 object-cover" />
                     <button
                       type="button"
@@ -233,16 +233,16 @@ export default function Broadcast({ setSidebarOpen }) {
           </div>
 
           {/* History */}
-          <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
             <h2 className="text-lg font-bold text-gray-900 mb-5">ประวัติการ Broadcast</h2>
             {loadingHistory ? (
-              <div className="text-center py-8 text-zinc-600">กำลังโหลด...</div>
+              <div className="text-center py-8 text-gray-400">กำลังโหลด...</div>
             ) : history.length === 0 ? (
-              <div className="text-center py-8 text-zinc-600">ยังไม่มีประวัติการส่ง</div>
+              <div className="text-center py-8 text-gray-400">ยังไม่มีประวัติการส่ง</div>
             ) : (
               <div className="space-y-3">
                 {history.map((b) => (
-                  <div key={b.id} className="flex items-start gap-4 p-4 rounded-2xl bg-white border border-black/[0.05]">
+                  <div key={b.id} className="flex items-start gap-4 p-4 rounded-2xl bg-white border border-gray-100">
                     <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${
                       b.status === 'sent' ? 'bg-emerald-500/20' : b.status === 'failed' ? 'bg-red-500/20' : 'bg-amber-500/20'
                     }`}>
@@ -255,7 +255,7 @@ export default function Broadcast({ setSidebarOpen }) {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-gray-900 truncate">{b.message}</p>
                       <div className="flex items-center gap-3 mt-1">
-                        <span className="text-xs text-zinc-600">{formatDate(b.sent_at || b.created_at)}</span>
+                        <span className="text-xs text-gray-400">{formatDate(b.sent_at || b.created_at)}</span>
                         <span className="text-xs text-gray-400">ส่งถึง {(b.sent_count || 0).toLocaleString()}/{(b.recipient_count || 0).toLocaleString()} คน</span>
                       </div>
                     </div>
@@ -275,11 +275,11 @@ export default function Broadcast({ setSidebarOpen }) {
 
         {/* Preview */}
         <div className="space-y-6">
-          <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
             <h2 className="text-lg font-bold text-gray-900 mb-5">Preview</h2>
             {/* Mock LINE UI */}
             <div className="bg-[#A0C4FF]/10 rounded-2xl p-4 border border-blue-400/20">
-              <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/[0.06]">
+              <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-green-400 flex items-center justify-center text-gray-900 text-lg flex-shrink-0">
                   🐱
                 </div>
@@ -303,7 +303,7 @@ export default function Broadcast({ setSidebarOpen }) {
                     )}
                   </>
                 ) : (
-                  <p className="text-zinc-600 text-xs">พิมพ์ข้อความด้านซ้ายเพื่อ preview</p>
+                  <p className="text-gray-400 text-xs">พิมพ์ข้อความด้านซ้ายเพื่อ preview</p>
                 )}
               </div>
             </div>
@@ -316,7 +316,7 @@ export default function Broadcast({ setSidebarOpen }) {
           </div>
 
           {/* Tips */}
-          <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
             <h2 className="text-base font-bold text-gray-900 mb-4">💡 Tips</h2>
             <ul className="space-y-2 text-xs text-gray-400">
               <li>✓ ใส่ emoji เพื่อดึงดูดความสนใจ</li>
@@ -332,7 +332,7 @@ export default function Broadcast({ setSidebarOpen }) {
       {/* Confirm Modal */}
       {showConfirm && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
-          <div className="bg-gray-50 rounded-3xl border border-black/[0.09] w-full max-w-sm shadow-2xl p-6 text-center max-h-[90vh] overflow-y-auto">
+          <div className="bg-gray-50 rounded-3xl border border-gray-200 w-full max-w-sm shadow-2xl p-6 text-center max-h-[90vh] overflow-y-auto">
             <div className="w-16 h-16 rounded-2xl bg-green-500/20 border border-green-500/30 flex items-center justify-center mx-auto mb-4">
               <Megaphone className="w-8 h-8 text-green-600" />
             </div>
@@ -343,7 +343,7 @@ export default function Broadcast({ setSidebarOpen }) {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowConfirm(false)}
-                className="flex-1 py-3 rounded-xl text-sm font-semibold btn-secondary border border-black/[0.09]"
+                className="flex-1 py-3 rounded-xl text-sm font-semibold btn-secondary border border-gray-200"
               >
                 ยกเลิก
               </button>

@@ -136,7 +136,7 @@ export default function Marketing({ setSidebarOpen }) {
             return (
               <div
                 key={tpl.id}
-                className="bg-gray-50 rounded-3xl border border-white/[0.06] p-5 hover:border-green-500/20 transition-all flex flex-col"
+                className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5 hover:border-green-500/20 transition-all flex flex-col"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
@@ -158,7 +158,7 @@ export default function Marketing({ setSidebarOpen }) {
 
                 <p className="text-gray-500 text-sm mb-3 flex-1">{tpl.description}</p>
 
-                <div className="p-3 rounded-xl bg-black/30 border border-black/[0.05] mb-4">
+                <div className="p-3 rounded-xl bg-white border border-gray-100 mb-4">
                   <p className="text-xs text-gray-400 italic leading-relaxed">"{tpl.message}"</p>
                 </div>
 
@@ -183,7 +183,7 @@ export default function Marketing({ setSidebarOpen }) {
             {campaigns.map((c) => {
               const tpl = AUTOMATION_TEMPLATES.find((t) => t.id === (c.template_id || c.templateId));
               return (
-                <div key={c.id} className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 border border-white/[0.06]">
+                <div key={c.id} className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100">
                   <span className="text-2xl">{tpl?.icon || '⚡'}</span>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-gray-900">{c.name}</p>
@@ -202,7 +202,7 @@ export default function Marketing({ setSidebarOpen }) {
       {/* Modal */}
       {selectedTemplate && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-          <div className="bg-gray-50 rounded-3xl border border-black/[0.09] w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-gray-50 rounded-3xl border border-gray-200 w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
                 <span className="text-3xl">{selectedTemplate.icon}</span>
@@ -210,7 +210,7 @@ export default function Marketing({ setSidebarOpen }) {
               </div>
               <button
                 onClick={() => setSelectedTemplate(null)}
-                className="p-2 hover:bg-white/[0.06] rounded-xl text-gray-400 hover:text-gray-900 transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-gray-900 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -218,7 +218,7 @@ export default function Marketing({ setSidebarOpen }) {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-zinc-300 mb-2">ชื่อ Campaign *</label>
+                <label className="block text-sm font-semibold text-gray-600 mb-2">ชื่อ Campaign *</label>
                 <input
                   type="text"
                   value={campaignName}
@@ -230,7 +230,7 @@ export default function Marketing({ setSidebarOpen }) {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-zinc-300 mb-2">เลือก Bot *</label>
+                <label className="block text-sm font-semibold text-gray-600 mb-2">เลือก Bot *</label>
                 <select
                   value={selectedBotId}
                   onChange={(e) => setSelectedBotId(e.target.value)}
@@ -247,16 +247,16 @@ export default function Marketing({ setSidebarOpen }) {
                 </select>
               </div>
 
-              <div className="p-4 rounded-2xl bg-black/30 border border-white/[0.06]">
+              <div className="p-4 rounded-2xl bg-white border border-gray-100">
                 <p className="text-xs font-semibold text-gray-500 mb-2">ข้อความที่จะส่ง</p>
-                <p className="text-sm text-zinc-300 italic leading-relaxed">"{selectedTemplate.message}"</p>
+                <p className="text-sm text-gray-600 italic leading-relaxed">"{selectedTemplate.message}"</p>
               </div>
             </div>
 
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setSelectedTemplate(null)}
-                className="flex-1 py-3 rounded-xl text-sm font-semibold btn-secondary border border-black/[0.09]"
+                className="flex-1 py-3 rounded-xl text-sm font-semibold btn-secondary border border-gray-200"
               >
                 ยกเลิก
               </button>

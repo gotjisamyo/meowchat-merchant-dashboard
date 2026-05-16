@@ -109,7 +109,7 @@ export default function Profile({ setSidebarOpen }) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
         {/* Avatar Section */}
         <div className="lg:col-span-1">
-          <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-4 sm:p-6 flex flex-col items-center gap-4 text-center">
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-4 sm:p-6 flex flex-col items-center gap-4 text-center">
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-green-600 to-green-400 flex items-center justify-center text-4xl font-bold text-gray-900 shadow-xl shadow-green-500/20">
               {profile.name?.charAt(0).toUpperCase() || 'M'}
             </div>
@@ -122,7 +122,7 @@ export default function Profile({ setSidebarOpen }) {
             </div>
 
             {/* Account Info */}
-            <div className="w-full pt-4 border-t border-white/[0.06] space-y-3 text-left">
+            <div className="w-full pt-4 border-t border-gray-100 space-y-3 text-left">
               <InfoRow label="อีเมล" value={profile.email || '-'} />
               <InfoRow label="เบอร์โทร" value={profile.phone || '-'} />
               <InfoRow label="บริษัท" value={profile.company || '-'} />
@@ -133,7 +133,7 @@ export default function Profile({ setSidebarOpen }) {
         {/* Profile Form + Password */}
         <div className="lg:col-span-2 space-y-6">
           {/* Profile Info */}
-          <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-9 h-9 rounded-xl bg-green-500/15 border border-green-500/20 flex items-center justify-center">
                 <User className="w-4 h-4 text-green-600" />
@@ -201,10 +201,10 @@ export default function Profile({ setSidebarOpen }) {
           </div>
 
           {/* Change Password */}
-          <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-9 h-9 rounded-xl bg-purple-500/15 border border-purple-500/20 flex items-center justify-center">
-                <Lock className="w-4 h-4 text-purple-400" />
+              <div className="w-9 h-9 rounded-xl bg-purple-500/15 border border-green-500/20 flex items-center justify-center">
+                <Lock className="w-4 h-4 text-green-600" />
               </div>
               <h2 className="text-lg font-bold text-gray-900">เปลี่ยนรหัสผ่าน</h2>
             </div>
@@ -220,7 +220,7 @@ export default function Profile({ setSidebarOpen }) {
                     placeholder="••••••••"
                     required
                   />
-                  <button type="button" onClick={() => togglePass('current')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-zinc-300 transition-colors">
+                  <button type="button" onClick={() => togglePass('current')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
                     {showPass.current ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
@@ -237,7 +237,7 @@ export default function Profile({ setSidebarOpen }) {
                       placeholder="อย่างน้อย 6 ตัวอักษร"
                       required
                     />
-                    <button type="button" onClick={() => togglePass('next')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-zinc-300 transition-colors">
+                    <button type="button" onClick={() => togglePass('next')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
                       {showPass.next ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
@@ -252,7 +252,7 @@ export default function Profile({ setSidebarOpen }) {
                       placeholder="••••••••"
                       required
                     />
-                    <button type="button" onClick={() => togglePass('confirm')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-zinc-300 transition-colors">
+                    <button type="button" onClick={() => togglePass('confirm')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
                       {showPass.confirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
@@ -286,7 +286,7 @@ export default function Profile({ setSidebarOpen }) {
 function FormField({ label, children }) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-zinc-300 mb-1.5">{label}</label>
+      <label className="block text-sm font-semibold text-gray-600 mb-1.5">{label}</label>
       {children}
     </div>
   );

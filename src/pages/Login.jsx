@@ -81,11 +81,11 @@ export default function Login() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-7 shadow-2xl">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-7 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-zinc-300 mb-2">
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-600 mb-2">
                 อีเมล
               </label>
               <div className="relative">
@@ -96,7 +96,7 @@ export default function Login() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-black/[0.09] rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
                   placeholder="merchant@email.com"
                   autoComplete="email"
                 />
@@ -105,7 +105,7 @@ export default function Login() {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-zinc-300 mb-2">
+              <label htmlFor="password" className="block text-sm font-semibold text-gray-600 mb-2">
                 รหัสผ่าน
               </label>
               <div className="relative">
@@ -116,14 +116,14 @@ export default function Login() {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-11 pr-12 py-3 bg-white border border-black/[0.09] rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
+                  className="w-full pl-11 pr-12 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
                   placeholder="••••••••"
                   autoComplete="current-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-zinc-300 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 min-h-[44px] min-w-[44px] flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -135,7 +135,7 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => setForgotModal(true)}
-                className="text-xs text-green-600 hover:text-green-500 transition-colors font-medium"
+                className="text-xs text-green-600 hover:text-green-500 transition-colors font-medium py-3 px-1 min-h-[44px]"
               >
                 ลืมรหัสผ่าน?
               </button>
@@ -169,22 +169,22 @@ export default function Login() {
         {/* Register link */}
         <p className="text-center mt-4 text-gray-400 text-sm">
           ยังไม่มีบัญชี?{' '}
-          <Link to="/register" className="text-green-600 hover:text-green-500 font-semibold transition-colors">
+          <Link to="/register" className="text-green-600 hover:text-green-500 font-semibold transition-colors py-2 inline-block">
             สมัครฟรี 14 วัน
           </Link>
         </p>
 
         {/* Trust Signals */}
         <div className="mt-5 flex items-center justify-center gap-3 flex-wrap">
-          <span className="flex items-center gap-1.5 text-[11px] text-zinc-600">🔒 SSL Encrypted</span>
-          <span className="text-zinc-800">·</span>
-          <span className="flex items-center gap-1.5 text-[11px] text-zinc-600">🏪 57+ ร้านค้าไว้วางใจ</span>
-          <span className="text-zinc-800">·</span>
-          <span className="flex items-center gap-1.5 text-[11px] text-zinc-600">📋 PDPA Compliant</span>
+          <span className="flex items-center gap-1.5 text-[11px] text-gray-400">🔒 SSL Encrypted</span>
+          <span className="text-gray-700">·</span>
+          <span className="flex items-center gap-1.5 text-[11px] text-gray-400">🏪 57+ ร้านค้าไว้วางใจ</span>
+          <span className="text-gray-700">·</span>
+          <span className="flex items-center gap-1.5 text-[11px] text-gray-400">📋 PDPA Compliant</span>
         </div>
 
         {/* Footer */}
-        <p className="text-center mt-3 text-zinc-700 text-xs">
+        <p className="text-center mt-3 text-gray-400 text-xs">
           © 2026 MeowChat by Mawsom Company Limited
         </p>
       </div>
@@ -192,7 +192,7 @@ export default function Login() {
       {/* Forgot Password Modal */}
       {forgotModal && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-sm bg-gray-50 rounded-3xl border border-black/[0.09] p-7 shadow-2xl animate-fade-in">
+          <div className="w-full max-w-sm bg-gray-50 rounded-3xl border border-gray-200 p-7 shadow-2xl animate-fade-in">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-green-500/15 border border-green-500/20 flex items-center justify-center">
@@ -202,7 +202,7 @@ export default function Login() {
               </div>
               <button
                 onClick={() => setForgotModal(false)}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-white/[0.06] transition-colors"
+                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -218,11 +218,11 @@ export default function Login() {
                 <Mail className="w-4 h-4 text-green-600 flex-shrink-0" />
                 <span className="text-sm text-green-600 font-semibold">support@meowchat.store</span>
               </a>
-              <p className="text-xs text-zinc-600 text-center pt-1">ทีมงานจะตอบกลับภายใน 24 ชั่วโมง</p>
+              <p className="text-xs text-gray-400 text-center pt-1">ทีมงานจะตอบกลับภายใน 24 ชั่วโมง</p>
             </div>
             <button
               onClick={() => setForgotModal(false)}
-              className="w-full mt-5 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] text-gray-500 hover:text-gray-900 hover:bg-black/[0.05] text-sm font-semibold transition-all"
+              className="w-full mt-5 py-2.5 rounded-xl bg-gray-50 border border-gray-100 text-gray-500 hover:text-gray-900 hover:bg-gray-50 text-sm font-semibold transition-all"
             >
               ปิด
             </button>

@@ -27,8 +27,8 @@ function getDateStart(range) {
 const STATUSES = [
   { value: 'all',        label: 'ทั้งหมด',          cls: '' },
   { value: 'pending',    label: 'รอยืนยัน',          cls: 'bg-amber-500/15 text-amber-400 border-amber-500/20' },
-  { value: 'confirmed',  label: 'ยืนยันแล้ว',         cls: 'bg-blue-500/15 text-blue-400 border-blue-500/20' },
-  { value: 'processing', label: 'กำลังเตรียม',        cls: 'bg-purple-500/15 text-purple-400 border-purple-500/20' },
+  { value: 'confirmed',  label: 'ยืนยันแล้ว',         cls: 'bg-blue-500/15 text-green-600 border-blue-500/20' },
+  { value: 'processing', label: 'กำลังเตรียม',        cls: 'bg-purple-500/15 text-green-600 border-green-500/20' },
   { value: 'shipped',    label: 'จัดส่งแล้ว',         cls: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/20' },
   { value: 'completed',  label: 'สำเร็จ',             cls: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' },
   { value: 'cancelled',  label: 'ยกเลิก',             cls: 'bg-red-500/15 text-red-400 border-red-500/20' },
@@ -168,7 +168,7 @@ export default function Orders({ setSidebarOpen }) {
         ].map(s => {
           const Icon = s.icon;
           return (
-            <div key={s.label} className="bg-gray-50 rounded-2xl border border-white/[0.06] p-4">
+            <div key={s.label} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
               <div className="flex items-center gap-2 mb-1">
                 <Icon className="w-4 h-4 text-gray-400" />
                 <span className="text-xs text-gray-400">{s.label}</span>
@@ -189,7 +189,7 @@ export default function Orders({ setSidebarOpen }) {
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex-shrink-0 ${
               dateRange === r.value
                 ? 'bg-green-500/15 border-green-500/30 text-green-500'
-                : 'bg-white/[0.03] border-white/[0.06] text-gray-400 hover:border-white/20'
+                : 'bg-gray-50 border-gray-100 text-gray-400 hover:border-green-500/30'
             }`}
           >
             {r.label}
@@ -208,7 +208,7 @@ export default function Orders({ setSidebarOpen }) {
                 ? s.value === 'all'
                   ? 'bg-green-500/15 border-green-500/30 text-green-500'
                   : `border ${s.cls}`
-                : 'bg-white/[0.03] border-white/[0.06] text-gray-400 hover:border-white/20'
+                : 'bg-gray-50 border-gray-100 text-gray-400 hover:border-green-500/30'
             }`}
           >
             {s.label}
@@ -252,10 +252,10 @@ function OrderCard({ order, expanded, onToggle, onUpdateStatus, updating }) {
   const actions = NEXT_ACTIONS[order.status] || [];
 
   return (
-    <div className="bg-gray-50 rounded-2xl border border-white/[0.06] overflow-hidden">
+    <div className="bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden">
       {/* Header row */}
       <button
-        className="w-full flex items-center gap-3 p-4 text-left hover:bg-white/[0.02] transition-colors"
+        className="w-full flex items-center gap-3 p-4 text-left hover:bg-gray-50/50 transition-colors"
         onClick={onToggle}
       >
         <div className="flex-1 min-w-0">
@@ -280,16 +280,16 @@ function OrderCard({ order, expanded, onToggle, onUpdateStatus, updating }) {
 
       {/* Expanded detail */}
       {expanded && (
-        <div className="border-t border-white/[0.06] p-4 space-y-4">
+        <div className="border-t border-gray-100 p-4 space-y-4">
           {/* Items */}
           <div>
             <p className="text-xs font-semibold text-gray-400 mb-2">รายการสินค้า/บริการ</p>
             <div className="space-y-2">
               {items.length === 0 ? (
-                <p className="text-xs text-zinc-600">ไม่มีข้อมูลรายการ</p>
+                <p className="text-xs text-gray-400">ไม่มีข้อมูลรายการ</p>
               ) : items.map((item, i) => (
                 <div key={i} className="flex items-center justify-between text-sm">
-                  <span className="text-zinc-300">{item.productName || item.name || 'สินค้า'}</span>
+                  <span className="text-gray-600">{item.productName || item.name || 'สินค้า'}</span>
                   <div className="flex items-center gap-3 text-gray-400">
                     <span>×{item.quantity}</span>
                     <span className="text-green-500 font-semibold">
@@ -307,7 +307,7 @@ function OrderCard({ order, expanded, onToggle, onUpdateStatus, updating }) {
 
           {/* Meta */}
           {(order.payment_method || order.shipping_address) && (
-            <div className="text-xs text-zinc-600 space-y-1">
+            <div className="text-xs text-gray-400 space-y-1">
               {order.payment_method && <p>ชำระ: {order.payment_method}</p>}
               {order.shipping_address && <p>ที่อยู่: {order.shipping_address}</p>}
             </div>
@@ -335,7 +335,7 @@ function OrderCard({ order, expanded, onToggle, onUpdateStatus, updating }) {
           )}
 
           {actions.length === 0 && (
-            <div className="flex items-center gap-2 text-xs text-zinc-600">
+            <div className="flex items-center gap-2 text-xs text-gray-400">
               {order.status === 'completed'
                 ? <><CheckCircle2 className="w-4 h-4 text-emerald-500" /> order สำเร็จแล้ว</>
                 : <><XCircle className="w-4 h-4 text-red-500" /> order ปิดแล้ว</>

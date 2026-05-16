@@ -7,8 +7,8 @@ import PageLayout from '../components/PageLayout';
 
 function MockBrowser({ site, children }) {
   return (
-    <div className="rounded-xl overflow-hidden border border-black/[0.09] bg-white mb-4">
-      <div className="flex items-center gap-2 px-4 py-2 bg-white border-b border-white/[0.06]">
+    <div className="rounded-xl overflow-hidden border border-gray-200 bg-white mb-4">
+      <div className="flex items-center gap-2 px-4 py-2 bg-white border-b border-gray-100">
         <div className="flex gap-1.5">
           <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
           <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
@@ -75,9 +75,9 @@ function MockStep2() {
     <MockBrowser site="manager.line.biz › ร้านของคุณ › Settings">
       <div className="flex text-xs">
         {/* Sidebar */}
-        <div className="w-40 bg-white border-r border-white/[0.06] py-3 flex-shrink-0">
+        <div className="w-40 bg-white border-r border-gray-100 py-3 flex-shrink-0">
           {['Basic settings', 'Chat', 'Response settings', 'Messaging API', 'Account'].map((item) => (
-            <div key={item} className={`px-4 py-2.5 flex items-center gap-2 cursor-pointer ${item === 'Messaging API' ? 'bg-green-500/20 border-l-2 border-green-400 text-green-500 font-bold' : 'text-gray-400 hover:text-zinc-300'}`}>
+            <div key={item} className={`px-4 py-2.5 flex items-center gap-2 cursor-pointer ${item === 'Messaging API' ? 'bg-green-500/20 border-l-2 border-green-400 text-green-500 font-bold' : 'text-gray-400 hover:text-gray-600'}`}>
               {item === 'Messaging API' && <div className="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0" />}
               {item}
             </div>
@@ -87,8 +87,8 @@ function MockStep2() {
         <div className="flex-1 p-5 bg-zinc-950">
           <p className="text-gray-900 font-bold mb-1">Messaging API</p>
           <p className="text-gray-400 mb-4 text-[10px]">Use the Messaging API to build a bot that interacts with your customers</p>
-          <div className="bg-white rounded-lg p-4 border border-white/[0.06]">
-            <p className="text-zinc-300 font-semibold mb-3">Messaging API status: <span className="text-red-400">Not enabled</span></p>
+          <div className="bg-white rounded-lg p-4 border border-gray-100">
+            <p className="text-gray-600 font-semibold mb-3">Messaging API status: <span className="text-red-400">Not enabled</span></p>
             <div className="relative inline-block">
               <button className="bg-[#00B900] text-gray-900 text-xs font-bold px-4 py-2 rounded-lg ring-2 ring-green-400 ring-offset-1 ring-offset-zinc-900">
                 Enable Messaging API
@@ -110,7 +110,7 @@ function MockStep3() {
     <MockBrowser site="developers.line.biz › Console › Provider › Channel">
       <div className="bg-zinc-950 text-xs">
         {/* Tabs */}
-        <div className="flex border-b border-white/[0.06] bg-white">
+        <div className="flex border-b border-gray-100 bg-white">
           {['Basic settings', 'Messaging API', 'Statistics'].map((tab) => (
             <div key={tab} className={`px-4 py-2.5 font-semibold cursor-pointer ${tab === 'Basic settings' ? 'text-[#00B900] border-b-2 border-[#00B900]' : 'text-gray-400'}`}>
               {tab}
@@ -121,7 +121,7 @@ function MockStep3() {
         <div className="p-4 space-y-3">
           <div>
             <p className="text-gray-500 mb-1 font-semibold">Channel ID</p>
-            <div className="bg-white rounded px-3 py-2 text-gray-500 font-mono border border-white/[0.06]">1234567890</div>
+            <div className="bg-white rounded px-3 py-2 text-gray-500 font-mono border border-gray-100">1234567890</div>
           </div>
           <div>
             <p className="text-gray-500 mb-1 font-semibold">Channel secret</p>
@@ -129,16 +129,16 @@ function MockStep3() {
               <div className="bg-white rounded px-3 py-2 text-emerald-400 font-mono border border-green-500/40 ring-1 ring-green-500/30 tracking-wider">
                 a1b2c3d4e5f6••••••••••••••
               </div>
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-100 text-zinc-300 text-[10px] px-2 py-0.5 rounded cursor-pointer hover:bg-zinc-600">Copy</div>
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded cursor-pointer hover:bg-zinc-600">Copy</div>
               <div className="absolute -top-6 right-0 bg-green-400 text-gray-900 text-[10px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
                 ← คัดลอกค่านี้
               </div>
             </div>
           </div>
         </div>
-        <div className="border-t border-white/[0.06] mx-4 my-1" />
+        <div className="border-t border-gray-100 mx-4 my-1" />
         <div className="p-4">
-          <div className="flex border-b border-white/[0.06] bg-white -mx-4 px-4 mb-3">
+          <div className="flex border-b border-gray-100 bg-white -mx-4 px-4 mb-3">
             {['Basic settings', 'Messaging API', 'Statistics'].map((tab) => (
               <div key={tab} className={`px-4 py-2.5 font-semibold cursor-pointer text-xs ${tab === 'Messaging API' ? 'text-[#00B900] border-b-2 border-[#00B900]' : 'text-gray-400'}`}>
                 {tab}
@@ -147,7 +147,7 @@ function MockStep3() {
           </div>
           <p className="text-gray-500 mb-1 font-semibold">Channel access token (long-lived)</p>
           <div className="flex gap-2 items-center">
-            <div className="flex-1 bg-white rounded px-3 py-2 text-zinc-600 border border-green-500/40 ring-1 ring-green-500/30 font-mono text-[10px]">
+            <div className="flex-1 bg-white rounded px-3 py-2 text-gray-400 border border-green-500/40 ring-1 ring-green-500/30 font-mono text-[10px]">
               กดปุ่ม Issue เพื่อสร้าง token...
             </div>
             <div className="relative">
@@ -206,7 +206,7 @@ function MockStep5() {
     <MockBrowser site="developers.line.biz › Messaging API › Webhook settings">
       <div className="bg-zinc-950 p-4 text-xs space-y-4">
         <div>
-          <p className="text-zinc-300 font-bold mb-2">Webhook settings</p>
+          <p className="text-gray-600 font-bold mb-2">Webhook settings</p>
           <p className="text-gray-500 mb-1">Webhook URL</p>
           <div className="flex gap-2">
             <div className="flex-1 bg-white border border-green-500/40 ring-1 ring-green-400/20 rounded px-3 py-2 text-green-500 font-mono text-[10px] break-all">
@@ -214,7 +214,7 @@ function MockStep5() {
             </div>
           </div>
           <div className="flex gap-2 mt-2">
-            <button className="bg-gray-100 text-zinc-300 px-3 py-1.5 rounded text-[10px] font-semibold">Update</button>
+            <button className="bg-gray-100 text-gray-600 px-3 py-1.5 rounded text-[10px] font-semibold">Update</button>
             <div className="relative">
               <button className="bg-[#00B900] text-gray-900 px-3 py-1.5 rounded text-[10px] font-bold ring-2 ring-green-400 ring-offset-1 ring-offset-zinc-950">
                 Verify
@@ -231,10 +231,10 @@ function MockStep5() {
           <p className="text-emerald-400 font-bold">Success — webhook connected!</p>
         </div>
 
-        <div className="flex items-center justify-between bg-white rounded-lg px-3 py-3 border border-white/[0.06]">
+        <div className="flex items-center justify-between bg-white rounded-lg px-3 py-3 border border-gray-100">
           <div>
-            <p className="text-zinc-300 font-semibold">Use webhook</p>
-            <p className="text-zinc-600 text-[10px]">Receive messages via webhook</p>
+            <p className="text-gray-600 font-semibold">Use webhook</p>
+            <p className="text-gray-400 text-[10px]">Receive messages via webhook</p>
           </div>
           <div className="relative">
             <div className="w-10 h-5 bg-[#00B900] rounded-full flex items-center px-0.5 ring-2 ring-green-400 ring-offset-1 ring-offset-zinc-900">
@@ -340,13 +340,13 @@ function CodeBlock({ code, note }) {
         <code className="block text-xs text-green-500 px-4 py-3 pr-12 break-all leading-relaxed font-mono">{code}</code>
         <button
           onClick={handleCopy}
-          className="absolute right-2 top-2 p-1.5 rounded-lg text-gray-400 hover:text-zinc-300 hover:bg-black/3 transition-colors"
+          className="absolute right-2 top-2 p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-black/3 transition-colors"
           title="คัดลอก"
         >
           {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
         </button>
       </div>
-      {note && <p className="text-xs text-zinc-600 mt-1.5">{note}</p>}
+      {note && <p className="text-xs text-gray-400 mt-1.5">{note}</p>}
     </div>
   );
 }
@@ -364,7 +364,7 @@ export default function LineSetupGuide({ setSidebarOpen }) {
       actions={
         <button
           onClick={() => navigate('/bot')}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-black/[0.08] text-sm text-gray-500 hover:text-gray-900 hover:border-white/20 transition-colors"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-black/[0.08] text-sm text-gray-500 hover:text-gray-900 hover:border-green-500/30 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           กลับ Bot Settings
@@ -382,7 +382,7 @@ export default function LineSetupGuide({ setSidebarOpen }) {
         {STEPS.map((step, idx) => {
           const MockUI = STEP_MOCKUPS[idx];
           return (
-            <div key={step.number} className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
+            <div key={step.number} className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
               {/* Header */}
               <div className="flex items-start gap-4 mb-5">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-gray-900 font-bold text-sm flex-shrink-0 shadow-lg shadow-green-500/20">
@@ -409,7 +409,7 @@ export default function LineSetupGuide({ setSidebarOpen }) {
 
               {/* Note */}
               {step.note && (
-                <div className="mt-3 flex items-start gap-2 text-xs text-blue-400 bg-blue-500/5 border border-blue-500/15 rounded-xl px-3 py-2">
+                <div className="mt-3 flex items-start gap-2 text-xs text-green-600 bg-blue-500/5 border border-blue-500/15 rounded-xl px-3 py-2">
                   <span className="flex-shrink-0 mt-0.5">ℹ</span>
                   <span>{step.note}</span>
                 </div>

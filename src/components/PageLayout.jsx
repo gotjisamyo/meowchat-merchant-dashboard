@@ -17,7 +17,7 @@ export default function PageLayout({ title, subtitle, setSidebarOpen, children, 
       <header className="h-14 flex items-center justify-between px-4 bg-white/95 backdrop-blur-xl border-b border-black/[0.05] sticky top-0 z-30 lg:hidden">
         <button
           onClick={() => setSidebarOpen(true)}
-          className="p-2 hover:bg-white/[0.06] rounded-xl text-gray-500 transition-colors"
+          className="p-2 hover:bg-gray-100 rounded-xl text-gray-500 transition-colors"
         >
           <Menu className="w-5 h-5" />
         </button>
@@ -64,7 +64,7 @@ export default function PageLayout({ title, subtitle, setSidebarOpen, children, 
 
       {/* Footer */}
       <footer className="content-area py-5 border-t border-black/[0.05] mt-auto">
-        <div className="flex flex-col gap-3 text-zinc-600 text-xs">
+        <div className="flex flex-col gap-3 text-gray-400 text-xs">
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5">
             <span>🔒 SSL Encrypted</span>
             <span>🏪 57+ ร้านค้าไว้วางใจ</span>

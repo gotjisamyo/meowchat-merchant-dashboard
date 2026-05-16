@@ -250,7 +250,7 @@ export default function Catalog({ setSidebarOpen }) {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
-            className="w-full bg-gray-50 border border-white/[0.06] rounded-xl pl-9 pr-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-green-500/40"
+            className="w-full bg-gray-50 border border-gray-100 rounded-xl pl-9 pr-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-green-500/40"
             placeholder="ค้นหารายการ..."
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -264,7 +264,7 @@ export default function Catalog({ setSidebarOpen }) {
               className={`flex-shrink-0 whitespace-nowrap px-3 py-2 rounded-xl text-xs font-bold transition-all border ${
                 filterType === t
                   ? 'bg-green-500/15 border-green-500/30 text-green-500'
-                  : 'bg-white/[0.03] border-white/[0.06] text-gray-400 hover:border-white/20'
+                  : 'bg-gray-50 border-gray-100 text-gray-400 hover:border-green-500/30'
               }`}
             >
               {t}
@@ -273,7 +273,7 @@ export default function Catalog({ setSidebarOpen }) {
           <select
             value={filterStatus}
             onChange={e => setFilterStatus(e.target.value)}
-            className="bg-gray-50 border border-white/[0.06] rounded-xl px-3 py-2 text-xs text-gray-500 focus:outline-none focus:border-green-500/40"
+            className="bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-xs text-gray-500 focus:outline-none focus:border-green-500/40"
           >
             <option value="ทั้งหมด">ทุกสถานะ</option>
             <option value="active">พร้อม</option>
@@ -332,7 +332,7 @@ function ItemCard({ item, inKB, onEdit, onDelete, onToggle }) {
 
   return (
     <div className={`bg-gray-50 rounded-2xl border p-4 flex flex-col gap-3 transition-all ${
-      item.status === 'inactive' ? 'border-black/[0.05] opacity-60' : 'border-white/[0.06] hover:border-white/[0.10]'
+      item.status === 'inactive' ? 'border-black/[0.05] opacity-60' : 'border-gray-100 hover:border-white/[0.10]'
     }`}>
       {/* Top row */}
       <div className="flex items-start justify-between gap-2">
@@ -347,7 +347,7 @@ function ItemCard({ item, inKB, onEdit, onDelete, onToggle }) {
         </div>
         <div className="flex items-center gap-1.5 flex-shrink-0">
           {inKB && (
-            <span className="flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-purple-500/15 text-purple-400 border border-purple-500/20" title="sync ใน Knowledge Base แล้ว">
+            <span className="flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-purple-500/15 text-green-600 border border-green-500/20" title="sync ใน Knowledge Base แล้ว">
               <Brain className="w-2.5 h-2.5" />KB
             </span>
           )}
@@ -373,7 +373,7 @@ function ItemCard({ item, inKB, onEdit, onDelete, onToggle }) {
               ? 'bg-red-500/10 text-red-400'
               : item.stock <= 5
               ? 'bg-amber-500/10 text-amber-400'
-              : 'bg-white/[0.06] text-gray-500'
+              : 'bg-gray-100 text-gray-500'
           }`}>
             {item.stock === 0 ? 'หมด' : `เหลือ ${item.stock}`}
           </span>
@@ -393,7 +393,7 @@ function ItemCard({ item, inKB, onEdit, onDelete, onToggle }) {
           <span>{item.status === 'active' ? 'พร้อม' : 'ปิด'}</span>
         </button>
         <div className="flex-1" />
-        <button onClick={onEdit} className="p-1.5 rounded-lg hover:bg-white/[0.06] text-gray-400 hover:text-gray-900 transition-colors">
+        <button onClick={onEdit} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-900 transition-colors">
           <Edit2 className="w-3.5 h-3.5" />
         </button>
         <button onClick={onDelete} className="p-1.5 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition-colors">
@@ -463,11 +463,11 @@ function ItemModal({ item, onSave, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
-      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm w-full max-w-lg max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <h2 className="text-base font-bold text-gray-900">{item ? 'แก้ไขรายการ' : 'เพิ่มรายการใหม่'}</h2>
-          <button onClick={onClose} className="p-2 rounded-xl hover:bg-white/[0.06] text-gray-400 hover:text-gray-900 transition-colors">
+          <button onClick={onClose} className="p-2 rounded-xl hover:bg-gray-100 text-gray-400 hover:text-gray-900 transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -487,7 +487,7 @@ function ItemModal({ item, onSave, onClose }) {
                     className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold text-left transition-all border ${
                       form.category === t.value
                         ? 'bg-green-500/15 border-green-500/30 text-green-500'
-                        : 'bg-white/[0.03] border-white/[0.06] text-gray-500 hover:border-white/20'
+                        : 'bg-gray-50 border-gray-100 text-gray-500 hover:border-green-500/30'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5 flex-shrink-0" />
@@ -539,7 +539,7 @@ function ItemModal({ item, onSave, onClose }) {
 
           {/* คำอธิบาย */}
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">คำอธิบาย <span className="text-zinc-600">(บอทใช้ตอบลูกค้า)</span></label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">คำอธิบาย <span className="text-gray-400">(บอทใช้ตอบลูกค้า)</span></label>
             <textarea
               className="input-premium w-full resize-none h-24 text-sm"
               placeholder="อธิบายรายการนี้ บอทจะนำข้อมูลนี้ไปตอบลูกค้าอัตโนมัติ"
@@ -550,9 +550,9 @@ function ItemModal({ item, onSave, onClose }) {
 
           {/* รูปภาพ */}
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">รูปภาพ <span className="text-zinc-600">(ไม่บังคับ)</span></label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">รูปภาพ <span className="text-gray-400">(ไม่บังคับ)</span></label>
             {form.imageUrl && (
-              <div className="relative mb-2 rounded-xl overflow-hidden border border-white/[0.06] bg-black/20">
+              <div className="relative mb-2 rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
                 <img src={form.imageUrl} alt="preview" className="w-full h-32 object-cover" onError={e => e.target.style.display='none'} />
                 <button
                   type="button"
@@ -574,7 +574,7 @@ function ItemModal({ item, onSave, onClose }) {
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploadingImg}
-                className="px-3 py-2 rounded-xl bg-white/[0.06] border border-white/[0.1] text-zinc-300 hover:bg-white/[0.1] text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50 flex-shrink-0"
+                className="px-3 py-2 rounded-xl bg-gray-100 border border-gray-200 text-gray-600 hover:bg-white/[0.1] text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50 flex-shrink-0"
               >
                 {uploadingImg ? (
                   <span className="w-3.5 h-3.5 border border-white/30 border-t-white rounded-full animate-spin" />
@@ -606,7 +606,7 @@ function ItemModal({ item, onSave, onClose }) {
                       ? s.v === 'active'
                         ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
                         : 'bg-red-500/15 border-red-500/30 text-red-400'
-                      : 'bg-white/[0.03] border-white/[0.06] text-gray-400 hover:border-white/20'
+                      : 'bg-gray-50 border-gray-100 text-gray-400 hover:border-green-500/30'
                   }`}
                 >
                   {s.l}
@@ -624,7 +624,7 @@ function ItemModal({ item, onSave, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="flex gap-3 p-6 border-t border-white/[0.06]">
+        <div className="flex gap-3 p-6 border-t border-gray-100">
           <button onClick={onClose} className="btn-secondary flex-1 py-3 rounded-xl text-sm font-semibold">
             ยกเลิก
           </button>

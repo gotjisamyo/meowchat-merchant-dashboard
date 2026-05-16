@@ -54,7 +54,7 @@ export default function Referral({ setSidebarOpen }) {
       setSidebarOpen={setSidebarOpen}
     >
       {/* How it works */}
-      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
         <h2 className="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2">
           <Gift className="w-5 h-5 text-green-600" />
           ทำงานอย่างไร
@@ -65,7 +65,7 @@ export default function Referral({ setSidebarOpen }) {
             { step: '2', icon: Users, label: 'เพื่อนสมัคร', desc: 'เพื่อนทดลองใช้ฟรี 14 วัน — ชำระเงินครั้งแรกได้ส่วนลด 20% เดือนแรก' },
             { step: '3', icon: Gift, label: 'รับรางวัล', desc: 'คุณได้ 1 เดือนฟรีทันทีที่เพื่อนชำระเงินครั้งแรก' },
           ].map(({ step, icon: Icon, label, desc }) => (
-            <div key={step} className="flex flex-col items-center text-center p-4 rounded-2xl bg-black/20 border border-black/[0.05]">
+            <div key={step} className="flex flex-col items-center text-center p-4 rounded-2xl bg-gray-50 border border-gray-100">
               <div className="w-10 h-10 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center text-green-600 font-extrabold text-lg mb-3">
                 {step}
               </div>
@@ -78,11 +78,11 @@ export default function Referral({ setSidebarOpen }) {
       </div>
 
       {/* Referral link */}
-      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6 space-y-4">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-4">
         <h2 className="text-lg font-bold text-gray-900">ลิงก์ของคุณ</h2>
 
-        <div className="flex items-center gap-2 p-4 rounded-2xl bg-black/30 border border-black/[0.09]">
-          <p className="flex-1 text-sm text-zinc-300 font-mono truncate">{referralLink}</p>
+        <div className="flex items-center gap-2 p-4 rounded-2xl bg-white border border-gray-200">
+          <p className="flex-1 text-sm text-gray-600 font-mono truncate">{referralLink}</p>
           <button
             onClick={handleCopy}
             className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-green-500/15 border border-green-500/30 text-green-600 text-xs font-bold hover:bg-green-500/25 transition-all"
@@ -92,7 +92,7 @@ export default function Referral({ setSidebarOpen }) {
           </button>
         </div>
 
-        <div className="flex items-center gap-2 p-3 rounded-xl bg-white border border-white/[0.06]">
+        <div className="flex items-center gap-2 p-3 rounded-xl bg-white border border-gray-100">
           <span className="text-xs text-gray-400">รหัสแนะนำ:</span>
           <span className="text-sm font-bold text-green-600 font-mono">{referralCode}</span>
         </div>
@@ -107,7 +107,7 @@ export default function Referral({ setSidebarOpen }) {
       </div>
 
       {/* QR Code Card */}
-      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6 space-y-5">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-5">
         <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
           <QrCode className="w-5 h-5 text-green-600" />
           QR Code แนะนำเพื่อน
@@ -144,7 +144,7 @@ export default function Referral({ setSidebarOpen }) {
           <div className="flex items-center gap-3 w-full">
             <button
               onClick={handleDownloadQR}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.1] text-sm font-semibold text-zinc-300 hover:bg-white/[0.1] transition-all"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gray-100 border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-white/[0.1] transition-all"
             >
               <Download className="w-4 h-4" />
               ดาวน์โหลด
@@ -161,7 +161,7 @@ export default function Referral({ setSidebarOpen }) {
       </div>
 
       {/* Stats placeholder */}
-      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
         <h2 className="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2">
           <Users className="w-5 h-5 text-green-600" />
           สถิติการแนะนำ
@@ -172,16 +172,16 @@ export default function Referral({ setSidebarOpen }) {
             { label: 'สมัครแล้ว', value: referralData?.conversions ?? '—' },
             { label: 'เดือนฟรีที่ได้', value: referralData?.rewards_earned ?? '—' },
           ].map(({ label, value }) => (
-            <div key={label} className="text-center p-4 rounded-2xl bg-black/20 border border-black/[0.05]">
+            <div key={label} className="text-center p-4 rounded-2xl bg-gray-50 border border-gray-100">
               <p className="text-3xl font-extrabold text-gray-900 mb-1">{value}</p>
-              <p className="text-xs text-zinc-600 font-semibold uppercase tracking-wider">{label}</p>
+              <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">{label}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Share messages */}
-      <div className="bg-gray-50 rounded-3xl border border-white/[0.06] p-6">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
         <h2 className="text-base font-bold text-gray-900 mb-4">ข้อความแนะนำสำเร็จรูป</h2>
         <div className="space-y-3">
           {[
@@ -194,9 +194,9 @@ export default function Referral({ setSidebarOpen }) {
               msg: `🐱 ใช้ MeowChat รับนัดหมายผ่าน LINE อัตโนมัติ\nบอทตอบแทน ลดงาน ลดพลาด ทดลองฟรี 14 วัน ชำระเงินครั้งแรกได้ส่วนลด 20%\n👉 ${referralLink}`,
             },
           ].map(({ label, msg }) => (
-            <div key={label} className="p-4 rounded-2xl bg-black/20 border border-black/[0.05]">
+            <div key={label} className="p-4 rounded-2xl bg-gray-50 border border-gray-100">
               <p className="text-xs text-gray-400 font-semibold mb-2">{label}</p>
-              <p className="text-sm text-zinc-300 whitespace-pre-line mb-3 leading-relaxed">{msg}</p>
+              <p className="text-sm text-gray-600 whitespace-pre-line mb-3 leading-relaxed">{msg}</p>
               <button
                 onClick={() => { navigator.clipboard.writeText(msg); }}
                 className="flex items-center gap-1.5 text-xs text-green-600 hover:text-green-500 font-semibold transition-colors"
