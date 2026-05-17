@@ -222,7 +222,7 @@ export default function Catalog({ setSidebarOpen }) {
           className="btn-primary px-4 py-2.5 rounded-xl text-sm font-bold text-gray-900 flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
-          <span className="hidden sm:inline">เพิ่มรายการ</span>
+          <span>เพิ่มรายการ</span>
         </button>
       }
     >
@@ -263,7 +263,7 @@ export default function Catalog({ setSidebarOpen }) {
             onChange={e => setSearch(e.target.value)}
           />
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+        <div className="flex flex-wrap gap-2">
           {typeOptions.map(t => (
             <button
               key={t}
