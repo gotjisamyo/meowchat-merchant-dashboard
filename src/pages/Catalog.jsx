@@ -121,32 +121,37 @@ export default function Catalog({ setSidebarOpen }) {
   }, [items, search, filterType, filterStatus]);
 
   async function handleSave(form) {
-    try {
-      const payload = {
-        name: form.name.trim(),
-        category: form.category,
-        price: parseFloat(form.price) || 0,
-        description: form.description.trim(),
-        stock: getTypeInfo(form.category).hasStock ? (parseInt(form.stock) || 0) : null,
-        imageUrl: form.imageUrl.trim(),
-        status: form.status,
-      };
+    const payload = {
+      name: form.name.trim(),
+      category: form.category,
+      price: parseFloat(form.price) || 0,
+      description: form.description.trim(),
+      stock: getTypeInfo(form.category).hasStock ? (parseInt(form.stock) || 0) : null,
+      imageUrl: form.imageUrl.trim(),
+      status: form.status,
+    };
 
-      let savedItemId;
+    let savedItemId;
+    try {
       if (modal?.item) {
         await catalogAPI.update(modal.item.id, payload);
         setItems(prev => prev.map(i => i.id === modal.item.id ? { ...i, ...payload } : i));
         savedItemId = modal.item.id;
-        setToast({ message: 'อัพเดทรายการสำเร็จ + sync KB แล้ว', type: 'success' });
       } else {
         const res = await catalogAPI.create(shopId, payload);
         savedItemId = res.id;
         setItems(prev => [{ id: savedItemId, ...payload }, ...prev]);
-        setToast({ message: 'เพิ่มรายการสำเร็จ + sync KB แล้ว', type: 'success' });
       }
+      setToast({ message: modal?.item ? 'อัพเดทรายการสำเร็จ' : 'เพิ่มรายการสำเร็จ', type: 'success' });
+      setModal(null);
+    } catch {
+      setToast({ message: 'บันทึกไม่สำเร็จ กรุณาลองใหม่', type: 'error' });
+      return;
+    }
 
-      // Sync to Knowledge Base
-      if (botId && savedItemId) {
+    // KB sync runs independently — failure here does not affect the saved item
+    if (botId && savedItemId) {
+      try {
         const existingKbId = modal?.item
           ? items.find(i => i.id === savedItemId)?.kb_entry_id
           : undefined;
@@ -156,11 +161,9 @@ export default function Catalog({ setSidebarOpen }) {
           await catalogAPI.update(savedItemId, { kb_entry_id: newKbId });
         }
         setItems(prev => prev.map(i => i.id === savedItemId ? { ...i, kb_entry_id: newKbId } : i));
+      } catch {
+        // KB sync is a background operation; silently skip on error
       }
-
-      setModal(null);
-    } catch {
-      setToast({ message: 'บันทึกไม่สำเร็จ กรุณาลองใหม่', type: 'error' });
     }
   }
 
@@ -190,15 +193,19 @@ export default function Catalog({ setSidebarOpen }) {
     try {
       await catalogAPI.delete(target.id);
       setItems(prev => prev.filter(i => i.id !== target.id));
-
-      // Remove from Knowledge Base
-      if (botId) {
-        await removeItemFromKB(target, botId);
-      }
-
-      setToast({ message: `ลบ "${target.name}" และ KB entry แล้ว`, type: 'success' });
+      setToast({ message: `ลบ "${target.name}" สำเร็จ`, type: 'success' });
     } catch {
       setToast({ message: 'ลบไม่สำเร็จ กรุณาลองใหม่', type: 'error' });
+      return;
+    }
+
+    // KB sync runs independently — failure here does not affect the deleted item
+    if (botId) {
+      try {
+        await removeItemFromKB(target, botId);
+      } catch {
+        // KB sync is a background operation; silently skip on error
+      }
     }
   }
 
