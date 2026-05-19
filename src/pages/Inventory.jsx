@@ -178,8 +178,10 @@ export default function Inventory({ setSidebarOpen }) {
   }
 
   async function handleDismissAlert(alertId) {
-    await inventoryAPI.markAlertRead(alertId);
     setAlerts(prev => prev.filter(a => a.id !== alertId));
+    try {
+      await inventoryAPI.markAlertRead(alertId);
+    } catch { /* silently ignore — alert already removed from UI */ }
   }
 
   // summary สำหรับสินค้า (hasStock) เท่านั้น
@@ -273,7 +275,11 @@ export default function Inventory({ setSidebarOpen }) {
 
           {/* Tabs */}
           <div className="flex gap-1 mb-4 bg-gray-100 rounded-xl p-1 w-fit">
-            {[{ id: 'stock', label: 'สต็อกสินค้า' }, { id: 'movements', label: 'ความเคลื่อนไหว' }].map(t => (
+            {[
+              { id: 'stock', label: 'สต็อกสินค้า' },
+              { id: 'movements', label: 'ความเคลื่อนไหว' },
+              { id: 'alerts', label: `แจ้งเตือน${alerts.length > 0 ? ` (${alerts.length})` : ''}` },
+            ].map(t => (
               <button
                 key={t.id}
                 onClick={() => setTab(t.id)}
@@ -342,6 +348,43 @@ export default function Inventory({ setSidebarOpen }) {
                   })}
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {/* Alerts Tab */}
+          {tab === 'alerts' && (
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              {alerts.length === 0 ? (
+                <div className="px-4 py-10 text-center text-gray-400">
+                  <AlertTriangle size={32} className="mx-auto mb-2 text-gray-200" />
+                  <p className="font-medium">ไม่มีการแจ้งเตือนค้างอยู่</p>
+                  <p className="text-xs mt-1">ระบบจะแจ้งเตือนอัตโนมัติเมื่อสต็อกสินค้าต่ำกว่าระดับขั้นต่ำ</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-50">
+                  {alerts.map(a => (
+                    <div key={a.id} className="flex items-center justify-between px-4 py-4 hover:bg-gray-50/60 transition-colors">
+                      <div>
+                        <span className="text-gray-900 text-sm font-semibold">{a.product_name}</span>
+                        <p className="text-yellow-600 text-xs mt-0.5">เหลือ {a.current_quantity} (ขั้นต่ำ {a.min_level})</p>
+                        <span className={`inline-block text-xs px-2 py-0.5 rounded-full mt-1 font-medium ${
+                          a.alert_type === 'out_of_stock'
+                            ? 'bg-red-50 text-red-700 border border-red-200'
+                            : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+                        }`}>
+                          {a.alert_type === 'out_of_stock' ? 'หมดแล้ว' : 'ใกล้หมด'}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => handleDismissAlert(a.id)}
+                        className="text-xs text-gray-400 hover:text-gray-600 border border-gray-200 hover:border-gray-400 rounded-lg px-3 py-1.5 transition-colors"
+                      >
+                        ✓ รับทราบ
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

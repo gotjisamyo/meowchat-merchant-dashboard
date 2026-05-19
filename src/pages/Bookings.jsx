@@ -28,6 +28,7 @@ export default function Bookings({ setSidebarOpen }) {
   const [loading, setLoading] = useState(true);
   const [shopId, setShopId] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
+  const [filterDate, setFilterDate] = useState(null);
   const [updatingId, setUpdatingId] = useState(null);
   const [toast, setToast] = useState(null);
 
@@ -49,10 +50,15 @@ export default function Bookings({ setSidebarOpen }) {
     load();
   }, []);
 
-  const filtered = useMemo(() =>
-    filterStatus === 'all' ? bookings : bookings.filter(b => b.status === filterStatus),
-    [bookings, filterStatus]
-  );
+  const filtered = useMemo(() => {
+    let result = bookings;
+    if (filterDate === 'today') {
+      const today = new Date().toDateString();
+      result = result.filter(b => b.booking_datetime && new Date(b.booking_datetime).toDateString() === today);
+    }
+    if (filterStatus !== 'all') result = result.filter(b => b.status === filterStatus);
+    return result;
+  }, [bookings, filterStatus, filterDate]);
 
   const stats = useMemo(() => ({
     total:     bookings.length,
@@ -110,20 +116,20 @@ export default function Bookings({ setSidebarOpen }) {
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'ทั้งหมด',   value: stats.total,     icon: Calendar, cls: 'text-gray-900' },
-          { label: 'วันนี้',     value: stats.today,     icon: Clock,    cls: 'text-green-600' },
-          { label: 'รอยืนยัน',  value: stats.pending,   icon: User,     cls: 'text-amber-400' },
-          { label: 'ยืนยันแล้ว', value: stats.confirmed, icon: CheckCircle2, cls: 'text-emerald-400' },
+          { label: 'ทั้งหมด',   value: stats.total,     icon: Calendar,     cls: 'text-gray-900',    active: filterStatus === 'all' && !filterDate, onClick: () => { setFilterStatus('all'); setFilterDate(null); } },
+          { label: 'วันนี้',     value: stats.today,     icon: Clock,        cls: 'text-green-600',   active: filterDate === 'today',                onClick: () => { setFilterDate(filterDate === 'today' ? null : 'today'); setFilterStatus('all'); } },
+          { label: 'รอยืนยัน',  value: stats.pending,   icon: User,         cls: 'text-amber-400',   active: filterStatus === 'pending' && !filterDate, onClick: () => { setFilterStatus('pending'); setFilterDate(null); } },
+          { label: 'ยืนยันแล้ว', value: stats.confirmed, icon: CheckCircle2, cls: 'text-emerald-400', active: filterStatus === 'confirmed' && !filterDate, onClick: () => { setFilterStatus('confirmed'); setFilterDate(null); } },
         ].map(s => {
           const Icon = s.icon;
           return (
-            <div key={s.label} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+            <button key={s.label} onClick={s.onClick} className={`bg-white rounded-2xl border shadow-sm p-4 text-left transition-all hover:shadow-md ${s.active ? 'border-green-400/50 ring-1 ring-green-400/30' : 'border-gray-100'}`}>
               <div className="flex items-center gap-2 mb-1">
                 <Icon className="w-4 h-4 text-gray-400" />
                 <span className="text-xs text-gray-400">{s.label}</span>
               </div>
               <p className={`text-xl font-extrabold ${s.cls}`}>{s.value}</p>
-            </div>
+            </button>
           );
         })}
       </div>
@@ -159,7 +165,7 @@ export default function Bookings({ setSidebarOpen }) {
           กำลังโหลด...
         </div>
       ) : filtered.length === 0 ? (
-        <EmptyState isFiltered={filterStatus !== 'all'} onClear={() => setFilterStatus('all')} />
+        <EmptyState isFiltered={filterStatus !== 'all' || !!filterDate} onClear={() => { setFilterStatus('all'); setFilterDate(null); }} />
       ) : (
         <div className="space-y-3">
           {filtered.map(b => {
