@@ -79,166 +79,6 @@ function formatRelativeTime(isoStr) {
   }
 }
 
-function getStoredUserEmail() {
-  try {
-    return JSON.parse(localStorage.getItem('meowchat_user') || 'null')?.email?.toLowerCase() || '';
-  } catch {
-    return '';
-  }
-}
-
-function buildGodScopedAnalyticsMock(days = 30) {
-  const range = Math.max(7, Math.min(days, 30));
-  const today = new Date();
-  const conversationPattern = [3, 4, 5, 3, 6, 5, 7];
-  const uniqueUserPattern = [2, 3, 3, 2, 4, 3, 5];
-  const escalationPattern = [0, 1, 0, 0, 1, 0, 1];
-
-  const daily = Array.from({ length: range }, (_, index) => {
-    const d = new Date(today);
-    d.setDate(today.getDate() - (range - 1 - index));
-    return {
-      day: d.toISOString().slice(0, 10),
-      conversations: conversationPattern[index % conversationPattern.length],
-      uniqueUsers: uniqueUserPattern[index % uniqueUserPattern.length],
-      escalations: escalationPattern[index % escalationPattern.length],
-    };
-  });
-
-  const heatPattern = [2, 1, 1, 0, 0, 1, 2, 4, 8, 13, 12, 10, 11, 9, 8, 10, 12, 14, 16, 18, 14, 9, 5, 3];
-  const heatmaps = Array.from({ length: 7 }, (_, day) => (
-    Array.from({ length: 24 }, (_, hour) => ({
-      day,
-      hour,
-      value: heatPattern[hour] + ((day + hour) % 4),
-    }))
-  )).flat();
-
-  const peakCell = heatmaps.reduce((best, cell) => (cell.value > best.value ? cell : best), heatmaps[0]);
-  const totalConversations = daily.reduce((sum, item) => sum + item.conversations, 0);
-  const totalEscalations = daily.reduce((sum, item) => sum + item.escalations, 0);
-
-  return {
-    stats: {
-      totalConversations,
-      totalMessages: totalConversations * 4,
-      uniqueUsers: daily.reduce((sum, item) => sum + item.uniqueUsers, 0),
-      escalations: totalEscalations,
-      aiResponseRate: 92,
-      timeSavedHours: 14,
-      csatScore: 94,
-      resolvedRate: 88,
-      aiTime: 7,
-      humanTime: 79,
-      conversionRate: 31,
-    },
-    daily,
-    topKeywords: [
-      { word: 'ราคา', count: 18 },
-      { word: 'ส่งด่วน', count: 14 },
-      { word: 'สต็อก', count: 11 },
-      { word: 'โปร', count: 9 },
-      { word: 'ผ่อน', count: 7 },
-      { word: 'เคลม', count: 5 },
-    ],
-    intents: [
-      { name: 'สอบถามสินค้า', value: 38 },
-      { name: 'เช็กโปรโมชัน', value: 22 },
-      { name: 'ติดตามออเดอร์', value: 18 },
-      { name: 'ขอเจ้าหน้าที่', value: 12 },
-      { name: 'บริการหลังการขาย', value: 10 },
-    ],
-    heatmaps,
-    topLinks: [
-      { url: 'https://meowchat.store/promo/april', clicks: 17, conversions: 5 },
-      { url: 'https://meowchat.store/catalog/premium', clicks: 13, conversions: 4 },
-      { url: 'https://meowchat.store/review', clicks: 9, conversions: 2 },
-    ],
-    sentiment: { happy: 16, neutral: 8, angry: 2 },
-    recentSamples: [
-      { customerName: 'Mint', text: 'สวัสดีค่ะ ขอเช็กราคาสินค้าตัว premium หน่อยค่ะ', intent: 'สอบถามสินค้า', mood: 'happy' },
-      { customerName: 'Boss', text: 'มีสต็อกพร้อมส่งไหมครับ อยากได้สีดำ', intent: 'เช็กสต็อก', mood: 'neutral' },
-      { customerName: 'May', text: 'ออเดอร์เมื่อวานยังไม่เข้าเลย ขอคุยกับเจ้าหน้าที่ค่ะ', intent: 'ขอเจ้าหน้าที่', mood: 'angry' },
-      { customerName: 'Nok', text: 'ตอนนี้มีโปรอะไรบ้างคะ', intent: 'เช็กโปรโมชัน', mood: 'happy' },
-    ],
-    peakSummary: {
-      bestDay: ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'][peakCell.day],
-      bestHour: `${String(peakCell.hour).padStart(2, '0')}:00`,
-      peakLoad: peakCell.value,
-      topIntent: 'สอบถามสินค้า',
-    },
-  };
-}
-
-function mergeGodScopedAnalytics(data, days) {
-  if (getStoredUserEmail() !== 'god@meowchat.store') return data;
-
-  const mock = buildGodScopedAnalyticsMock(days);
-  return {
-    stats: { ...mock.stats, ...(data?.stats || {}) },
-    daily: Array.isArray(data?.daily) && data.daily.length > 0 ? data.daily : mock.daily,
-    topKeywords: Array.isArray(data?.topKeywords) && data.topKeywords.length > 0 ? data.topKeywords : mock.topKeywords,
-    intents: Array.isArray(data?.intents) && data.intents.length > 0 ? data.intents : mock.intents,
-    heatmaps: Array.isArray(data?.heatmaps) && data.heatmaps.length > 0 ? data.heatmaps : mock.heatmaps,
-    topLinks: Array.isArray(data?.topLinks) && data.topLinks.length > 0 ? data.topLinks : mock.topLinks,
-    recentSamples: Array.isArray(data?.recentSamples) && data.recentSamples.length > 0 ? data.recentSamples : mock.recentSamples,
-    peakSummary: data?.peakSummary?.bestHour ? data.peakSummary : mock.peakSummary,
-    sentiment: data?.sentiment && (data.sentiment.happy || data.sentiment.neutral || data.sentiment.angry)
-      ? data.sentiment
-      : mock.sentiment,
-  };
-}
-
-// ── Mock data (fallback when API unavailable) ─────────────────────────────────
-
-const MOCK_BOT = {
-  id: 'bot_001',
-  name: 'MeowBot ร้านอาหาร',
-  businessName: 'ร้านอาหารสยาม',
-  personality: 'friendly',
-  channelId: '@SiamFoodOA',
-  businessScope: 'เมนูอาหาร ราคา เวลาทำการ ข้อมูลการจัดส่ง',
-  status: 'online',
-};
-
-const MOCK_USAGE = {
-  used: 847,
-  limit: 2000,
-  plan: 'Starter',
-  resetDate: '1 เมษายน 2569',
-  todayMessages: 42,
-  newCustomersToday: 7,
-  responseRate: 98.2,
-};
-
-const MOCK_CONVERSATIONS = [
-  { id: 'c1', customerName: 'คุณสมชาย', lastMessage: 'มีเมนูอะไรบ้างครับ?', time: '5 นาทีที่แล้ว', status: 'normal', avatar: 'ส', messages: [
-    { from: 'customer', text: 'สวัสดีครับ', time: '14:30' },
-    { from: 'bot', text: 'สวัสดีครับ ยินดีต้อนรับสู่ร้านอาหารสยาม มีอะไรให้ช่วยไหมครับ?', time: '14:30' },
-    { from: 'customer', text: 'มีเมนูอะไรบ้างครับ?', time: '14:31' },
-    { from: 'bot', text: 'เรามีเมนูหลากหลายครับ ได้แก่ ข้าวผัดกะเพรา ฿80, ต้มยำกุ้ง ฿120, ผัดไทย ฿90 และอีกมากมายครับ', time: '14:31' },
-  ]},
-  { id: 'c2', customerName: 'คุณมาลี', lastMessage: 'สั่งออนไลน์ได้ไหมคะ', time: '15 นาทีที่แล้ว', status: 'escalated', avatar: 'ม', messages: [
-    { from: 'customer', text: 'สั่งออนไลน์ได้ไหมคะ', time: '14:20' },
-    { from: 'bot', text: 'ขอโทษครับ ขณะนี้ยังไม่รองรับการสั่งออนไลน์โดยตรง', time: '14:20' },
-  ]},
-  { id: 'c3', customerName: 'คุณวิชัย', lastMessage: 'เปิดกี่โมงครับ', time: '32 นาทีที่แล้ว', status: 'normal', avatar: 'ว', messages: [
-    { from: 'customer', text: 'เปิดกี่โมงครับ', time: '14:03' },
-    { from: 'bot', text: 'ร้านเปิดทุกวัน เวลา 10:00 - 22:00 น. ครับ', time: '14:03' },
-  ]},
-];
-
-const MOCK_KNOWLEDGE = [
-  { id: 'kb1', topic: 'เมนูอาหาร', content: 'ร้านมีเมนูข้าวผัดกะเพรา ฿80, ต้มยำกุ้ง ฿120, ผัดไทย ฿90, ข้าวมันไก่ ฿70', keywords: ['เมนู', 'อาหาร', 'ราคา', 'ข้าวผัด'] },
-  { id: 'kb2', topic: 'เวลาทำการ', content: 'ร้านเปิดทุกวัน ตั้งแต่เวลา 10:00 - 22:00 น.', keywords: ['เวลา', 'เปิด', 'ปิด', 'วันหยุด'] },
-  { id: 'kb3', topic: 'การจัดส่ง', content: 'จัดส่งผ่าน LINE MAN, Grab Food ในระยะ 5 กม. ขั้นต่ำ ฿150', keywords: ['ส่ง', 'จัดส่ง', 'เดลิเวอรี่', 'Grab'] },
-];
-
-const MOCK_HANDOFFS = [
-  { id: 'h1', customerName: 'คุณรัตนา', lastMessage: 'ต้องการคุยกับพนักงานค่ะ', time: '2 นาทีที่แล้ว', status: 'waiting', avatar: 'ร' },
-  { id: 'h2', customerName: 'คุณมาลี', lastMessage: 'สั่งออนไลน์แล้วยังไม่ได้รับของ', time: '10 นาทีที่แล้ว', status: 'waiting', avatar: 'ม' },
-];
-
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
 export const authAPI = {
@@ -665,7 +505,7 @@ export const analyticsAPI = {
     try {
       const res = await api.get(`/api/bots/${botId}/analytics/overview?days=${days}`);
       const d = res.data || {};
-      return mergeGodScopedAnalytics({
+      return {
         stats: { ...fallback.stats, ...d.stats },
         daily: Array.isArray(d.daily) ? d.daily : [],
         topKeywords: Array.isArray(d.topKeywords)
@@ -677,9 +517,9 @@ export const analyticsAPI = {
         recentSamples: Array.isArray(d.recentSamples) ? d.recentSamples : [],
         peakSummary: d.peakSummary || null,
         sentiment: d.sentiment || fallback.sentiment,
-      }, days);
+      };
     } catch {
-      return mergeGodScopedAnalytics(fallback, days);
+      return fallback;
     }
   },
 };
