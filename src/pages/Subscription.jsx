@@ -127,6 +127,12 @@ export default function Subscription({ setSidebarOpen }) {
     } else if (params.get('payment') === 'cancel') {
       setToast({ type: 'error', message: 'ยกเลิกการชำระเงิน' });
       window.history.replaceState({}, '', window.location.pathname);
+    } else if (params.get('credits') === 'success') {
+      setToast({ type: 'success', message: '✅ ซื้อเครดิตสำเร็จ! เครดิตจะถูกเพิ่มภายในไม่กี่วินาที' });
+      window.history.replaceState({}, '', window.location.pathname);
+    } else if (params.get('credits') === 'cancel') {
+      setToast({ type: 'error', message: 'ยกเลิกการซื้อเครดิต' });
+      window.history.replaceState({}, '', window.location.pathname);
     }
   }, []);
 
@@ -700,9 +706,12 @@ function TopupModal({ shopId, onClose, onSuccess }) {
     setSubmitting(true);
     setError('');
     try {
-      const data = await creditsAPI.purchase(shopId, selected.id);
-      setPurchaseInfo(data);
-      setStep('payment');
+      const data = await creditsAPI.checkout(shopId, selected.id);
+      if (data?.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      } else {
+        setError('ไม่สามารถสร้าง checkout ได้ กรุณาลองใหม่');
+      }
     } catch {
       setError('เกิดข้อผิดพลาด กรุณาลองใหม่');
     } finally {

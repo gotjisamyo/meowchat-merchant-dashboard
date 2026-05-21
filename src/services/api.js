@@ -547,6 +547,11 @@ export const creditsAPI = {
       return { credits: [], totalAvailable: 0 };
     }
   },
+  // Stripe one-time payment checkout for credit pack — returns { checkoutUrl }
+  checkout: async (shopId, packId) => {
+    const res = await api.post(`/api/credits/checkout/${shopId}`, { packId });
+    return res.data;
+  },
   // Purchase a pack — returns { ok, paymentId, refNumber, pack, bankInfo, instructions }
   purchase: async (shopId, packId) => {
     const res = await api.post(`/api/credits/purchase/${shopId}`, { packId });
