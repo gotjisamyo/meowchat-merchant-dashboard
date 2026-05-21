@@ -822,4 +822,23 @@ export const inventoryAPI = {
   },
 };
 
+// ── Messenger (Facebook + Instagram DM) ──────────────────────────────────────
+
+export const messengerAPI = {
+  getConnection: async (shopId) => {
+    try {
+      const res = await api.get(`/api/messenger/connection/${shopId}`);
+      return res.data;
+    } catch { return { connected: false }; }
+  },
+  connect: async (shopId, userToken, pageId = null) => {
+    const res = await api.post(`/api/messenger/connect/${shopId}`, { userToken, pageId });
+    return res.data;
+  },
+  disconnect: async (shopId) => {
+    const res = await api.delete(`/api/messenger/disconnect/${shopId}`);
+    return res.data;
+  },
+};
+
 export default api;

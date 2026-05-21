@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Bot, Save, Link2, Info, Receipt, MessageSquare, Plus, Trash2, Send, Clock, Smile, PhoneCall, Zap, BookOpen, Cpu } from 'lucide-react';
+import { Bot, Save, Link2, Link2Off, Info, Receipt, MessageSquare, Plus, Trash2, Send, Clock, Smile, PhoneCall, Zap, BookOpen, Cpu, Facebook, Instagram } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
 import ConfirmDialog from '../components/ConfirmDialog';
-import { botAPI, quickRepliesAPI } from '../services/api';
+import { botAPI, quickRepliesAPI, messengerAPI } from '../services/api';
 
 const PERSONALITIES = [
   { value: 'friendly',     icon: '😊', label: 'เป็นกันเอง',           desc: 'ตอบแบบเพื่อนคุย สบายๆ ไม่เป็นทางการ' },
@@ -56,6 +56,12 @@ export default function BotSettings({ setSidebarOpen }) {
   const [lineVerifying, setLineVerifying] = useState(false);
   const [lineVerifyResult, setLineVerifyResult] = useState(null); // null | { ok, name, picture, detail }
 
+  // Facebook Messenger / Instagram connection state
+  const [fbConnection, setFbConnection] = useState(null); // null | { connected, fb_page_id, pageInfo, ig_user_id }
+  const [fbUserToken, setFbUserToken] = useState('');
+  const [fbConnecting, setFbConnecting] = useState(false);
+  const [fbPages, setFbPages] = useState(null); // list of pages if multiple
+
   // Test bot state
   const [testMessages, setTestMessages] = useState([]);
   const [testInput, setTestInput] = useState('');
@@ -98,6 +104,11 @@ export default function BotSettings({ setSidebarOpen }) {
           } catch {
             setQuickReplies([]);
           }
+          // Load FB/IG connection status
+          try {
+            const fbStatus = await messengerAPI.getConnection(b.id);
+            setFbConnection(fbStatus);
+          } catch { setFbConnection({ connected: false }); }
         } else {
           setToast({ message: 'ยังไม่มีการตั้งค่าบอท กรุณาตั้งค่า LINE OA ก่อน', type: 'error' });
         }
@@ -179,6 +190,40 @@ export default function BotSettings({ setSidebarOpen }) {
       setLineVerifyResult({ ok: false, detail: 'ไม่สามารถตรวจสอบได้ กรุณาลองใหม่' });
     }
     setLineVerifying(false);
+  };
+
+  const handleFbConnect = async (pageId = null) => {
+    if (!fbUserToken.trim()) {
+      setToast({ message: 'กรุณาใส่ User Token ก่อน', type: 'error' });
+      return;
+    }
+    setFbConnecting(true);
+    try {
+      const data = await messengerAPI.connect(bot.id, fbUserToken.trim(), pageId);
+      if (data.pages) {
+        // Multiple pages — let user choose
+        setFbPages(data.pages);
+      } else {
+        setFbPages(null);
+        setFbUserToken('');
+        setFbConnection({ connected: true, fb_page_id: data.fb_page_id, ig_user_id: data.ig_user_id, pageInfo: { name: data.page_name } });
+        setToast({ message: `เชื่อมต่อ ${data.page_name} สำเร็จ!${data.ig_connected ? ' + Instagram ✓' : ''}`, type: 'success' });
+      }
+    } catch (err) {
+      setToast({ message: err.response?.data?.error || 'เชื่อมต่อไม่สำเร็จ กรุณาลองใหม่', type: 'error' });
+    }
+    setFbConnecting(false);
+  };
+
+  const handleFbDisconnect = async () => {
+    if (!window.confirm('ยืนยันยกเลิกการเชื่อมต่อ Facebook?')) return;
+    try {
+      await messengerAPI.disconnect(bot.id);
+      setFbConnection({ connected: false });
+      setToast({ message: 'ยกเลิกการเชื่อมต่อแล้ว', type: 'success' });
+    } catch {
+      setToast({ message: 'เกิดข้อผิดพลาด กรุณาลองใหม่', type: 'error' });
+    }
   };
 
   const update = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
@@ -705,6 +750,135 @@ export default function BotSettings({ setSidebarOpen }) {
                   placeholder="@YourOfficialAccount"
                 />
               </FormField>
+            </div>
+          </Section>
+
+          {/* Facebook Messenger + Instagram DM */}
+          <Section title="Facebook Messenger / Instagram DM" icon={<MessageSquare className="w-5 h-5 text-blue-400" />}>
+            <div className="space-y-4">
+              {/* Status */}
+              <div className={`p-4 rounded-2xl border ${
+                fbConnection?.connected
+                  ? 'bg-blue-500/10 border-blue-500/20'
+                  : 'bg-zinc-500/10 border-zinc-500/20'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                      fbConnection?.connected ? 'bg-blue-400 animate-pulse' : 'bg-zinc-500'
+                    }`} />
+                    <span className={`text-sm font-bold ${
+                      fbConnection?.connected ? 'text-blue-400' : 'text-gray-500'
+                    }`}>
+                      {fbConnection?.connected
+                        ? `✓ เชื่อมต่อแล้ว${fbConnection.pageInfo?.name ? ` — ${fbConnection.pageInfo.name}` : ''}`
+                        : 'ยังไม่ได้เชื่อมต่อ Facebook'}
+                    </span>
+                  </div>
+                  {fbConnection?.connected && (
+                    <button
+                      type="button"
+                      onClick={handleFbDisconnect}
+                      className="text-xs px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors flex items-center gap-1.5"
+                    >
+                      <Link2Off className="w-3 h-3" />
+                      ยกเลิก
+                    </button>
+                  )}
+                </div>
+                {fbConnection?.ig_user_id && (
+                  <p className="text-xs text-purple-400 mt-2 flex items-center gap-1">
+                    ✓ Instagram DM เชื่อมต่อแล้ว (IG ID: {fbConnection.ig_user_id})
+                  </p>
+                )}
+              </div>
+
+              {!fbConnection?.connected && (
+                <>
+                  {/* Page picker when multiple pages */}
+                  {fbPages && (
+                    <div className="bg-blue-500/5 border border-blue-500/20 rounded-2xl p-4 space-y-2">
+                      <p className="text-xs text-blue-400 font-bold mb-2">พบหลาย Facebook Page — เลือกที่ต้องการ:</p>
+                      {fbPages.map(p => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => handleFbConnect(p.id)}
+                          disabled={fbConnecting}
+                          className="w-full text-left flex items-center justify-between p-3 rounded-xl bg-white border border-blue-500/20 hover:border-blue-500/40 transition-colors text-sm"
+                        >
+                          <span className="font-bold text-gray-900">{p.name}</span>
+                          <span className="text-xs text-gray-400">{p.igConnected ? '📸 Instagram ✓' : 'Facebook เท่านั้น'}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <FormField label="User Token (จาก Facebook Developer)">
+                    <input
+                      type="password"
+                      value={fbUserToken}
+                      onChange={(e) => { setFbUserToken(e.target.value); setFbPages(null); }}
+                      className="input-premium"
+                      placeholder="วาง User Access Token"
+                      autoComplete="off"
+                    />
+                  </FormField>
+
+                  <button
+                    type="button"
+                    onClick={() => handleFbConnect()}
+                    disabled={fbConnecting || !fbUserToken.trim()}
+                    className="w-full py-2.5 rounded-xl bg-blue-500 hover:bg-blue-600 disabled:opacity-40 text-white text-sm font-bold transition-colors flex items-center justify-center gap-2"
+                  >
+                    {fbConnecting
+                      ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      : <Link2 className="w-4 h-4" />}
+                    {fbConnecting ? 'กำลังเชื่อมต่อ...' : 'เชื่อมต่อ Facebook Page'}
+                  </button>
+
+                  <div className="bg-white rounded-2xl p-4 border border-gray-100">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Info className="w-4 h-4 text-blue-400" />
+                      <span className="text-sm font-bold text-gray-900">วิธีเชื่อมต่อ Facebook Messenger</span>
+                    </div>
+                    <ol className="space-y-3 text-xs text-gray-500">
+                      <li className="flex gap-2">
+                        <span className="text-blue-400 font-bold flex-shrink-0">1.</span>
+                        <span>เข้า <strong className="text-gray-900">developers.facebook.com</strong> → เลือก App ของคุณ</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-blue-400 font-bold flex-shrink-0">2.</span>
+                        <span>ไปที่ <strong className="text-gray-900">Tools → Graph API Explorer</strong> → เลือก App → Generate Token ด้วย permissions: <code className="text-blue-400">pages_messaging</code></span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-blue-400 font-bold flex-shrink-0">3.</span>
+                        <span>Copy token มาวางด้านบน แล้วกด เชื่อมต่อ</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-blue-400 font-bold flex-shrink-0">4.</span>
+                        <span>ไป <strong className="text-gray-900">Messenger → Settings → Webhooks</strong> → ใส่ Callback URL: <code className="text-xs text-blue-400 break-all">https://api.meowchat.store/api/messenger/webhook</code></span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-blue-400 font-bold flex-shrink-0">5.</span>
+                        <span>Verify Token: <code className="text-blue-400 font-bold">meowchat_verify_token</code> → Subscribe fields: <code className="text-blue-400">messages</code></span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-blue-400 font-bold flex-shrink-0 flex gap-1">✓</span>
+                        <span className="text-blue-400">เสร็จแล้ว — ลูกค้าทักมาที่ Facebook Page AI จะตอบอัตโนมัติ</span>
+                      </li>
+                    </ol>
+                  </div>
+                </>
+              )}
+
+              <div className="bg-white rounded-2xl p-4 border border-gray-100">
+                <p className="text-xs text-gray-400 font-bold mb-1">📋 Webhook URL</p>
+                <code className="text-xs text-blue-500 bg-blue-500/10 px-3 py-2 rounded-lg block break-all select-all">
+                  https://api.meowchat.store/api/messenger/webhook
+                </code>
+                <p className="text-xs text-gray-400 mt-2">Verify Token: <code className="text-blue-400">meowchat_verify_token</code></p>
+              </div>
             </div>
           </Section>
 
