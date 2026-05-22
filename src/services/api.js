@@ -841,4 +841,25 @@ export const messengerAPI = {
   },
 };
 
+export const mediaAPI = {
+  getAll: async (shopId) => {
+    try {
+      const res = await api.get(`/api/media/${shopId}`);
+      return res.data;
+    } catch { return []; }
+  },
+  create: async (shopId, data) => {
+    const res = await api.post(`/api/media/${shopId}`, data);
+    return res.data;
+  },
+  update: async (shopId, id, data) => {
+    const res = await api.patch(`/api/media/${shopId}/${id}`, data);
+    return res.data;
+  },
+  remove: async (shopId, id) => {
+    const res = await api.delete(`/api/media/${shopId}/${id}`);
+    return res.data;
+  },
+};
+
 export default api;

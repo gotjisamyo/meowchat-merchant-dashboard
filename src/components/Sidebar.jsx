@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Bot, BookOpen, MessageSquare, CreditCard, User,
-  ChevronLeft, ChevronRight, Cat, LogOut, Loader2, PhoneCall, Gift, Megaphone, BarChart2, Users, Zap, HelpCircle, Package, ShoppingCart, Calendar, Boxes,
+  ChevronLeft, ChevronRight, Cat, LogOut, Loader2, PhoneCall, Gift, Megaphone, BarChart2, Users, Zap, HelpCircle, Package, ShoppingCart, Calendar, Boxes, Image,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { handoffAPI, billingAPI, botAPI, ordersAPI, bookingsAPI } from '../services/api';
@@ -14,6 +14,7 @@ const menuGroups = [
       { path: '/',          id: 'dashboard', label: 'Dashboard',     icon: LayoutDashboard },
       { path: '/bot',       id: 'bot',       label: 'ตั้งค่าบอท',     icon: Bot },
       { path: '/knowledge', id: 'knowledge', label: 'Knowledge Base', icon: BookOpen },
+      { path: '/media',     id: 'media',     label: 'รูปภาพ / Media',  icon: Image },
     ],
   },
   {

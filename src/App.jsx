@@ -27,6 +27,7 @@ import Bookings from './pages/Bookings';
 import Inventory from './pages/Inventory';
 import BillingSuccess from './pages/BillingSuccess';
 import BillingCancel from './pages/BillingCancel';
+import MediaLibrary from './pages/MediaLibrary';
 
 function MerchantLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -71,6 +72,7 @@ export default function App() {
                       <Route path="/" element={<Dashboard setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/bot" element={<BotSettings setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/knowledge" element={<KnowledgeBase setSidebarOpen={setSidebarOpen} />} />
+                      <Route path="/media" element={<MediaLibrary setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/conversations" element={<Conversations setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/handoff" element={<Handoff setSidebarOpen={setSidebarOpen} />} />
                       <Route path="/subscription" element={<Subscription setSidebarOpen={setSidebarOpen} />} />
