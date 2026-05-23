@@ -1,10 +1,18 @@
-import { useState, useEffect } from 'react';
-import { Image, Plus, Pencil, Trash2, X, Tag, ToggleLeft, ToggleRight, Search, Sparkles, Link } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Image, Plus, Pencil, Trash2, X, Tag, ToggleLeft, ToggleRight, Search, Sparkles, Upload, Link, Loader2, CheckCircle2 } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import ConfirmDialog from '../components/ConfirmDialog';
 import Toast from '../components/Toast';
 import { mediaAPI, shopAPI } from '../services/api';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://api.meowchat.store';
+
+function authHeaders() {
+  const token = localStorage.getItem('meowchat_token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+// ── Tag Input ──────────────────────────────────────────────────────────────────
 function TagInput({ value, onChange }) {
   const [input, setInput] = useState('');
   const add = () => {
@@ -18,7 +26,7 @@ function TagInput({ value, onChange }) {
         {value.map(tag => (
           <span key={tag} className="flex items-center gap-1 bg-emerald-900/40 text-emerald-300 text-xs px-2 py-1 rounded-full">
             {tag}
-            <button onClick={() => onChange(value.filter(t => t !== tag))} className="hover:text-white">
+            <button type="button" onClick={() => onChange(value.filter(t => t !== tag))} className="hover:text-white">
               <X size={10} />
             </button>
           </span>
@@ -32,7 +40,7 @@ function TagInput({ value, onChange }) {
           placeholder="พิมพ์ keyword แล้วกด Enter"
           className="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
         />
-        <button onClick={add} className="px-3 py-2 bg-zinc-700 hover:bg-zinc-600 rounded-lg text-sm text-zinc-300">
+        <button type="button" onClick={add} className="px-3 py-2 bg-zinc-700 hover:bg-zinc-600 rounded-lg text-sm text-zinc-300">
           <Plus size={14} />
         </button>
       </div>
@@ -41,6 +49,150 @@ function TagInput({ value, onChange }) {
   );
 }
 
+// ── Image Upload Zone ──────────────────────────────────────────────────────────
+function ImageUploadZone({ imageUrl, onUrl }) {
+  const [tab, setTab] = useState(imageUrl ? 'url' : 'upload');
+  const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
+  const [urlInput, setUrlInput] = useState(imageUrl || '');
+  const fileRef = useRef();
+
+  const uploadFile = useCallback(async (file) => {
+    if (!file) return;
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowed.includes(file.type)) { setError('รองรับเฉพาะ JPEG, PNG, WebP, GIF'); return; }
+    if (file.size > 2 * 1024 * 1024) { setError('ขนาดไฟล์ต้องไม่เกิน 2 MB'); return; }
+    setError('');
+    setUploading(true);
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetch(`${API_BASE}/api/upload/image`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: form,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Upload failed');
+      onUrl(data.url);
+      setUrlInput(data.url);
+    } catch (e) {
+      setError(e.message || 'อัพโหลดไม่สำเร็จ');
+    }
+    setUploading(false);
+  }, [onUrl]);
+
+  const onDrop = useCallback((e) => {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file) uploadFile(file);
+  }, [uploadFile]);
+
+  const handleUrlChange = (v) => { setUrlInput(v); onUrl(v); };
+
+  return (
+    <div className="space-y-3">
+      {/* Tabs */}
+      <div className="flex gap-1 bg-zinc-900 rounded-xl p-1 w-fit border border-zinc-700">
+        <button
+          type="button"
+          onClick={() => setTab('upload')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${tab === 'upload' ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:text-zinc-200'}`}
+        >
+          <Upload size={12} /> อัพโหลดรูป
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab('url')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${tab === 'url' ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:text-zinc-200'}`}
+        >
+          <Link size={12} /> ใส่ URL
+        </button>
+      </div>
+
+      {/* Upload Zone */}
+      {tab === 'upload' && (
+        <div
+          onDrop={onDrop}
+          onDragOver={e => { e.preventDefault(); setDragging(true); }}
+          onDragLeave={() => setDragging(false)}
+          onClick={() => !uploading && fileRef.current?.click()}
+          className={`relative border-2 border-dashed rounded-2xl transition-all cursor-pointer select-none
+            ${dragging ? 'border-emerald-500 bg-emerald-900/20' : 'border-zinc-700 hover:border-zinc-500 hover:bg-zinc-800/50'}
+            ${uploading ? 'pointer-events-none' : ''}
+          `}
+        >
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            className="hidden"
+            onChange={e => { if (e.target.files[0]) uploadFile(e.target.files[0]); e.target.value = ''; }}
+          />
+
+          {imageUrl && !uploading ? (
+            <div className="p-3 flex items-center gap-3">
+              <img src={imageUrl} alt="preview" className="h-20 w-20 object-cover rounded-xl border border-zinc-700 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+                  <span className="text-sm font-medium text-white">อัพโหลดสำเร็จ</span>
+                </div>
+                <p className="text-xs text-zinc-500 truncate font-mono">{imageUrl}</p>
+                <button
+                  type="button"
+                  onClick={e => { e.stopPropagation(); onUrl(''); setUrlInput(''); fileRef.current?.click(); }}
+                  className="mt-2 text-xs text-emerald-400 hover:text-emerald-300 font-medium"
+                >
+                  เปลี่ยนรูป
+                </button>
+              </div>
+            </div>
+          ) : uploading ? (
+            <div className="py-10 flex flex-col items-center gap-3">
+              <Loader2 size={28} className="text-emerald-400 animate-spin" />
+              <p className="text-sm text-zinc-400">กำลังอัพโหลด...</p>
+            </div>
+          ) : (
+            <div className="py-10 flex flex-col items-center gap-3">
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${dragging ? 'bg-emerald-900/40' : 'bg-zinc-800'}`}>
+                <Upload size={22} className={dragging ? 'text-emerald-400' : 'text-zinc-500'} />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-medium text-zinc-300">
+                  {dragging ? 'ปล่อยรูปที่นี่ได้เลย' : 'วางรูปที่นี่ หรือคลิกเพื่อเลือก'}
+                </p>
+                <p className="text-xs text-zinc-600 mt-1">JPEG, PNG, WebP, GIF — ไม่เกิน 2 MB</p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* URL Input */}
+      {tab === 'url' && (
+        <div className="space-y-2">
+          <input
+            value={urlInput}
+            onChange={e => handleUrlChange(e.target.value)}
+            placeholder="https://example.com/image.jpg"
+            className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 font-mono"
+          />
+          {urlInput && (
+            <img src={urlInput} alt="preview" className="mt-2 h-24 w-auto rounded-lg object-cover border border-zinc-700"
+              onError={e => { e.target.style.display = 'none'; }} />
+          )}
+        </div>
+      )}
+
+      {error && <p className="text-xs text-red-400">{error}</p>}
+    </div>
+  );
+}
+
+// ── Modal ──────────────────────────────────────────────────────────────────────
 function Modal({ item, onSave, onClose, saving }) {
   const [label, setLabel] = useState(item?.label || '');
   const [keywords, setKeywords] = useState(item?.keywords || []);
@@ -49,12 +201,16 @@ function Modal({ item, onSave, onClose, saving }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
-      <div className="bg-zinc-800 border border-zinc-700 rounded-2xl w-full max-w-lg shadow-2xl">
-        <div className="flex items-center justify-between p-5 border-b border-zinc-700">
+      <div className="bg-zinc-800 border border-zinc-700 rounded-2xl w-full max-w-lg shadow-2xl max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between p-5 border-b border-zinc-700 shrink-0">
           <h3 className="font-semibold text-white">{item ? 'แก้ไขรูปภาพ' : 'เพิ่มรูปภาพใหม่'}</h3>
           <button onClick={onClose} className="text-zinc-400 hover:text-white"><X size={18} /></button>
         </div>
-        <div className="p-5 space-y-4">
+        <div className="p-5 space-y-4 overflow-y-auto">
+          <div>
+            <label className="block text-sm text-zinc-400 mb-2">รูปภาพ <span className="text-red-400">*</span></label>
+            <ImageUploadZone imageUrl={imageUrl} onUrl={setImageUrl} />
+          </div>
           <div>
             <label className="block text-sm text-zinc-400 mb-1">ชื่อ / หมวดหมู่ <span className="text-red-400">*</span></label>
             <input
@@ -72,22 +228,6 @@ function Modal({ item, onSave, onClose, saving }) {
             <TagInput value={keywords} onChange={setKeywords} />
           </div>
           <div>
-            <label className="block text-sm text-zinc-400 mb-1">
-              <Link size={12} className="inline mr-1" />
-              URL รูปภาพ <span className="text-red-400">*</span>
-            </label>
-            <input
-              value={imageUrl}
-              onChange={e => setImageUrl(e.target.value)}
-              placeholder="https://example.com/image.jpg"
-              className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500"
-            />
-            {imageUrl && (
-              <img src={imageUrl} alt="preview" className="mt-2 h-24 w-auto rounded-lg object-cover border border-zinc-700"
-                onError={e => { e.target.style.display = 'none'; }} />
-            )}
-          </div>
-          <div>
             <label className="block text-sm text-zinc-400 mb-1">คำบรรยายรูป (optional)</label>
             <input
               value={caption}
@@ -97,15 +237,16 @@ function Modal({ item, onSave, onClose, saving }) {
             />
           </div>
         </div>
-        <div className="flex gap-3 p-5 border-t border-zinc-700">
+        <div className="flex gap-3 p-5 border-t border-zinc-700 shrink-0">
           <button onClick={onClose} className="flex-1 py-2 rounded-xl border border-zinc-600 text-zinc-300 hover:bg-zinc-700 text-sm">
             ยกเลิก
           </button>
           <button
             onClick={() => onSave({ label, keywords, image_url: imageUrl, caption })}
             disabled={!label || !imageUrl || saving}
-            className="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-medium text-sm"
+            className="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-medium text-sm flex items-center justify-center gap-2"
           >
+            {saving && <Loader2 size={13} className="animate-spin" />}
             {saving ? 'กำลังบันทึก...' : (item ? 'บันทึก' : 'เพิ่มรูปภาพ')}
           </button>
         </div>
@@ -114,6 +255,7 @@ function Modal({ item, onSave, onClose, saving }) {
   );
 }
 
+// ── Main Page ──────────────────────────────────────────────────────────────────
 export default function MediaLibrary({ setSidebarOpen }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -241,7 +383,6 @@ export default function MediaLibrary({ setSidebarOpen }) {
           <div className="grid gap-3">
             {filtered.map(item => (
               <div key={item.id} className={`flex items-center gap-4 p-4 bg-zinc-800/60 border rounded-xl transition-opacity ${item.active ? 'border-zinc-700' : 'border-zinc-800 opacity-50'}`}>
-                {/* Thumbnail */}
                 <div className="shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-zinc-900 border border-zinc-700 flex items-center justify-center">
                   {item.image_url ? (
                     <img src={item.image_url} alt={item.label} className="w-full h-full object-cover"
@@ -250,7 +391,6 @@ export default function MediaLibrary({ setSidebarOpen }) {
                     <Image size={20} className="text-zinc-600" />
                   )}
                 </div>
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-white text-sm truncate">{item.label}</span>
@@ -265,7 +405,6 @@ export default function MediaLibrary({ setSidebarOpen }) {
                     ))}
                   </div>
                 </div>
-                {/* Actions */}
                 <div className="flex items-center gap-1 shrink-0">
                   <button onClick={() => handleToggle(item)} className="p-2 rounded-lg text-zinc-400 hover:text-emerald-400 hover:bg-zinc-700" title={item.active ? 'ปิดใช้งาน' : 'เปิดใช้งาน'}>
                     {item.active ? <ToggleRight size={18} className="text-emerald-400" /> : <ToggleLeft size={18} />}
