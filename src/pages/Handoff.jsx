@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { PhoneCall, X, Clock, User, CheckCircle, AlertCircle, RefreshCw, BookOpen, ChevronDown, ChevronUp, Zap, MessageSquare, UserCheck, HeadphonesIcon, BellRing, ListFilter, Send, Loader2 } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
+import PlatformIcon from '../components/PlatformIcon';
 import Toast from '../components/Toast';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { handoffAPI, botAPI } from '../services/api';
@@ -193,6 +194,7 @@ export default function Handoff({ setSidebarOpen }) {
           createdAt: h.created_at,
           status: h.status === 'pending' ? 'waiting' : h.status,
           avatar: (h.customer_name || 'ล').charAt(0),
+          channel: h.channel || 'line',
         };
         setHandoffs(prev => [mapped, ...prev.filter(x => x.id !== h.id)]);
       } catch {}
@@ -437,8 +439,13 @@ export default function Handoff({ setSidebarOpen }) {
           <div className="divide-y divide-white/[0.04]">
             {closedHandoffs.map((h) => (
               <div key={h.id} className="flex items-center gap-4 px-5 py-3 opacity-60">
-                <div className="w-9 h-9 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-sm font-bold text-gray-400 flex-shrink-0">
-                  {h.avatar || <User className="w-4 h-4" />}
+                <div className="relative flex-shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-sm font-bold text-gray-400">
+                    {h.avatar || <User className="w-4 h-4" />}
+                  </div>
+                  <span className="absolute -bottom-0.5 -right-0.5 rounded-full ring-1 ring-white">
+                    <PlatformIcon channel={h.channel} size={12} />
+                  </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-gray-500 text-sm">{h.customerName}</p>
@@ -462,8 +469,13 @@ function HandoffCard({ handoff, onAccept, onClose, onToggleChat, chatOpen, isLoa
 
   return (
     <div className="flex items-start gap-4 px-5 py-4 hover:bg-gray-50/50 transition-colors">
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-500/20 border border-gray-100 flex items-center justify-center text-sm font-bold text-gray-900 flex-shrink-0 mt-0.5">
-        {handoff.avatar || <User className="w-4 h-4" />}
+      <div className="relative flex-shrink-0 mt-0.5">
+        <div className="w-10 h-10 rounded-full bg-green-500/20 border border-gray-100 flex items-center justify-center text-sm font-bold text-gray-900">
+          {handoff.avatar || <User className="w-4 h-4" />}
+        </div>
+        <span className="absolute -bottom-0.5 -right-0.5 rounded-full ring-1 ring-white">
+          <PlatformIcon channel={handoff.channel} size={14} />
+        </span>
       </div>
 
       <div className="flex-1 min-w-0">

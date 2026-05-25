@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MessageSquare, Search, ChevronRight, X, AlertCircle, Clock, Users, RefreshCw, Zap } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
+import PlatformIcon from '../components/PlatformIcon';
 import { conversationsAPI, botAPI } from '../services/api';
 
 const FILTERS = [
@@ -184,8 +185,13 @@ export default function Conversations({ setSidebarOpen }) {
                       selected?.id === conv.id ? 'bg-green-500/[0.06]' : ''
                     }`}
                   >
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-500/20 border border-gray-100 flex items-center justify-center text-sm font-bold text-gray-900 flex-shrink-0">
-                      {conv.avatar}
+                    <div className="relative w-10 h-10 flex-shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-green-500/20 border border-gray-100 flex items-center justify-center text-sm font-bold text-gray-900">
+                        {conv.avatar}
+                      </div>
+                      <span className="absolute -bottom-0.5 -right-0.5 rounded-full ring-1 ring-white">
+                        <PlatformIcon channel={conv.channel} size={14} />
+                      </span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-0.5 gap-2">
@@ -237,8 +243,13 @@ function ChatDetail({ conv, onClose, loadingMsgs }) {
         >
           <X className="w-4 h-4" />
         </button>
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-500/20 border border-gray-100 flex items-center justify-center text-sm font-bold text-gray-900 flex-shrink-0">
-          {conv.avatar}
+        <div className="relative w-10 h-10 flex-shrink-0">
+          <div className="w-10 h-10 rounded-full bg-green-500/20 border border-gray-100 flex items-center justify-center text-sm font-bold text-gray-900">
+            {conv.avatar}
+          </div>
+          <span className="absolute -bottom-0.5 -right-0.5 rounded-full ring-1 ring-white">
+            <PlatformIcon channel={conv.channel} size={14} />
+          </span>
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -281,7 +292,7 @@ function ChatDetail({ conv, onClose, loadingMsgs }) {
               <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words ${
                 msg.from === 'customer'
                   ? 'bg-white text-gray-900 rounded-tl-sm'
-                  : 'bg-gradient-to-r from-green-500 to-green-400 text-gray-900 rounded-tr-sm'
+                  : 'bg-green-500 text-gray-900 rounded-tr-sm'
               }`}>
                 {msg.text}
               </div>
@@ -290,7 +301,7 @@ function ChatDetail({ conv, onClose, loadingMsgs }) {
               </p>
             </div>
             {msg.from === 'bot' && (
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-green-400 flex items-center justify-center text-xs ml-2 flex-shrink-0 mt-1">
+              <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-xs ml-2 flex-shrink-0 mt-1">
                 🐱
               </div>
             )}
