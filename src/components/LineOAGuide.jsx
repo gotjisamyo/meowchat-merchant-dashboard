@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const WEBHOOK_BASE = 'https://api.meowchat.store/api/line/webhook';
+const WEBHOOK_BASE = `${import.meta.env.VITE_API_URL || 'https://api.meowchat.store'}/api/line/webhook`;
 
 export default function LineOAGuide({ botId }) {
   const [copied, setCopied] = useState(false);

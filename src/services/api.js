@@ -866,6 +866,7 @@ export const messengerAPI = {
       const cleanup = () => {
         clearInterval(poll);
         window.removeEventListener('message', handler);
+        try { popup?.close(); } catch (_) {}
       };
       window.addEventListener('message', handler);
     });

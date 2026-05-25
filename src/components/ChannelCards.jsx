@@ -6,6 +6,7 @@ export default function ChannelCards({ bot, fbConnection, onRefresh }) {
   const [lineOpen, setLineOpen] = useState(false);
   const [fbLoading, setFbLoading] = useState(false);
   const [fbError, setFbError] = useState('');
+  const [fbDisconnecting, setFbDisconnecting] = useState(false);
 
   const fbConnected = fbConnection?.connected;
   const igConnected = !!fbConnection?.ig_user_id;
@@ -25,11 +26,15 @@ export default function ChannelCards({ bot, fbConnection, onRefresh }) {
 
   const handleFbDisconnect = async () => {
     if (!window.confirm('ยืนยันยกเลิกการเชื่อมต่อ Facebook?')) return;
+    setFbDisconnecting(true);
+    setFbError('');
     try {
       await messengerAPI.disconnect(bot.id);
       await onRefresh();
     } catch (err) {
-      console.error('disconnect error:', err);
+      setFbError(err.message || 'ยกเลิกการเชื่อมต่อไม่สำเร็จ');
+    } finally {
+      setFbDisconnecting(false);
     }
   };
 
@@ -71,9 +76,10 @@ export default function ChannelCards({ bot, fbConnection, onRefresh }) {
               <button
                 type="button"
                 onClick={handleFbDisconnect}
-                className="text-xs text-red-400 hover:text-red-500 transition-colors"
+                disabled={fbDisconnecting}
+                className="text-xs text-red-400 hover:text-red-500 disabled:opacity-40 transition-colors"
               >
-                ยกเลิก
+                {fbDisconnecting ? '...' : 'ยกเลิก'}
               </button>
             </div>
           ) : (
