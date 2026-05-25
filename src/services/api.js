@@ -839,6 +839,37 @@ export const messengerAPI = {
     const res = await api.delete(`/api/messenger/disconnect/${shopId}`);
     return res.data;
   },
+  connectViaOAuth: (botId) => {
+    return new Promise((resolve, reject) => {
+      const w = 600, h = 700;
+      const left = Math.round(window.screenX + (window.outerWidth - w) / 2);
+      const top = Math.round(window.screenY + (window.outerHeight - h) / 2);
+      const popup = window.open(
+        `${API_BASE_URL}/api/messenger/oauth/facebook/init?botId=${encodeURIComponent(botId)}`,
+        'fb-oauth',
+        `width=${w},height=${h},left=${left},top=${top}`
+      );
+      if (!popup) {
+        reject(new Error('Popup ถูกบล็อก กรุณาอนุญาต popup สำหรับเว็บนี้'));
+        return;
+      }
+      const handler = (event) => {
+        if (event.origin !== API_BASE_URL) return;
+        if (typeof event.data?.success === 'undefined') return;
+        cleanup();
+        if (event.data.success) resolve(event.data);
+        else reject(new Error(event.data.error || 'เชื่อมต่อไม่สำเร็จ'));
+      };
+      const poll = setInterval(() => {
+        if (popup.closed) { cleanup(); reject(new Error('cancelled')); }
+      }, 500);
+      const cleanup = () => {
+        clearInterval(poll);
+        window.removeEventListener('message', handler);
+      };
+      window.addEventListener('message', handler);
+    });
+  },
 };
 
 export const mediaAPI = {
