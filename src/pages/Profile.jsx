@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, Lock, Save, Eye, EyeOff, Building2 } from 'lucide-react';
+import { User, Save, Building2 } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
 import { authAPI } from '../services/api';
@@ -14,14 +14,7 @@ export default function Profile({ setSidebarOpen }) {
     phone: '',
     company: '',
   });
-  const [passwords, setPasswords] = useState({
-    current: '',
-    next: '',
-    confirm: '',
-  });
-  const [showPass, setShowPass] = useState({ current: false, next: false, confirm: false });
   const [savingProfile, setSavingProfile] = useState(false);
-  const [savingPass, setSavingPass] = useState(false);
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -69,35 +62,6 @@ export default function Profile({ setSidebarOpen }) {
     setSavingProfile(false);
   };
 
-  const handleChangePassword = async (e) => {
-    e.preventDefault();
-    if (passwords.next !== passwords.confirm) {
-      setToast({ message: 'รหัสผ่านใหม่ไม่ตรงกัน', type: 'error' });
-      return;
-    }
-    if (passwords.next.length < 6) {
-      setToast({ message: 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร', type: 'error' });
-      return;
-    }
-    setSavingPass(true);
-    try {
-      await api.put('/api/auth/profile', {
-        currentPassword: passwords.current,
-        newPassword: passwords.next,
-      });
-      setPasswords({ current: '', next: '', confirm: '' });
-      setToast({ message: 'เปลี่ยนรหัสผ่านเรียบร้อยแล้ว', type: 'success' });
-    } catch (err) {
-      setToast({
-        message: err.response?.data?.message || 'เกิดข้อผิดพลาด กรุณาตรวจสอบรหัสผ่านปัจจุบัน',
-        type: 'error',
-      });
-    }
-    setSavingPass(false);
-  };
-
-  const togglePass = (key) => setShowPass((prev) => ({ ...prev, [key]: !prev[key] }));
-
   return (
     <PageLayout
       title="โปรไฟล์"
@@ -110,7 +74,7 @@ export default function Profile({ setSidebarOpen }) {
         {/* Avatar Section */}
         <div className="lg:col-span-1">
           <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-4 sm:p-6 flex flex-col items-center gap-4 text-center">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-green-600 to-green-400 flex items-center justify-center text-4xl font-bold text-gray-900 shadow-xl shadow-green-500/20">
+            <div className="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center text-4xl font-bold text-gray-900 shadow-xl shadow-green-500/20">
               {profile.name?.charAt(0).toUpperCase() || 'M'}
             </div>
             <div>
@@ -200,83 +164,6 @@ export default function Profile({ setSidebarOpen }) {
             </form>
           </div>
 
-          {/* Change Password */}
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-9 h-9 rounded-xl bg-purple-500/15 border border-green-500/20 flex items-center justify-center">
-                <Lock className="w-4 h-4 text-green-600" />
-              </div>
-              <h2 className="text-lg font-bold text-gray-900">เปลี่ยนรหัสผ่าน</h2>
-            </div>
-
-            <form onSubmit={handleChangePassword} className="space-y-4">
-              <FormField label="รหัสผ่านปัจจุบัน">
-                <div className="relative">
-                  <input
-                    type={showPass.current ? 'text' : 'password'}
-                    value={passwords.current}
-                    onChange={(e) => setPasswords((p) => ({ ...p, current: e.target.value }))}
-                    className="input-premium pr-11"
-                    placeholder="••••••••"
-                    required
-                  />
-                  <button type="button" onClick={() => togglePass('current')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
-                    {showPass.current ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </FormField>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <FormField label="รหัสผ่านใหม่">
-                  <div className="relative">
-                    <input
-                      type={showPass.next ? 'text' : 'password'}
-                      value={passwords.next}
-                      onChange={(e) => setPasswords((p) => ({ ...p, next: e.target.value }))}
-                      className="input-premium pr-11"
-                      placeholder="อย่างน้อย 6 ตัวอักษร"
-                      required
-                    />
-                    <button type="button" onClick={() => togglePass('next')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
-                      {showPass.next ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </FormField>
-                <FormField label="ยืนยันรหัสผ่านใหม่">
-                  <div className="relative">
-                    <input
-                      type={showPass.confirm ? 'text' : 'password'}
-                      value={passwords.confirm}
-                      onChange={(e) => setPasswords((p) => ({ ...p, confirm: e.target.value }))}
-                      className="input-premium pr-11"
-                      placeholder="••••••••"
-                      required
-                    />
-                    <button type="button" onClick={() => togglePass('confirm')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
-                      {showPass.confirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </FormField>
-              </div>
-
-              {passwords.next && passwords.confirm && passwords.next !== passwords.confirm && (
-                <p className="text-red-400 text-xs">รหัสผ่านใหม่ไม่ตรงกัน</p>
-              )}
-
-              <div className="flex justify-end pt-2">
-                <button
-                  type="submit"
-                  disabled={savingPass || !passwords.current || !passwords.next || !passwords.confirm}
-                  className="btn-primary px-6 py-3 rounded-xl text-sm font-bold text-gray-900 flex items-center gap-2 disabled:opacity-50"
-                >
-                  {savingPass
-                    ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    : <Lock className="w-4 h-4" />}
-                  เปลี่ยนรหัสผ่าน
-                </button>
-              </div>
-            </form>
-          </div>
         </div>
       </div>
     </PageLayout>

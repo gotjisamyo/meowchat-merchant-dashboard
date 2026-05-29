@@ -1,33 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
-import { Mail, Lock, Eye, EyeOff, Loader2, Cat, X, HeadphonesIcon } from 'lucide-react';
+import { Cat, Loader2 } from 'lucide-react';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [forgotModal, setForgotModal] = useState(false);
-  const emailRef = useRef(null);
-  const passRef = useRef(null);
 
-  // Force dark bg on browser autofill
-  useEffect(() => {
-    const fix = (el) => {
-      if (!el) return;
-      el.style.backgroundColor = '#F9FAFB';
-      el.style.color = '#ffffff';
-    };
-    const t = setInterval(() => {
-      fix(emailRef.current);
-      fix(passRef.current);
-    }, 200);
-    return () => clearInterval(t);
-  }, []);
-
-  const { login, isAuthenticated } = useAuth();
+  const { loginWithGoogle, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const fromLoc = location.state?.from;
@@ -37,142 +18,76 @@ export default function Login() {
     if (isAuthenticated) navigate(from, { replace: true });
   }, [isAuthenticated, navigate, from]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSuccess = async (credentialResponse) => {
     setError('');
-
-    if (!email.trim()) { setError('กรุณากรอกอีเมล'); return; }
-    if (!password.trim()) { setError('กรุณากรอกรหัสผ่าน'); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('รูปแบบอีเมลไม่ถูกต้อง');
-      return;
-    }
-
     setIsLoading(true);
     try {
-      await login(email, password);
+      await loginWithGoogle(credentialResponse.credential);
       navigate(from, { replace: true });
     } catch (err) {
-      setError(err.message || 'เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง');
+      setError(err.message || 'เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่');
     }
     setIsLoading(false);
+  };
+
+  const handleError = () => {
+    setError('เข้าสู่ระบบด้วย Google ไม่สำเร็จ กรุณาลองใหม่');
   };
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background glow effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-1/2 -left-1/4 w-3/4 h-3/4 bg-gradient-to-br from-green-500/8 via-transparent to-transparent rounded-full blur-3xl" />
-        <div className="absolute -bottom-1/2 -right-1/4 w-3/4 h-3/4 bg-gradient-to-tl from-green-500/8 via-transparent to-transparent rounded-full blur-3xl" />
+        <div className="absolute -top-1/2 -left-1/4 w-3/4 h-3/4 rounded-full blur-3xl" />
+        <div className="absolute -bottom-1/2 -right-1/4 w-3/4 h-3/4 rounded-full blur-3xl" />
       </div>
 
       {/* Subtle grid */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.025)_1px,transparent_1px)] bg-[size:60px_60px] pointer-events-none" />
 
       {/* Card */}
-      <div className="w-full max-w-md relative z-10 animate-fade-in">
+      <div className="w-full max-w-sm relative z-10 animate-fade-in">
         {/* Logo & Title */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-green-400 mb-4 shadow-xl shadow-green-500/25">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-green-500 mb-4 shadow-xl shadow-green-500/25">
             <Cat className="w-8 h-8 text-gray-900" />
           </div>
           <h1 className="text-2xl font-extrabold text-gray-900 mb-1">MeowChat Merchant</h1>
           <p className="text-gray-400 text-sm">เข้าสู่ระบบเพื่อจัดการบอท LINE OA ของคุณ</p>
         </div>
 
-        {/* Form Card */}
+        {/* Card */}
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-7 shadow-2xl">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-600 mb-2">
-                อีเมล
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                <input
-                  id="email"
-                  ref={emailRef}
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
-                  placeholder="merchant@email.com"
-                  autoComplete="email"
-                />
-              </div>
+          {error && (
+            <div className="mb-5 p-3 rounded-xl bg-red-500/10 border border-red-500/20">
+              <p className="text-red-400 text-sm text-center">{error}</p>
             </div>
+          )}
 
-            {/* Password */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-gray-600 mb-2">
-                รหัสผ่าน
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                <input
-                  id="password"
-                  ref={passRef}
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-11 pr-12 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500/40 transition-all text-sm"
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 min-h-[44px] min-w-[44px] flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
+          {isLoading ? (
+            <div className="flex items-center justify-center gap-2 py-3 text-gray-500 text-sm">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              กำลังเข้าสู่ระบบ...
             </div>
-
-            {/* Forgot password */}
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={() => setForgotModal(true)}
-                className="text-xs text-green-600 hover:text-green-500 transition-colors font-medium py-3 px-1 min-h-[44px]"
-              >
-                ลืมรหัสผ่าน?
-              </button>
+          ) : (
+            <div className="flex justify-center">
+              <GoogleLogin
+                onSuccess={handleSuccess}
+                onError={handleError}
+                useOneTap={false}
+                shape="rectangular"
+                size="large"
+                width="300"
+                text="signin_with"
+                locale="th"
+              />
             </div>
+          )}
 
-            {/* Error */}
-            {error && (
-              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20">
-                <p className="text-red-400 text-sm text-center">{error}</p>
-              </div>
-            )}
-
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-3.5 px-4 bg-gradient-to-r from-green-600 to-green-400 hover:from-green-500 hover:to-green-300 text-gray-900 font-bold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-green-500/20 text-sm"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  กำลังเข้าสู่ระบบ...
-                </>
-              ) : (
-                'เข้าสู่ระบบ'
-              )}
-            </button>
-          </form>
+          <p className="text-center text-xs text-gray-400 mt-4 leading-relaxed">
+            ครั้งแรกที่เข้าใช้งานจะสร้างบัญชีให้อัตโนมัติ
+          </p>
         </div>
-
-        {/* Register link */}
-        <p className="text-center mt-4 text-gray-400 text-sm">
-          ยังไม่มีบัญชี?{' '}
-          <Link to="/register" className="text-green-600 hover:text-green-500 font-semibold transition-colors py-2 inline-block">
-            สมัครฟรี 14 วัน
-          </Link>
-        </p>
 
         {/* Trust Signals */}
         <div className="mt-5 flex items-center justify-center gap-3 flex-wrap">
@@ -183,52 +98,10 @@ export default function Login() {
           <span className="flex items-center gap-1.5 text-[11px] text-gray-400">📋 PDPA Compliant</span>
         </div>
 
-        {/* Footer */}
         <p className="text-center mt-3 text-gray-400 text-xs">
           © 2026 MeowChat by Mawsom Company Limited
         </p>
       </div>
-
-      {/* Forgot Password Modal */}
-      {forgotModal && (
-        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-sm bg-gray-50 rounded-3xl border border-gray-200 p-7 shadow-2xl animate-fade-in">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-green-500/15 border border-green-500/20 flex items-center justify-center">
-                  <HeadphonesIcon className="w-5 h-5 text-green-600" />
-                </div>
-                <h2 className="text-base font-bold text-gray-900">ลืมรหัสผ่าน?</h2>
-              </div>
-              <button
-                onClick={() => setForgotModal(false)}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <p className="text-sm text-gray-500 mb-4 leading-relaxed">
-              ติดต่อทีม Support เพื่อรีเซ็ตรหัสผ่านของคุณ
-            </p>
-            <div className="space-y-2">
-              <a
-                href="mailto:support@meowchat.store"
-                className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-green-500/10 border border-green-500/20 hover:bg-green-500/15 transition-colors"
-              >
-                <Mail className="w-4 h-4 text-green-600 flex-shrink-0" />
-                <span className="text-sm text-green-600 font-semibold">support@meowchat.store</span>
-              </a>
-              <p className="text-xs text-gray-400 text-center pt-1">ทีมงานจะตอบกลับภายใน 24 ชั่วโมง</p>
-            </div>
-            <button
-              onClick={() => setForgotModal(false)}
-              className="w-full mt-5 py-2.5 rounded-xl bg-gray-50 border border-gray-100 text-gray-500 hover:text-gray-900 hover:bg-gray-50 text-sm font-semibold transition-all"
-            >
-              ปิด
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,15 +1,16 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const AuthContext = createContext(null);
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.meowchat.store';
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Restore session from localStorage on mount
   useEffect(() => {
     const storedUser = localStorage.getItem('meowchat_user');
     const token = localStorage.getItem('meowchat_token');
@@ -20,11 +21,11 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  const login = async (email, password) => {
-    const res = await fetch(`${API_URL}/api/auth/login`, {
+  const loginWithGoogle = async (credential) => {
+    const res = await fetch(`${API_URL}/api/auth/google`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
+      body: JSON.stringify({ credential }),
     });
 
     const data = await res.json();
@@ -32,10 +33,6 @@ export function AuthProvider({ children }) {
     if (!res.ok) {
       throw new Error(data.message || 'เข้าสู่ระบบไม่สำเร็จ');
     }
-
-    // Allow any non-admin role (user, merchant, etc.)
-    // Admin role is reserved for the Super Admin dashboard
-    // Uncomment to restrict: if (data.user.role === 'admin') throw new Error('...');
 
     localStorage.setItem('meowchat_token', data.token);
     localStorage.setItem('meowchat_user', JSON.stringify(data.user));
@@ -58,16 +55,18 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      loading,
-      isAuthenticated,
-      login,
-      logout,
-      updateUser,
-    }}>
-      {children}
-    </AuthContext.Provider>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <AuthContext.Provider value={{
+        user,
+        loading,
+        isAuthenticated,
+        loginWithGoogle,
+        logout,
+        updateUser,
+      }}>
+        {children}
+      </AuthContext.Provider>
+    </GoogleOAuthProvider>
   );
 }
 
