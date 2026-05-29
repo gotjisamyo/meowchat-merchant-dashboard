@@ -76,7 +76,7 @@ export default function Orders({ setSidebarOpen }) {
           currentShopId = bots[0]?.id;
           if (currentShopId) setShopId(currentShopId);
         }
-        if (!currentShopId) return;
+        if (!currentShopId) { if (isInitial) setLoading(false); return; }
         const data = await ordersAPI.getOrders(currentShopId);
         setOrders(prev => {
           // Notify on new pending orders (after initial load)

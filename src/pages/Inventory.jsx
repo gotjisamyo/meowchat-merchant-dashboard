@@ -154,10 +154,10 @@ export default function Inventory({ setSidebarOpen }) {
     async function init() {
       const bots = await botAPI.getMyBots();
       const id = bots[0]?.id;
+      setLoading(false);
       if (!id) return;
       setShopId(id);
       await load(id);
-      setLoading(false);
     }
     init();
   }, [load]);
