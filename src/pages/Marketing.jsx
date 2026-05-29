@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Play, CheckCircle, X, Zap } from 'lucide-react';
 import PageLayout from '../components/PageLayout';
 import Toast from '../components/Toast';
+import PlanGate from '../components/PlanGate';
 import { botAPI, marketingAPI } from '../services/api';
 
 const AUTOMATION_TEMPLATES = [
@@ -69,21 +70,25 @@ const AUTOMATION_TEMPLATES = [
 
 export default function Marketing({ setSidebarOpen }) {
   const [bots, setBots] = useState([]);
+  const [loadingBots, setLoadingBots] = useState(true);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [campaignName, setCampaignName] = useState('');
   const [selectedBotId, setSelectedBotId] = useState('');
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(null);
   const [campaigns, setCampaigns] = useState([]);
+  const [plan, setPlan] = useState(null);
 
   useEffect(() => {
     botAPI.getMyBots().then((b) => {
       setBots(b);
+      setLoadingBots(false);
+      setPlan(b[0]?.plan?.toLowerCase() || 'trial');
       if (b[0]?.id) {
         setSelectedBotId(b[0].id);
         marketingAPI.getCampaigns(b[0].id).then(setCampaigns);
       }
-    });
+    }).catch(() => setLoadingBots(false));
   }, []);
 
   const handleUseTemplate = (template) => {
@@ -123,7 +128,7 @@ export default function Marketing({ setSidebarOpen }) {
       setSidebarOpen={setSidebarOpen}
     >
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-
+      <PlanGate currentPlan={plan} requiredPlan="business">
       {/* Templates */}
       <div>
         <div className="flex items-center gap-2 mb-5">
@@ -236,8 +241,9 @@ export default function Marketing({ setSidebarOpen }) {
                   onChange={(e) => setSelectedBotId(e.target.value)}
                   className="input-premium w-full"
                 >
-                  {bots.length === 0 && (
-                    <option value="">กำลังโหลด...</option>
+                  {loadingBots && <option value="">กำลังโหลด...</option>}
+                  {!loadingBots && bots.length === 0 && (
+                    <option value="">— ยังไม่มี Bot กรุณาสร้าง Bot ก่อน —</option>
                   )}
                   {bots.map((b) => (
                     <option key={b.id} value={b.id}>
@@ -274,6 +280,7 @@ export default function Marketing({ setSidebarOpen }) {
           </div>
         </div>
       )}
+      </PlanGate>
     </PageLayout>
   );
 }
